@@ -2,24 +2,20 @@ import random
 import matplotlib.pyplot as plt
 import matplotlib.image as mpimg
 #import csv
-poradi = 0
+rank = 0
 names_free_drivers = [    "Maximilian Becker", "Santiago Cruz",   "Oliver Wright", "Hiroshi Takeda",     "Sebastian Fontaine", "Mateo Silva",     "Jonas Lindberg", "Ivan Kuznetsov",     "Lorenzo Bianchi", "Connor Mitchell",    "Rafael Ortega", "Tobias Schmidt",     "Yuto Nakamura", "Charles Lambert",     "Gabriel Costa", "Andrei Petrescu",    "Lutime Meyer", "Zhang Wei",     "Finn Gallagher", "Ricardo Santos"]
 TIME_S1 = 15
 TIME_S2 = 23
 TIME_S3 = 22
 time_laps = []
-KOL = 0
+LAPS = 0
 laps_rem = 0
 driver_1 = "Max"
 driver_2 = "Kim"
-#while driver_1 == "":
-#    driver_1 = input("Chybný vstup. Jak se jmenuje jezdec 1: ")
-#while driver_1 == driver_2 or driver_2 == "":
-#    driver_2 = input("Chybný vstup. Jak se jmenuje jezdec 2: ")
 team_player = "MySql AWS Maxim racing team"
 count_cars = 28
 
-WEATHER_TYPES = ["sunny", "semi_rain", "rain", "strong_rain"]
+WEATHER_TYPES = ["sunny", "transitional", "rain", "strong_rain"]
 pneu_colours = {
     "hard": "gray",
     "medium": "yellow",
@@ -45,30 +41,30 @@ def colours_graphs():
             colours.append("green")  # fallback
     return colours
 def info():
-    predict = [weather_1, weather_2, weather_3, weather_4]
+    Forecast = [weather_1, weather_2, weather_3, weather_4]
     if lap == 0:
         print(f"Qualification | Actual weather: {tyre}")
     else:
-        print(f"\n🌤️  lap {lap}/{KOL} | Actual weather: {tyre}")
+        print(f"\n🌤️  lap {lap}/{LAPS} | Actual weather: {tyre}")
     if random.randint(1, 10) < 8:
-        print(f"🔮 Předpověď: {', '.join(predict)}")
+        print(f"🔮 Forecast: {', '.join(Forecast)}")
         if weather_1 == "sunny" and weather_4 in ["rain", "strong_rain"]:
             print(random.choice(["We’re monitoring the weather, expect rain in 3 laps.", "Rain is coming in now, you should start thinking about wet tires soon.", "Rain intensity increasing, we expect full wet conditions in the next 3 laps."]))
             print(random.choice(["Copy that, adjusting my pace.", "Understood, I’m keeping an eye on it.","OK"]))
     else:
         fake = [generate_weather(tyre) for _ in range(4)]
-        print(f"🔮 Předpověď: {', '.join(fake)}")
+        print(f"🔮 Forecast: {', '.join(fake)}")
         if fake[0] == "sunny" and fake[3] in ["rain", "strong_rain"]:
             print(random.choice(["We’re monitoring the weather, expect rain in 3 laps.", "Rain is coming in now, you should start thinking about wet tires soon.", "Rain intensity increasing, we expect full wet conditions in the next 3 laps."]))
             print(random.choice(["Copy that, adjusting my pace.", "Understood, I’m keeping an eye on it.","OK"]))
-    return predict
+    return Forecast
 def generate_weather(tyre):
     if tyre == "sunny":
-        tyre = random.choice(["sunny", "sunny","sunny","sunny", "sunny", "sunny","sunny","sunny","sunny", "sunny","sunny","sunny", "sunny", "sunny","sunny","sunny","sunny", "sunny","sunny","sunny", "sunny", "sunny","sunny","sunny", "sunny", "sunny","sunny","sunny", "semi_rain"])
-    elif tyre == "semi_rain":
-        tyre = random.choice(["sunny", "semi_rain", "semi_rain","semi_rain","rain"])
+        tyre = random.choice(["sunny", "sunny","sunny","sunny", "sunny", "sunny","sunny","sunny","sunny", "sunny","sunny","sunny", "sunny", "sunny","sunny","sunny","sunny", "sunny","sunny","sunny", "sunny", "sunny","sunny","sunny", "sunny", "sunny","sunny","sunny", "transitional"])
+    elif tyre == "transitional":
+        tyre = random.choice(["sunny", "transitional", "transitional","transitional","rain"])
     elif tyre == "rain":
-        tyre = random.choice(["semi_rain", "rain", "rain", "rain", "rain", "rain", "rain", "rain", "rain", "rain", "strong_rain"])
+        tyre = random.choice(["transitional", "rain", "rain", "rain", "rain", "rain", "rain", "rain", "rain", "rain", "strong_rain"])
     elif tyre == "strong_rain":
         tyre = random.choice(["rain", "rain", "strong_rain", "strong_rain", "strong_rain", "strong_rain", "strong_rain", "strong_rain", "strong_rain", "strong_rain"])
     return tyre
@@ -94,65 +90,65 @@ def drivers_table():
             print(f"Počet boxů: {a.box} Únava: {heloo}%")
             status_1 = status
 def reset_race():
-    global lap, time_laps, safety_car, laps_rem, predict, tyre
+    global lap, time_laps, safety_car, laps_rem, Forecast, tyre
     lap = 0
     time_laps = []
     safety_car = False
     laps_rem = 0
     tyre = "sunny"
-    predict = [generate_weather(tyre)]
+    Forecast = [generate_weather(tyre)]
     for _ in range(3):
-        predict.append(generate_weather(predict[-1]))
+        Forecast.append(generate_weather(Forecast[-1]))
     for a in cars:
         a.time = 0
         a.dnf = False
         a.wear = 0
         a.position = []
-        a.faulty = False
+        a.puncture = False
         a.box = 0
         a.stinty = []
         a.last_stint_start = 0
-    return lap, time_laps, safety_car, laps_rem, tyre, predict, cars
-def pit_hrac(training):
+    return lap, time_laps, safety_car, laps_rem, tyre, Forecast, cars
+def pit_player():
     volba = 1
     volba_2 = 1
-    if hrac.dnf is False:
+    if player.dnf is False:
         print("Action: [1] Continue [2] Box for driver 1")
         volba = input("> ").strip()
         if volba == "2":
             print("Choose pneu for driver 1: [hard / medium / soft / wet / inter]")
-            strategy(KOL-lap, TIME_S1, TIME_S2, TIME_S3, pneu, speed)                
+            strategy(LAPS-lap, TIME_S1, TIME_S2, TIME_S3, pneu, speed)                
             new = input("> ").strip().lower()
             while new not in PNEU_types:
-                new = input("Incorrect choice. Choose pneu for driver 2: [hard / medium / soft / wet / inter]")
+                new = input("Incorrect choice. Choose pneu for driver 2: [hard / medium / soft / wet / inter]\n")
             if new in PNEU_types:
-                hrac.pit_stop(new)
+                player.pit_stop(new)
             else:
                 print("Neplatná volba – pokračuješ.")
-    if hrac_2.dnf is False:
+    if player_2.dnf is False:
         print("Action: [1] Continue [2] Box for driver 2")
         volba_2 = input("> ").strip()
         if volba_2 == "2":
             print("Choose pneu for driver 2: [hard / medium / soft / wet / inter]")
-            strategy(KOL-lap, TIME_S1, TIME_S2, TIME_S3, pneu, speed)  
+            strategy(LAPS-lap, TIME_S1, TIME_S2, TIME_S3, pneu, speed)  
             new = input("> ").strip().lower()
             while new not in PNEU_types:
-                new = input("Incorrect choice. Choose pneu for driver 2: [hard / medium / soft / wet / inter]")
+                new = input("Incorrect choice. Choose pneu for driver 2: [hard / medium / soft / wet / inter]\n")
             if new in PNEU_types:
-                hrac_2.pit_stop(new)
+                player_2.pit_stop(new)
             else:
                 print("Neplatná volba – pokračuješ.")
-    if hrac.dnf == True or hrac_2.dnf==True:
+    if player.dnf == True or player_2.dnf==True:
         if volba == "2" and volba_2 == "2":
             print(random.choice(["Box now, double stack. Maintain gap, all planned.",  "Box, box, double stack! Close gap, no mistakes!",  "Box this lap, we’re double stacking. Maintain delta, we’ve got margin.",  "Plan B, box now. You’ll be second in the stack, minimal delay expected.",  "Box this lap for double stack. First car in now, stand by for release.",  "Box this lap, we are double stacking. Pit crew is prepped for both."]))
             print( "Copy. Keeping gap, I’m right behind.",  "Understood. Staying tight.",  "Copy. I’m ready.",  "Confirmed. I’ll hit my marks.")
-            hrac.time += 3
-            hrac_2.time += 3
+            player.time += 3
+            player_2.time += 3
         elif volba_2 == "2" and volba != "2" or volba == "2" and volba_2 != "2":
             print(random.choice(["Box, box. Box this lap. Tyres ready, confirm entry.",  "Pit window is open. Box this lap for new tyres.",  "Box now. Hitting your marks is critical.",  "Box, box. Tyre temps look good — execute clean entry.",  "Pit this lap. We’re switching compound."]))
             print(random.choice([ "Copy. In this lap.",  "Understood. Coming in.",  "On my way in.", "Copy. Box, box",  "Copy, box this lap.", "Copy, confirmed."]))
-def strategy(KOL, TIME_S1, TIME_S2, TIME_S3, pneu, speed):
-    pocet_kol = KOL
+def strategy(LAPS, TIME_S1, TIME_S2, TIME_S3, pneu, speed):
+    pocet_laps = LAPS
     lap_time = (TIME_S1 + TIME_S2 + TIME_S3)/60
     if pneu == "medium":
         k_wear = [1.5,5,9,4.4,8.4]
@@ -172,67 +168,67 @@ def strategy(KOL, TIME_S1, TIME_S2, TIME_S3, pneu, speed):
     vydrze = [vydrz_h, vydrz_m, vydrz_s]
     nazev = ["Hard", "Medium", "Soft"]
     box_time = (100/60)
-#    time = round((lap_time*KOL)/60*prych, 0)
+#    time = round((lap_time*LAPS)/60*prych, 0)
     for i, stint in enumerate(vydrze, 0):
-        if pocet_kol + 4 < vydrze[i] < pocet_kol +20:
-            #zbytek = pocet_kol - vydrze[i]
-            zbytek = vydrze[i] - pocet_kol
-            prych = (vydrze[i] - zbytek)*k_speed[i]/pocet_kol
-            #prych = (k_speed[i]*vydrze[i])/pocet_kol
-            time = round((lap_time*KOL)/prych, 2)
+        if pocet_laps + 4 < vydrze[i] < pocet_laps +20:
+            #zbytek = pocet_laps - vydrze[i]
+            zbytek = vydrze[i] - pocet_laps
+            prych = (vydrze[i] - zbytek)*k_speed[i]/pocet_laps
+            #prych = (k_speed[i]*vydrze[i])/pocet_laps
+            time = round((lap_time*LAPS)/prych, 2)
 
-            print(f"Možná strategy - {round(stint, 0)} kol - {time} minut - {nazev[i]}")
+            print(f"Theoretical strategy - {round(stint, 0)} laps - {time} minut - {nazev[i]}")
 
-#    zbytek = vydrz1 + vydrz2 - kol
-#    pocetkolvydrz2 = vydrz2 - zbytek 
-#    prych = (k_speed[i]*vydrz1 + pocet_kolvydrz2*k_speed[0])/pocet_kol
+#    zbytek = vydrz1 + vydrz2 - laps
+#    pocetlapsvydrz2 = vydrz2 - zbytek 
+#    prych = (k_speed[i]*vydrz1 + pocet_lapsvydrz2*k_speed[0])/pocet_laps
 
     for i in range(len(vydrze)):
-        if pocet_kol + 4 < vydrze[i] + vydrze[0] < pocet_kol +20:
-            zbytek = vydrze[i] + vydrze[0]- pocet_kol
-            pocetkolvydrz2 = vydrze[0] - zbytek
-            prych = (k_speed[i]*vydrze[i] + pocetkolvydrz2*k_speed[0])/pocet_kol
-            time = round(((lap_time*KOL)/prych) + box_time, 2)
-            if pocetkolvydrz2 > 0:
-                print(f"Možná strategy - {round(vydrze[i] + vydrze[0],0)} kol - {time} minut - {nazev[i]}, {nazev[0]}")
-        if pocet_kol + 4 < vydrze[i] + vydrze[1]  < pocet_kol +20:
-            zbytek = vydrze[i] + vydrze[1]- pocet_kol
-            pocetkolvydrz2 = vydrze[1] - zbytek
-            prych = (k_speed[i]*vydrze[i] + pocetkolvydrz2*k_speed[1])/pocet_kol
-            time = round(((lap_time*KOL)/prych) + box_time, 2)
-            if pocetkolvydrz2 > 0:
-                print(f"Možná strategy - {round(vydrze[i] + vydrze[1],0)} kol - {time} minut - {nazev[i]}, {nazev[1]}")
-        if pocet_kol + 4 < vydrze[i] + vydrze[2]  < pocet_kol +20:
-            zbytek = vydrze[i]+ vydrze[2] - pocet_kol
-            pocetkolvydrz2 = vydrze[2] - zbytek
-            prych = (k_speed[i]*vydrze[i] + pocetkolvydrz2*k_speed[2])/pocet_kol
-            time = round(((lap_time*KOL)/prych) + box_time, 2)
-            if pocetkolvydrz2 > 0:
-                print(f"Možná strategy - {round(vydrze[i] + vydrze[2], 0)} kol - {time} minut - {nazev[i]}, {nazev[2]}")
+        if pocet_laps + 4 < vydrze[i] + vydrze[0] < pocet_laps +20:
+            zbytek = vydrze[i] + vydrze[0]- pocet_laps
+            pocetlapsvydrz2 = vydrze[0] - zbytek
+            prych = (k_speed[i]*vydrze[i] + pocetlapsvydrz2*k_speed[0])/pocet_laps
+            time = round(((lap_time*LAPS)/prych) + box_time, 2)
+            if pocetlapsvydrz2 > 0:
+                print(f"Theoretical strategy - {round(vydrze[i] + vydrze[0],0)} laps - {time} minut - {nazev[i]}, {nazev[0]}")
+        if pocet_laps + 4 < vydrze[i] + vydrze[1]  < pocet_laps +20:
+            zbytek = vydrze[i] + vydrze[1]- pocet_laps
+            pocetlapsvydrz2 = vydrze[1] - zbytek
+            prych = (k_speed[i]*vydrze[i] + pocetlapsvydrz2*k_speed[1])/pocet_laps
+            time = round(((lap_time*LAPS)/prych) + box_time, 2)
+            if pocetlapsvydrz2 > 0:
+                print(f"Theoretical strategy - {round(vydrze[i] + vydrze[1],0)} laps - {time} minut - {nazev[i]}, {nazev[1]}")
+        if pocet_laps + 4 < vydrze[i] + vydrze[2]  < pocet_laps +20:
+            zbytek = vydrze[i]+ vydrze[2] - pocet_laps
+            pocetlapsvydrz2 = vydrze[2] - zbytek
+            prych = (k_speed[i]*vydrze[i] + pocetlapsvydrz2*k_speed[2])/pocet_laps
+            time = round(((lap_time*LAPS)/prych) + box_time, 2)
+            if pocetlapsvydrz2 > 0:
+                print(f"Theoretical strategy - {round(vydrze[i] + vydrze[2], 0)} laps - {time} minut - {nazev[i]}, {nazev[2]}")
     for i in range(len(vydrze)):
         for j in range(len(vydrze)):
-            if pocet_kol + 4 <vydrze[i] + vydrze[j] + vydrze[0]  < pocet_kol +20:
-                zbytek = vydrze[i] + vydrze[j]  + vydrze[0] - pocet_kol
-                pocetkolvydrz2 = vydrze[0] - zbytek
-                prych = (k_speed[i]*vydrze[i] + k_speed[j]*vydrze[j]+ pocetkolvydrz2*k_speed[0])/pocet_kol
-                time = round((lap_time*KOL/prych) + box_time*2, 2)
-                if pocetkolvydrz2 > 0:
-                    print(f"Možná strategy - {round(vydrze[i] + vydrze[j] + vydrze[0], 0)} kol - {round(lap_time*(vydrze[i] + vydrze[j]+vydrze[0]) + box_time*2, 0)} minut - {nazev[i]}, {nazev[j]}, {nazev[0]}")
-            if pocet_kol + 4 <vydrze[i] + vydrze[j] + vydrze[1]  < pocet_kol +20:
-                zbytek = vydrze[i] + vydrze[j]  + vydrze[1]- pocet_kol
-                pocetkolvydrz2 = vydrze[1] - zbytek
-                prych = (k_speed[i]*vydrze[i] + k_speed[j]*vydrze[j]+ pocetkolvydrz2*k_speed[1])/pocet_kol
-                time = round(((lap_time*KOL)/prych) + box_time*2, 2)
-                if pocetkolvydrz2 > 0:
-                    print(f"Možná strategy - {round(vydrze[i] + vydrze[j] + vydrze[1], 0)} kol - {round(lap_time*(vydrze[i] + vydrze[j]+vydrze[1]) + box_time*2, 0)} minut - {nazev[i]}, {nazev[j]}, {nazev[1]}")
-            if pocet_kol + 4 <vydrze[i] + vydrze[j] + vydrze[2]  < pocet_kol +20:
-                zbytek = vydrze[i] + vydrze[j] + vydrze[2]- pocet_kol
-                pocetkolvydrz2 = vydrze[2] - zbytek
-                prych = (k_speed[i]*vydrze[i] + k_speed[j]*vydrze[j]+ pocetkolvydrz2*k_speed[2])/pocet_kol
-                time =  round(((lap_time*KOL)/prych) + box_time*2, 2)
-                if pocetkolvydrz2 > 0:
-                    print(f"Možná strategy - {round(vydrze[i] + vydrze[j] + vydrze[2], 0)} kol - {time} minut - {nazev[i]}, {nazev[j]}, {nazev[2]}")
-driveri_mmr2 = [
+            if pocet_laps + 4 <vydrze[i] + vydrze[j] + vydrze[0]  < pocet_laps +20:
+                zbytek = vydrze[i] + vydrze[j]  + vydrze[0] - pocet_laps
+                pocetlapsvydrz2 = vydrze[0] - zbytek
+                prych = (k_speed[i]*vydrze[i] + k_speed[j]*vydrze[j]+ pocetlapsvydrz2*k_speed[0])/pocet_laps
+                time = round((lap_time*LAPS/prych) + box_time*2, 2)
+                if pocetlapsvydrz2 > 0:
+                    print(f"Theoretical strategy - {round(vydrze[i] + vydrze[j] + vydrze[0], 0)} laps - {round(lap_time*(vydrze[i] + vydrze[j]+vydrze[0]) + box_time*2, 0)} minut - {nazev[i]}, {nazev[j]}, {nazev[0]}")
+            if pocet_laps + 4 <vydrze[i] + vydrze[j] + vydrze[1]  < pocet_laps +20:
+                zbytek = vydrze[i] + vydrze[j]  + vydrze[1]- pocet_laps
+                pocetlapsvydrz2 = vydrze[1] - zbytek
+                prych = (k_speed[i]*vydrze[i] + k_speed[j]*vydrze[j]+ pocetlapsvydrz2*k_speed[1])/pocet_laps
+                time = round(((lap_time*LAPS)/prych) + box_time*2, 2)
+                if pocetlapsvydrz2 > 0:
+                    print(f"Theoretical strategy - {round(vydrze[i] + vydrze[j] + vydrze[1], 0)} laps - {round(lap_time*(vydrze[i] + vydrze[j]+vydrze[1]) + box_time*2, 0)} minut - {nazev[i]}, {nazev[j]}, {nazev[1]}")
+            if pocet_laps + 4 <vydrze[i] + vydrze[j] + vydrze[2]  < pocet_laps +20:
+                zbytek = vydrze[i] + vydrze[j] + vydrze[2]- pocet_laps
+                pocetlapsvydrz2 = vydrze[2] - zbytek
+                prych = (k_speed[i]*vydrze[i] + k_speed[j]*vydrze[j]+ pocetlapsvydrz2*k_speed[2])/pocet_laps
+                time =  round(((lap_time*LAPS)/prych) + box_time*2, 2)
+                if pocetlapsvydrz2 > 0:
+                    print(f"Theoretical strategy - {round(vydrze[i] + vydrze[j] + vydrze[2], 0)} laps - {time} minut - {nazev[i]}, {nazev[j]}, {nazev[2]}")
+drivers_mmr2 = [
     "Noah Blake", "Felipe Sandoval", "Luca Moretti", "Brian Chen", "Adam newk", "Pierre Gauthier",
     "Viktor Orlov", "Daisuke Tanaka", "Elias Müller", "Jordan Evans", "Diego Ramirez", "Anton Petrov",
     "Kenji Nakamura", "Nicolas Dubois", "Thomas Fischer", "Miguel Lopez", "Alexei Solapv", "Ethan Zhang",
@@ -264,11 +260,11 @@ def simulate_season_MMR2(drivers):
     return best, worst
 
 # Create a list of drivers with random experience
-list_drivers_mmr2 = [drivermmr2(name, random.uniform(0.95, 1.05)) for name in driveri_mmr2]
+list_drivers_mmr2 = [drivermmr2(name, random.uniform(0.95, 1.05)) for name in drivers_mmr2]
 
 # Run the simulation
 best, worst = simulate_season_MMR2(list_drivers_mmr2)
-#for driver in driveri_mmr2:
+#for driver in drivers_mmr2:
 #    drivermmr2(driver,random.uniform(0.95, 1))
 class Car:
     def __init__(self, name, skill, is_player=False):
@@ -286,7 +282,7 @@ class Car:
         self.drs = False
         self.team = None
         self.dnf = False
-        self.faulty = False
+        self.puncture = False
 
     def efectivity_pneu(self, tyre):
         # Zajisti, že pneumatika je string
@@ -315,13 +311,13 @@ class Car:
             self.dnf = True
             return
 
-        if self.faulty:
-            print(f"{self.name} – faulty! ❌")
+        if self.puncture:
+            print(f"{self.name} – puncture! ❌")
             safety_car = True
             return safety_car
         if self.wear > 80 and random.random() < 0.55:
-            print(f"{self.name} – faulty! ❌")
-            self.faulty = True
+            print(f"{self.name} – puncture! ❌")
+            self.puncture = True
             self.dnf = True
             safety_car = True
             return safety_car
@@ -375,13 +371,13 @@ class Car:
         self.wear = 0
         self.last_stint_start = self.time  # nový stint začíná od nového času
 
-    def rozhodni_ai(self, tyre, kol, max_kol, predict):
+    def rozhodni_ai(self, tyre, laps, max_laps, Forecast):
         if self.dnf:
             return None, False
         unava = self.wear
-        zustava = max_kol - kol
-        idealni = self.vhodne_pneu(predict[0])
-        ideal_2 = self.vhodne_pneu(predict[2])
+        zustava = max_laps - laps
+        idealni = self.vhodne_pneu(Forecast[0])
+        ideal_2 = self.vhodne_pneu(Forecast[2])
 
         self.pit = False
         if self.pneu not in idealni and self.pneu not in ideal_2 and zustava > 5:
@@ -392,45 +388,45 @@ class Car:
             self.pit = True
         elif safety_car and self.wear > 70 and zustava > 5:
             self.pit = True
-        if predict[3] == "semi_rain":
+        if Forecast[3] == "transitional":
             idealni = "soft"
-        elif predict[0] in ["rain", "strong_rain"] and KOL - lap < 70/k_wear[3] and predict[2] == predict[0]:
+        elif Forecast[0] in ["rain", "strong_rain"] and LAPS - lap < 70/k_wear[3] and Forecast[2] == Forecast[0]:
             idealni = "wet"
-        elif predict[0] in ["rain", "strong_rain"] and KOL - lap < 70/k_wear[4] and predict[2] == predict[0]:
+        elif Forecast[0] in ["rain", "strong_rain"] and LAPS - lap < 70/k_wear[4] and Forecast[2] == Forecast[0]:
             idealni = "inter"
-        elif predict[0] == "sunny" and KOL - lap < 70/k_wear[0] and predict[2] == predict[0]:
+        elif Forecast[0] == "sunny" and LAPS - lap < 70/k_wear[0] and Forecast[2] == Forecast[0]:
             idealni = "hard"
-        elif predict[0] == "sunny" and KOL- lap < 70/k_wear[1] and predict[2] == predict[0]:
+        elif Forecast[0] == "sunny" and LAPS- lap < 70/k_wear[1] and Forecast[2] == Forecast[0]:
             idealni = "medium"
-        elif predict[0] == "sunny" and KOL - lap < 70/k_wear[2] and predict[2] == predict[0]:
+        elif Forecast[0] == "sunny" and LAPS - lap < 70/k_wear[2] and Forecast[2] == Forecast[0]:
             idealni = "soft"
-        elif predict[0] in ["semi_rain", "sunny", "rain"] and predict[3] in ["rain", "strong_rain"] or predict[0] in ["rain", "strong_rain"] and predict[2] == predict[0] or predict[2] in ["rain", "strong_rain"]:
+        elif Forecast[0] in ["transitional", "sunny", "rain"] and Forecast[3] in ["rain", "strong_rain"] or Forecast[0] in ["rain", "strong_rain"] and Forecast[2] == Forecast[0] or Forecast[2] in ["rain", "strong_rain"]:
             idealni = random.choice(["wet" ,"wet" , "inter"])
-        elif predict[0] == "sunny" and predict[2] == predict[0]:
+        elif Forecast[0] == "sunny" and Forecast[2] == Forecast[0]:
             idealni = random.choice(["soft" , "medium", "hard", "medium", "hard"])
-        elif predict[0] in ["semi_rain", "sunny", "rain"] and predict[3] in ["sunny"]:
+        elif Forecast[0] in ["transitional", "sunny", "rain"] and Forecast[3] in ["sunny"]:
             idealni = random.choice(["soft" , "medium", "hard", "medium", "hard"])
         return idealni if self.pit else None
-    def hrac_info(self):
+    def player_info(self):
         if self.dnf == False:
             if safety_car == True:
                 print(random.choice(["Still safety car", "Still spinning slowly lap by lap."]))
                 if self.wear > 60:
                     print(random.choice(["Why didn’t we pit? We’ve just thrown away the race.", "I had no grip even before the safety car!", "Come on! These tyres are dead — what are we doing?!", "Are we sure about staying out? Tyres are cooked."]))
             print(f"\n🚗 Your car {self.name}")
-            poradi = [a.name for a in cars if not a.dnf]  # Move this line here            
+            rank = [a.name for a in cars if not a.dnf]  # Move this line here            
             if driver_1 == self.name:
-                position = poradi.index(driver_1) + 1 if driver_1 in poradi else count_cars
-                print(f"Driver 1 - {hrac.name}")
+                position = rank.index(driver_1) + 1 if driver_1 in rank else count_cars
+                print(f"Driver 1 - {player.name}")
             else:
-                position = poradi.index(driver_2) + 1 if driver_2 in poradi else  count_cars
-                print(f"Driver 2 - {hrac_2.name}")
-            print(f"\n📊 Rank: {position}. from {len(poradi)}")
+                position = rank.index(driver_2) + 1 if driver_2 in rank else  count_cars
+                print(f"Driver 2 - {player_2.name}")
+            print(f"\n📊 Rank: {position}. from {len(rank)}")
             fake_o = int(self.wear) - random.uniform(-4, 4)
             fake_o = int(fake_o)
             if fake_o < 0:
                 fake_o = 0
-            print(f"🛞  Pneu: {self.pneu} | Wear: {fake_o}%")
+            print(f"🛞  Pneu: {self.pneu} | Tyre wear: {fake_o}%")
             index = cars.index(self)
             difference = 0
             difference_2 = 0
@@ -470,7 +466,7 @@ class Car:
 
     def simuluj_ai(self, training):
         if self.is_player == False:
-            new_pneu = self.rozhodni_ai(tyre, lap, KOL, predict)
+            new_pneu = self.rozhodni_ai(tyre, lap, LAPS, Forecast)
             if new_pneu:
                 self.pit_stop(new_pneu)
 
@@ -478,13 +474,13 @@ class Car:
     def vhodne_pneu(self, tyre):
         if tyre in ["strong_rain", "rain"]:
                 return ["wet", "inter"]
-        elif tyre == "semi_rain":
+        elif tyre == "transitional":
             return ["wet", "inter", "soft", "medium", "hard"]
         else:
             return ["soft", "medium", "hard"]
-    def vypocitej_points_jezdec(self, poradi):
+    def vypocitej_points_jezdec(self, rank):
         if self.dnf == False:
-            position = poradi.index(self.name) + 1
+            position = rank.index(self.name) + 1
             if position == 1:
                 self.points += 50
             elif position == 2:
@@ -534,10 +530,10 @@ class Team:
         self.drivers.append(car)
         car.team = self
 
-    def vypocitej_points(self, poradi):
+    def vypocitej_points(self, rank):
         for jezdec in self.drivers:
-            if jezdec.name in poradi:
-                position = poradi.index(jezdec.name) + 1
+            if jezdec.name in rank:
+                position = rank.index(jezdec.name) + 1
                 if position == 1:
                     self.points += 50
                 elif position == 2:
@@ -581,20 +577,19 @@ x = 0
 cars = []
 for driver in drivers:
     cars.append(Car(driver,random.uniform(0.9, 1)))
-hrac = Car(driver_1, random.uniform(0.9, 1), is_player=True)
-cars.append(hrac)
+player = Car(driver_1, random.uniform(0.9, 1), is_player=True)
+cars.append(player)
 
-hrac_2 = Car(driver_2, random.uniform(0.95, 1), is_player=True)
-cars.append(hrac_2)
+player_2 = Car(driver_2, random.uniform(0.95, 1), is_player=True)
+cars.append(player_2)
 teams = []
-# Vytvoření týmů a přiřazení jezdců
-def create_team(team_player, hrac_1, hrac_2, teams, skill):
+def create_team(team_player, player_1, player_2, teams, skill):
     tym = Team(team_player, skill)
-    tym.pridej_jezdce(hrac_1)
-    tym.pridej_jezdce(hrac_2)
+    tym.pridej_jezdce(player_1)
+    tym.pridej_jezdce(player_2)
     teams.append(tym)
     return tym
-create_team(team_player, hrac, hrac_2, teams, random.uniform(0.85, 1))
+create_team(team_player, player, player_2, teams, random.uniform(0.85, 1))
 create_team("Scuderia Python", cars[0], cars[1], teams, random.uniform(0.8, 0.9))
 create_team("Racing 404",cars[2],cars[3], teams, random.uniform(0.95, 1))
 create_team("Formula 1.0 racing team",cars[4],cars[5], teams, random.uniform(0.9, 1))
@@ -625,80 +620,80 @@ while len(names_free_drivers) > 1:
             TIME_S1 = 22
             TIME_S2 = 25
             TIME_S3 = 18
-            KOL = 70
+            LAPS = 70
         if zavod == "LG TV Grand Prix du France":
             pneu = "soft"
             speed = "quick"
             TIME_S1 = 26
             TIME_S2 = 19
             TIME_S3 = 22
-            KOL = 74
+            LAPS = 74
         if zavod == "Sony Varsava Grand Prix":
             pneu = "hard"
             speed = "medium"
             TIME_S1 = 35
             TIME_S2 = 18
             TIME_S3 = 24
-            KOL = 62
+            LAPS = 62
         if zavod == "META China Grand Prix":
             pneu = "medium"
             speed = "slow"
             TIME_S1 = 25
             TIME_S2 = 34
             TIME_S3 = 30
-            KOL = 56
+            LAPS = 56
         if zavod == "Ostrava Apple GP":
             pneu = "soft"
             speed = "quick"
             TIME_S1 = 20
             TIME_S2 = 26
             TIME_S3 = 18
-            KOL = 67
+            LAPS = 67
         if zavod == "Python circuit Bahamas":
             pneu = "hard"
             speed = "medium"
             TIME_S1 = 25
             TIME_S2 = 23
             TIME_S3 = 38
-            KOL = 72  
+            LAPS = 72  
         if zavod == "HP Bulgarian GP":
             pneu = "medium"
             speed = "medium"
             TIME_S1 = 23
             TIME_S2 = 29
             TIME_S3 = 20
-            KOL = 60
+            LAPS = 60
         if zavod == "AWS Grand Prix de Espana":
             pneu = "medium"
             speed = "quick"
             TIME_S1 = 26
             TIME_S2 = 31
             TIME_S3 = 12
-            KOL = 51
+            LAPS = 51
         if zavod == "AirBNB Prague GP":
             pneu = "soft"
             speed = "quick"
             TIME_S1 = 20
             TIME_S2 = 33
             TIME_S3 = 40
-            KOL = 42
+            LAPS = 42
         if zavod == "eBay Skyline Turkey GP":
             pneu = "hard"
             speed = "slow"
             TIME_S1 = 27
             TIME_S2 = 24
             TIME_S3 = 36
-            KOL = 49
+            LAPS = 49
         if zavod == "Java airlines Monza IBM Italy GP":
             pneu = "soft"
             speed = "quick"
             TIME_S1 = 30
             TIME_S2 = 16
             TIME_S3 = 18
-            KOL = 70
+            LAPS = 70
         print(f"Current race {zavod} {b}/{len(sampionat)}")
-        print(f"This track is characteristic for {pneu} pneu and {speed} pace. It has {KOL} laps")
-        strategy(KOL, TIME_S1, TIME_S2, TIME_S3, pneu, speed)
+        print(f"This track is characteristic for {pneu} pneu and {speed} pace. It has {LAPS} laps")
+        strategy(LAPS, TIME_S1, TIME_S2, TIME_S3, pneu, speed)
 
         if pneu == "medium":
             k_wear = [1.5,5,9,4.4,8.4]
@@ -724,24 +719,24 @@ while len(names_free_drivers) > 1:
         weather_2 = generate_weather(weather_1)
         weather_3 = generate_weather(weather_2)
         weather_4 = generate_weather(weather_3)
-        predict = [weather_1, weather_2, weather_3, weather_4]
-        for x in predict:
+        Forecast = [weather_1, weather_2, weather_3, weather_4]
+        for x in Forecast:
             print (f"Weather: 🌤️ ☁️  {x}")
         for car in cars:
             car.pneu = random.choice(["hard", "medium"])
-        hrac.pneu = input("Choose pneu for driver 2: [hard / medium / soft / wet / inter]")
-        while hrac.pneu not in PNEU_types:
-            hrac.pneu = input("Incorrect choice. Choose pneu for driver 2: [hard / medium / soft / wet / inter]")
-            if hrac.pneu == "exit":
+        player.pneu = input("Choose pneu for driver 2: [hard / medium / soft / wet / inter]\n")
+        while player.pneu not in PNEU_types:
+            player.pneu = input("Incorrect choice. Choose pneu for driver 2: [hard / medium / soft / wet / inter]\n")
+            if player.pneu == "exit":
                 continue
-        hrac_2.pneu = input("Choose pneu for driver 2: [hard / medium / soft / wet / inter]")
-        while hrac_2.pneu not in PNEU_types:
-            hrac_2.pneu = input("Incorrect choice. Choose pneu for driver 2: [hard / medium / soft / wet / inter]")
-            if hrac.pneu == "exit":
+        player_2.pneu = input("Choose pneu for driver 2: [hard / medium / soft / wet / inter]\n")
+        while player_2.pneu not in PNEU_types:
+            player_2.pneu = input("Incorrect choice. Choose pneu for driver 2: [hard / medium / soft / wet / inter]\n")
+            if player.pneu == "exit":
                 continue
         simulation = []
         #Tréninky
-        training = input("Akce: Chceš trénink na výdrž pneu [1], speed [2] nebo kvalikaci [3]: ")
+        training = input("Action: Chceš trénink na výdrž pneu [1], speed [2] nebo kvalikaci [3]: ")
         #Kvalifikace
         for car in cars:
             sim_time = TIME_S1 * random.uniform(0.9, 1.1) + TIME_S2 * random.uniform(0.9, 1.1) + TIME_S3 * random.uniform(0.9, 1.1)
@@ -753,8 +748,8 @@ while len(names_free_drivers) > 1:
             penalizovany_time =  1 * i
             car.time += penalizovany_time
         ######################################################################################################################################################################
-        while lap <= KOL:
-            if lap == KOL:
+        while lap <= LAPS:
+            if lap == LAPS:
                 print("Last lap. Push push.")
             info()
             for car in cars:
@@ -795,9 +790,9 @@ while len(names_free_drivers) > 1:
             # sem patří tvůj kód
 
                 if car.is_player:
-                    car.hrac_info()
-                    #position = poradi.index(driver_1) + 1 if driver_1 in poradi else count_cars
-                    #d_2 = poradi.index(driver_2) + 1 if driver_2 in poradi else  count_cars
+                    car.player_info()
+                    #position = rank.index(driver_1) + 1 if driver_1 in rank else count_cars
+                    #d_2 = rank.index(driver_2) + 1 if driver_2 in rank else  count_cars
             cars.sort(key=lambda x: (x.dnf, x.time))
             cars = [a for a in cars] 
 
@@ -819,20 +814,20 @@ while len(names_free_drivers) > 1:
                             cars[i], cars[i - 1] = cars[i - 1], cars[i]
             cars.sort(key=lambda x: (x.dnf, x.time))
 
-            pit_hrac(training)
+            pit_player()
             cars.sort(key=lambda x: (x.dnf, x.time))
             timecar = 0
-            poradi = [a.name for a in cars if not a.dnf]  # Move this line here
-            position = poradi.index(driver_1) + 1 if driver_1 in poradi else count_cars
-            position_2 = poradi.index(driver_2) + 1 if driver_2 in poradi else count_cars
+            rank = [a.name for a in cars if not a.dnf]  # Move this line here
+            position = rank.index(driver_1) + 1 if driver_1 in rank else count_cars
+            position_2 = rank.index(driver_2) + 1 if driver_2 in rank else count_cars
 
 
-            #poradi = [a.name for a in cars if not a.dnf]
+            #rank = [a.name for a in cars if not a.dnf]
 
-            #position = poradi.index(driver_1) + 1 if driver_1 in poradi else "DNF"
-            print(f"\n📊 Pořadí {driver_1}: {position}. místo z {len(poradi)}")
-            #position_2 = poradi.index(driver_2) + 1 if driver_2 in poradi else "DNF"
-            print(f"\n📊 Pořadí {driver_2}: {position_2}. místo z {len(poradi)}")
+            #position = rank.index(driver_1) + 1 if driver_1 in rank else "DNF"
+            print(f"\n📊 Rank {driver_1}: {position}. místo z {len(rank)}")
+            #position_2 = rank.index(driver_2) + 1 if driver_2 in rank else "DNF"
+            print(f"\n📊 Rank {driver_2}: {position_2}. místo z {len(rank)}")
             drivers_table()
             for car in cars:
                 car.simuluj_ai(training)
@@ -849,25 +844,25 @@ while len(names_free_drivers) > 1:
                     print(f"{team.nazev} jde do double stacku.")
                     for a in cars:
                         if a.team == team and a.pit:
-                            position = poradi.index(a) + 1 if a in poradi else count_cars
+                            position = rank.index(a) + 1 if a in rank else count_cars
                             a.time += 50
             boxy_po_teamu.clear()
             cars.sort(key=lambda x: (x.dnf, x.time))
-            poradi = [a for a in cars if not a.dnf]  # Move this line here
+            rank = [a for a in cars if not a.dnf]  # Move this line here
             for a in cars:
-                if a in poradi:  # Pokud je car v seznamu poradi
-                    position = poradi.index(a) + 1  # position v seznamu (index + 1)
+                if a in rank:  # Pokud je car v seznamu rank
+                    position = rank.index(a) + 1  # position v seznamu (index + 1)
                 else:
                     position = count_cars  # Pokud není car v seznamu, nastaví se na count_cars
                 a.position.append(position)  # Přidání position do seznamu pozic cars
 
             # posun počasí
-            tyre = predict.pop(0)
-            weather_1 = predict[0]
-            weather_2 = predict[1]
-            weather_3 = predict[2]
-            predict.append(generate_weather(weather_3))
-            weather_4 = predict[3]
+            tyre = Forecast.pop(0)
+            weather_1 = Forecast[0]
+            weather_2 = Forecast[1]
+            weather_3 = Forecast[2]
+            Forecast.append(generate_weather(weather_3))
+            weather_4 = Forecast[3]
             lap += 1
         print("\n🏁 END OF THE RACE!!")
         b +=1
@@ -885,11 +880,11 @@ while len(names_free_drivers) > 1:
 
         time_laps[0][2].points += 2
         for d in range(len(time_laps)):
-            if time_laps[d][1] == hrac.name:
+            if time_laps[d][1] == player.name:
                 print(f"{time_laps[d][1]} ({time_laps[d][2].nazev}) has fastest lap {round(time_laps[d][0], 3)}, sector 1 {round(time_laps[d][3], 3)}, sector 2 {round(time_laps[d][4], 3)}, sector 3 {round(time_laps[d][5], 3)}")
                 break
         for d in range(len(time_laps)):
-            if time_laps[d][1] == hrac_2.name:
+            if time_laps[d][1] == player_2.name:
                 print(f"{time_laps[d][1]} ({time_laps[d][2].nazev}) has fastest lap {round(time_laps[d][0], 3)}, sector 1 {round(time_laps[d][3], 3)}, sector 2 {round(time_laps[d][4], 3)}, sector 3 {round(time_laps[d][5], 3)}")
                 break
         #time.sleep(6)
@@ -897,7 +892,7 @@ while len(names_free_drivers) > 1:
         ## Uložení výsledků do CSV
         #with open("vysledky_zavodu.csv", "w", newline="", encoding="utf-8") as file:
         #    writer = csv.writer(file)
-        #    writer.writerow(["Pořadí", "Jezdec", "Čas (min)", "Počet boxů", "DNF", "Stinty"])
+        #    writer.writerow(["Rank", "Jezdec", "Čas (min)", "Počet boxů", "DNF", "Stinty"])
         #    for i, a in enumerate(cars, 1):
         #        time = round(a.time / 60, 2) if not a.dnf else "DNF"
         #        stint_popis = "; ".join(
@@ -906,16 +901,16 @@ while len(names_free_drivers) > 1:
         #        writer.writerow([i, a.name, time, a.box, a.dnf, stint_popis])
 
 
-        # Ujistíme se, že poradi je stále list jezdců bez DNF
-        poradi = [a.name for a in cars if not a.dnf]
+        # Ujistíme se, že rank je stále list jezdců bez DNF
+        rank = [a.name for a in cars if not a.dnf]
         for driver in cars:
-            driver.vypocitej_points_jezdec(poradi)
+            driver.vypocitej_points_jezdec(rank)
         for team in teams:
-            team.vypocitej_points(poradi)
+            team.vypocitej_points(rank)
         points = sorted(teams, key=lambda x: (x.points))
         # Bezpečný výpočet pozic
-        position_1 = poradi.index(driver_1) + 1 if driver_1 in poradi else "DNF"
-        position_2 = poradi.index(driver_2) + 1 if driver_2 in poradi else "DNF"
+        position_1 = rank.index(driver_1) + 1 if driver_1 in rank else "DNF"
+        position_2 = rank.index(driver_2) + 1 if driver_2 in rank else "DNF"
         print(f"\n🏁 Final position:")
         print(f"{driver_1}: {position_1}. place")
         print(f"{driver_2}: {position_2}. place")
@@ -961,7 +956,7 @@ while len(names_free_drivers) > 1:
         plt.tight_layout()
         plt.show()
         plt.figure(figsize=(10, 6))
-        players = [hrac, hrac_2]
+        players = [player, player_2]
         for a in players:
             plt.plot(range(len(a.position)), a.position, label=a.name)
 
@@ -987,7 +982,7 @@ while len(names_free_drivers) > 1:
         if i == len(cars):
             new = best.name
             skill = best.skill
-            print(f"{new} changes {a.name} ({a.team.nazev})")
+            print(f"Breaking!!!\n{new} changes {a.name} ({a.team.nazev})\nBreaking!!!")
             best.name, best.skill = a.name, a.skills
             a.name, a.skills = new, skill
     print("\n🏆 Final team sorting:")
