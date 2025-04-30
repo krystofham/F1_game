@@ -1039,7 +1039,7 @@ while len(nazvy_jezdcu) > 1:
     for i, t in enumerate(teams, 1):
         if i == 1:
             t.zkusenost -= 0.1
-            img = mpimg.imread(f'tymy/{t.nazev}.png')
+            img = mpimg.imread(f'{t.nazev}.png')
             plt.imshow(img)
             plt.axis('off')  # Optional: hides axis for image display
             plt.show()
