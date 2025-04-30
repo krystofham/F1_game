@@ -80,14 +80,14 @@ def drivers_table():
             print(f"{i}. {a.name} – {status} min")
             heloo = round(a.wear) * random.uniform(0.9, 1.1)
             heloo = round(heloo, 1)
-            print(f"Počet boxů: {a.box} Únava: {heloo}%")
+            print(f"Number of pit stops: {a.box} Tyre wear: {heloo}%")
             status_1 = round(status, 3)
         else:
             distance = round(status - status_1, 3)
             print(f"{i}. {a.name} + {distance} s")
             heloo = round(a.wear) * random.uniform(0.9, 1.1)
             heloo = round(heloo, 1)
-            print(f"Počet boxů: {a.box} Únava: {heloo}%")
+            print(f"Number of pit stops: {a.box} Tyre wear: {heloo}%")
             status_1 = status
 def reset_race():
     global lap, time_laps, safety_car, laps_rem, Forecast, tyre
@@ -892,7 +892,7 @@ while len(names_free_drivers) > 1:
         ## Uložení výsledků do CSV
         #with open("vysledky_zavodu.csv", "w", newline="", encoding="utf-8") as file:
         #    writer = csv.writer(file)
-        #    writer.writerow(["Rank", "Jezdec", "Čas (min)", "Počet boxů", "DNF", "Stinty"])
+        #    writer.writerow(["Rank", "Jezdec", "Čas (min)", "Number of pit stops", "DNF", "Stinty"])
         #    for i, a in enumerate(cars, 1):
         #        time = round(a.time / 60, 2) if not a.dnf else "DNF"
         #        stint_popis = "; ".join(
@@ -988,7 +988,7 @@ while len(names_free_drivers) > 1:
     print("\n🏆 Final team sorting:")
     teams.sort(key=lambda t: t.points, reverse=True)
     for i, t in enumerate(teams, 1):
-        if i == 1:
+        if i == 1:  
             t.skill -= 0.1
             img = mpimg.imread(f'{t.nazev}.png')
             plt.imshow(img)
