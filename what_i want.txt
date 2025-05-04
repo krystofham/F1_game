@@ -51,3 +51,24 @@
  Season History: Track results, stats, and performance by year.
 
  CSV/Excel Export: For standings, lap times, stints, tyre usage.
+ Více funkcí
+Zvýšení času s koly (opotřebením) - doporučení
+Databáze JSON - řidiči a týmy
+Koeficienty podle Loru
+Class track
+Přepsat do aj
+Double box Ai moc často
+Seřazení doporučování na začátku
+Dopručování i AI
+Režim úspory pneu
+Uprage v průběhu sezony
+Dopuručení stintu na mokro
+trate ruzne DNF pravdepodobnost
+Radon + pylint + mccabe
+Pravděpodobnosti počasí
+Dešt box problem AI
+Upozernění na těsné výsledky
+Vlhkost tratě - postupné nabývání
+Reforma bodového systému
+Reforma počítání času
+Biggest laps in history
