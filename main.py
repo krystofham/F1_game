@@ -10,8 +10,8 @@ TIME_S3 = 22
 time_laps = []
 LAPS = 0
 laps_remaining = 0
-driver_1 = "Max"
-driver_2 = "Kim"
+driver_1 = "Max Vershaeren"
+driver_2 = "Kim Nguyen"
 team_player = "MySql AWS Maxim racing team"
 count_cars = 28
 
@@ -606,7 +606,6 @@ create_team("VS racing 22",cars[20],cars[21], teams,                            
 create_team("PyCharm motors",cars[22],cars[23], teams,                          random.uniform(4,   6))
 create_team("Pixel motors",cars[24],cars[25], teams,                            random.uniform(4,   6))
 sampionat = ["AWS Grand Prix de Espana", "AirBNB Prague GP", "eBay Skyline Turkey GP","Java airlines Monza IBM Italy GP","HP Bulgarian GP","Python circuit Bahamas", "Ostrava Apple GP", "META China Grand Prix", "Sony Varsava Grand Prix", "LG TV Grand Prix du France", "Huawei GP SPA"]
-b = 1
 lenght = int(input("What is the lenght of the championship: "))
 hi = len(sampionat) - lenght
 if hi > 0:
@@ -615,6 +614,7 @@ if hi > 0:
 season_count = 0
 while len(names_free_drivers) > 1:
     for zavod in sampionat:
+        b = 1
         lap = 0
         if zavod == "Huawei GP SPA":
             pneu = "soft"
@@ -969,6 +969,7 @@ while len(names_free_drivers) > 1:
         plt.tight_layout()
         plt.show()
         reset_race()
+        b += 1
     print("\n🏁 Final drivers sorting:")
     best, worst = simulate_season_MMR2(list_drivers_mmr2)
     season_count +=1
@@ -987,8 +988,10 @@ while len(names_free_drivers) > 1:
             if a.is_player:
                 if driver_1 == a.name:
                     driver_1 == new
+                    player.name, player.skills = new, skill
                 if driver_2 == a.name:
                     driver_2 == new
+                    player_2.name, player_2.skills = new, skill
             best.name, best.skill = a.name, a.skills
             a.name, a.skills = new, skill
     print("\n🏆 Final team sorting:")

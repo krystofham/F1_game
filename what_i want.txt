@@ -78,5 +78,6 @@ Vlhkost cesty
 season počítadlo
 upravit časy podobnější f1
 !!!!!!! NAZEV NAME v mmmr2
+Při změně řidiče - driver 1 - driver 2 (poslední)
 SEZONA SE POČÍTA VŽDY OD NULY (VAR "B")
 Dát soubor do více - rozdělit
