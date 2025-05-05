@@ -52,32 +52,30 @@
 
  CSV/Excel Export: For standings, lap times, stints, tyre usage.
  Více funkcí
-Zvýšení času s koly (opotřebením) - doporučení
-Databáze JSON - řidiči a týmy
-Koeficienty podle Loru
-Class track
-Přepsat do aj
-Double box Ai moc často
-Seřazení doporučování na začátku
-Dopručování i AI
-Režim úspory pneu
-Uprage v průběhu sezony
-Dopuručení stintu na mokro
-trate ruzne DNF pravdepodobnost
-Radon + pylint + mccabe
-Pravděpodobnosti počasí
-Dešt box problem AI
-Upozernění na těsné výsledky
-Vlhkost tratě - postupné nabývání
-Trady mezi týmy
-Když jsem poslední, ukazuje se delta za
-Reforma počítání času
-Biggest laps in history
-3 možné počasí - slunečno, možný déšt, déšt
-Vlhkost cesty 
-season počítadlo
-upravit časy podobnější f1
-!!!!!!! NAZEV NAME v mmmr2
-Při změně řidiče - driver 1 - driver 2 (poslední)
-SEZONA SE POČÍTA VŽDY OD NULY (VAR "B")
-Dát soubor do více - rozdělit
+Meine improve
+    Zvýšení času s koly (opotřebením) - doporučení
+    Databáze JSON - řidiči a týmy
+    Koeficienty podle Loru
+    Class track
+    Přepsat do aj
+    Double box Ai moc často
+    Seřazení doporučování na začátku
+    Dopručování i AI
+    Režim úspory pneu
+    Uprage v průběhu sezony
+    Dopuručení stintu na mokro
+    trate ruzne DNF pravdepodobnost
+    Radon + pylint + mccabe
+    Pravděpodobnosti počasí
+    Dešt box problem AI
+    Upozernění na těsné výsledky
+    Vlhkost tratě - postupné nabývání
+    Trady mezi týmy
+    Když jsem poslední, ukazuje se delta za
+    Reforma počítání času
+    Biggest laps in history
+    3 možné počasí - slunečno, možný déšt, déšt
+    Vlhkost cesty 
+    season počítadlo
+    !!!!!!! NAZEV NAME v mmmr2
+    Dát soubor do více - rozdělit

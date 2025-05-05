@@ -579,10 +579,10 @@ drivers = ["Alex Storme","Matteo Blaze","Hiro Tanaka","Lukas Rennhardt","Diego V
 x = 0
 cars = []
 for driver in drivers:
-    cars.append(Car(driver,random.uniform(4.5, 6)))
-player = Car(driver_1, random.uniform(4.5, 6), is_player=True)
+    cars.append(Car(driver,random.uniform(5, 6)))
+player = Car(driver_1, random.uniform(5, 6), is_player=True)
 cars.append(player)
-player_2 = Car(driver_2, random.uniform(4.5, 6), is_player=True)
+player_2 = Car(driver_2, random.uniform(5, 6), is_player=True)
 cars.append(player_2)
 teams = []
 def create_team(team_player, player_1, player_2, teams, skill):
@@ -591,7 +591,7 @@ def create_team(team_player, player_1, player_2, teams, skill):
     tym.pridej_jezdce(player_2)
     teams.append(tym)
     return tym
-create_team(team_player, player, player_2, teams,                               random.uniform(4.5, 6))
+create_team(team_player, player, player_2, teams,                               random.uniform(5,   6))
 create_team("Scuderia Python", cars[0], cars[1], teams,                         random.uniform(4,   6.9))
 create_team("Racing 404",cars[2],cars[3], teams,                                random.uniform(4.5, 6))
 create_team("Formula 1.0 racing team",cars[4],cars[5], teams,                   random.uniform(4,   6))
@@ -613,8 +613,8 @@ if hi > 0:
         sampionat.pop(random.randint(0, len(sampionat)-1))
 season_count = 0
 while len(names_free_drivers) > 1:
+    b = 1
     for zavod in sampionat:
-        b = 1
         lap = 0
         if zavod == "Huawei GP SPA":
             pneu = "soft"
@@ -1006,3 +1006,7 @@ while len(names_free_drivers) > 1:
         print(f"{i}. {t.nazev} – {t.points} points")
         if i == len(teams):
             t.skill -=1
+    for c in cars:
+        c.points = 0
+    for t in teams:
+        t.points = 0   
