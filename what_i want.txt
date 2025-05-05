@@ -69,6 +69,15 @@ Pravděpodobnosti počasí
 Dešt box problem AI
 Upozernění na těsné výsledky
 Vlhkost tratě - postupné nabývání
-Reforma bodového systému
+Trady mezi týmy
+Když jsem poslední, ukazuje se delta za
 Reforma počítání času
 Biggest laps in history
+3 možné počasí - slunečno, možný déšt, déšt
+Vlhkost cesty 
+season počítadlo
+upravit časy podobnější f1
+!!!!!!! NAZEV NAME v mmmr2
+SEZONA SE POČÍTA VŽDY OD NULY (VAR "B")
+!!!!!!! POCITANI ZAVODU NEFACHA
+Dát soubor do více - rozdělit

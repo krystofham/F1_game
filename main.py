@@ -144,8 +144,8 @@ def pit_player():
             print(random.choice([ "Copy. In this lap.",  "Understood. Coming in.",  "On my way in.", "Copy. Box, box",  "Copy, box this lap.", "Copy, confirmed."]))
 def strategy(LAPS, TIME_S1, TIME_S2, TIME_S3, pneu, speed):
     count_laps = LAPS
-    if count_laps == 0:
-        count_laps == 1
+    if count_laps < 2:
+        count_laps == 3
     lap_time = (TIME_S1 + TIME_S2 + TIME_S3)/60
     if pneu == "medium":
         k_wear = [1.5,5,9,4.4,8.4]
@@ -252,7 +252,7 @@ def simulate_season_MMR2(drivers):
     return best, worst
 
 # Create a list of drivers with random experience
-list_drivers_mmr2 = [drivermmr2(name, random.uniform(0.95, 1.05)) for name in drivers_mmr2]
+list_drivers_mmr2 = [drivermmr2(name, random.uniform(5.95, 8.05)) for name in drivers_mmr2]
 
 # Run the simulation
 best, worst = simulate_season_MMR2(list_drivers_mmr2)
@@ -338,7 +338,7 @@ class Car:
             s3 = s3*3
         lap_time = s1 + s2 + s3
         time_laps.append((lap_time, self.name, self.team, s1, s2, s3))
-        self.time = self.time + self.wear/10 + lap_time
+        self.time = self.time + self.wear/8 + lap_time
 
             
 
@@ -527,6 +527,8 @@ class Team:
         for jezdec in self.drivers:
             if jezdec.name in rank:
                 position = rank.index(jezdec.name) + 1
+            else:
+                position = count_cars
             if position == 1:
                 self.points += 50
             elif position == 2:
@@ -577,10 +579,10 @@ drivers = ["Alex Storme","Matteo Blaze","Hiro Tanaka","Lukas Rennhardt","Diego V
 x = 0
 cars = []
 for driver in drivers:
-    cars.append(Car(driver,random.uniform(4.5, 8)))
-player = Car(driver_1, random.uniform(4.5, 8), is_player=True)
+    cars.append(Car(driver,random.uniform(4.5, 6)))
+player = Car(driver_1, random.uniform(4.5, 6), is_player=True)
 cars.append(player)
-player_2 = Car(driver_2, random.uniform(4.5, 8), is_player=True)
+player_2 = Car(driver_2, random.uniform(4.5, 6), is_player=True)
 cars.append(player_2)
 teams = []
 def create_team(team_player, player_1, player_2, teams, skill):
@@ -589,20 +591,20 @@ def create_team(team_player, player_1, player_2, teams, skill):
     tym.pridej_jezdce(player_2)
     teams.append(tym)
     return tym
-create_team(team_player, player, player_2, teams,                               random.uniform(4.5, 8))
-create_team("Scuderia Python", cars[0], cars[1], teams,                         random.uniform(4,   8.9))
-create_team("Racing 404",cars[2],cars[3], teams,                                random.uniform(4.5, 8))
-create_team("Formula 1.0 racing team",cars[4],cars[5], teams,                   random.uniform(4,   8))
-create_team("Microsoft PitStop Protocol racing team",cars[6],cars[7], teams,    random.uniform(4,   8))
-create_team("Intel QWERTY GP",cars[8],cars[9], teams,                           random.uniform(4.5, 8))
-create_team("Underbyte Nvidia GP",cars[10],cars[11], teams,                     random.uniform(4,   8.85))
-create_team("JavaScript Racing team",cars[12],cars[13], teams,                  random.uniform(4,   8.85))
-create_team("Java motors",cars[14],cars[15], teams,                             random.uniform(4,   8))
-create_team("Jawa Surenate Linux racing team",cars[16],cars[17], teams,         random.uniform(4,   8))
-create_team("AMD Assemblyte GP",cars[18],cars[19], teams,                       random.uniform(4,   8))
-create_team("VS racing 22",cars[20],cars[21], teams,                            random.uniform(4,   8))
-create_team("PyCharm motors",cars[22],cars[23], teams,                          random.uniform(4,   8))
-create_team("Pixel motors",cars[24],cars[25], teams,                            random.uniform(4,   8))
+create_team(team_player, player, player_2, teams,                               random.uniform(4.5, 6))
+create_team("Scuderia Python", cars[0], cars[1], teams,                         random.uniform(4,   6.9))
+create_team("Racing 404",cars[2],cars[3], teams,                                random.uniform(4.5, 6))
+create_team("Formula 1.0 racing team",cars[4],cars[5], teams,                   random.uniform(4,   6))
+create_team("Microsoft PitStop Protocol racing team",cars[6],cars[7], teams,    random.uniform(4,   6))
+create_team("Intel QWERTY GP",cars[8],cars[9], teams,                           random.uniform(4.5, 6))
+create_team("Underbyte Nvidia GP",cars[10],cars[11], teams,                     random.uniform(4,   6.85))
+create_team("JavaScript Racing team",cars[12],cars[13], teams,                  random.uniform(4,   6.85))
+create_team("Java motors",cars[14],cars[15], teams,                             random.uniform(4,   6))
+create_team("Jawa Surenate Linux racing team",cars[16],cars[17], teams,         random.uniform(4,   6))
+create_team("AMD Assemblyte GP",cars[18],cars[19], teams,                       random.uniform(4,   6))
+create_team("VS racing 22",cars[20],cars[21], teams,                            random.uniform(4,   6))
+create_team("PyCharm motors",cars[22],cars[23], teams,                          random.uniform(4,   6))
+create_team("Pixel motors",cars[24],cars[25], teams,                            random.uniform(4,   6))
 sampionat = ["AWS Grand Prix de Espana", "AirBNB Prague GP", "eBay Skyline Turkey GP","Java airlines Monza IBM Italy GP","HP Bulgarian GP","Python circuit Bahamas", "Ostrava Apple GP", "META China Grand Prix", "Sony Varsava Grand Prix", "LG TV Grand Prix du France", "Huawei GP SPA"]
 b = 1
 lenght = int(input("What is the lenght of the championship: "))
@@ -864,7 +866,7 @@ while len(names_free_drivers) > 1:
             weather_4 = Forecast[3]
             lap += 1
         print("\n🏁 END OF THE RACE!!")
-        b +=1
+        
         time_laps.sort()
         print(f"{time_laps[0][1]} ({time_laps[0][2].nazev}) has fastest lap: {round(time_laps[0][0], 3)}")
         for a in cars:
@@ -968,14 +970,15 @@ while len(names_free_drivers) > 1:
         plt.show()
         reset_race()
     print("\n🏁 Final drivers sorting:")
-    #best, worst = simulate_season_MMR2(hi)
+    best, worst = simulate_season_MMR2(list_drivers_mmr2)
+    b +=1
     for d in list_drivers_mmr2:
-        d.skill -= 0.05
+        d.skill -= 2/b
     nahodne_name = random.choice(names_free_drivers)
     names_free_drivers.pop(names_free_drivers.index(nahodne_name))
     worst.nazev, worst.skill = nahodne_name, random.uniform(0.95,1.05)
     cars.sort(key=lambda x: x.points, reverse=True)
-    for i, a in enumerate(cars, 1):
+    for i, a in enumerate(cars, 0):
         print(f"{i}. {a.name} – {a.points} points ({a.team.nazev})")
         if i == len(cars):
             new = best.name
