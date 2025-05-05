@@ -612,8 +612,8 @@ hi = len(sampionat) - lenght
 if hi > 0:
     for _ in range(hi):
         sampionat.pop(random.randint(0, len(sampionat)-1))
+season_count = 0
 while len(names_free_drivers) > 1:
-    b = 0
     for zavod in sampionat:
         lap = 0
         if zavod == "Huawei GP SPA":
@@ -971,19 +971,24 @@ while len(names_free_drivers) > 1:
         reset_race()
     print("\n🏁 Final drivers sorting:")
     best, worst = simulate_season_MMR2(list_drivers_mmr2)
-    b +=1
+    season_count +=1
     for d in list_drivers_mmr2:
-        d.skill -= 2/b
+        d.skill -= 1/season_count
     nahodne_name = random.choice(names_free_drivers)
     names_free_drivers.pop(names_free_drivers.index(nahodne_name))
     worst.nazev, worst.skill = nahodne_name, random.uniform(0.95,1.05)
     cars.sort(key=lambda x: x.points, reverse=True)
-    for i, a in enumerate(cars, 0):
+    for i, a in enumerate(cars, 1):
         print(f"{i}. {a.name} – {a.points} points ({a.team.nazev})")
         if i == len(cars):
             new = best.name
             skill = best.skill
             print(f"Breaking!!!\n{new} changes {a.name} ({a.team.nazev})\nBreaking!!!")
+            if a.is_player:
+                if driver_1 == a.name:
+                    driver_1 == new
+                if driver_2 == a.name:
+                    driver_2 == new
             best.name, best.skill = a.name, a.skills
             a.name, a.skills = new, skill
     print("\n🏆 Final team sorting:")

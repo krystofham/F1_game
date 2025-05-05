@@ -79,5 +79,4 @@ season počítadlo
 upravit časy podobnější f1
 !!!!!!! NAZEV NAME v mmmr2
 SEZONA SE POČÍTA VŽDY OD NULY (VAR "B")
-!!!!!!! POCITANI ZAVODU NEFACHA
 Dát soubor do více - rozdělit
