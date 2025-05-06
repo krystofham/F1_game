@@ -3,6 +3,7 @@ import matplotlib.pyplot as plt
 import matplotlib.image as mpimg
 #import csv
 rank = 0
+wetiness = 0
 names_free_drivers = [    "Maximilian Becker", "Santiago Cruz",   "Oliver Wright", "Hiroshi Takeda",     "Sebastian Fontaine", "Mateo Silva",     "Jonas Lindberg", "Ivan Kuznetsov",     "Lorenzo Bianchi", "Connor Mitchell",    "Rafael Ortega", "Tobias Schmidt",     "Yuto Nakamura", "Charles Lambert",     "Gabriel Costa", "Andrei Petrescu",    "Lutime Meyer", "Zhang Wei",     "Finn Gallagher", "Ricardo Santos"]
 TIME_S1 = 15
 TIME_S2 = 23
@@ -23,6 +24,23 @@ pneu_colours = {
     "inter": "green",
     "wet": "deepskyblue"
 }
+def wet_track(weather, wetiness):
+    if weather == "heavy rain":
+        wetiness += 30
+    if weather == "rain":
+        wetiness += 20
+    if weather == "transitional":
+        if wetiness < 60:
+            wetiness += 10
+        else:
+            wetiness -= 10
+    if weather == "sunny":
+        wetiness -= 20
+    if wetiness > 100:
+        wetiness = 100
+    if wetiness < 0:
+        wetiness = 0
+    return wetiness
 def colours_graphs():
     for c in cars:
         if c.dnf:
@@ -40,12 +58,14 @@ def colours_graphs():
         else:
             colours.append("green")  
     return colours
-def info():
+def info(wetiness):
     Forecast = [weather_1, weather_2, weather_3, weather_4]
     if lap == 0:
         print(f"Qualification | Actual weather: {tyre}")
     else:
         print(f"\n🌤️  lap {lap}/{LAPS} | Actual weather: {tyre}")
+    if wetiness > 0:
+        print(f"Wet track for {wetiness}%")
     if random.randint(1, 10) < 8:
         print(f"🔮 Forecast: {', '.join(Forecast)}")
         if weather_1 == "sunny" and weather_4 in ["rain", "heavy rain"]:
@@ -291,7 +311,7 @@ class Car:
         return base
 
 
-    def simuluj_lap(self, tyre, training):
+    def simuluj_lap(self, tyre, training, wetiness):
         global safety_car
         if self.dnf:
             return
@@ -328,14 +348,14 @@ class Car:
             s1 = s1 - random.uniform(0.1, 0.3)
             s2 = s2 - random.uniform(0.1, 0.3)
             s3 = s3 - random.uniform(0.1, 0.3)
-        if tyre in ["sunny"] and self.pneu not in ["soft", "medium", "hard"]:
-            s1 = s1*3
-            s2 = s2*3
-            s3 = s3*3
-        if tyre in ["rain", "heavy rain"] and self.pneu not in ["wet" , "inter"]:
-            s1 = s1*3
-            s2 = s2*3
-            s3 = s3*3
+        if wetiness < 30 and self.pneu not in ["soft", "medium", "hard"]:
+            s1 = s1+wetiness/2
+            s2 = s2+wetiness/2
+            s3 = s3+wetiness/2
+        if wetiness > 55 and self.pneu not in ["wet" , "inter"]:
+            s1 = s1+wetiness/2
+            s2 = s2+wetiness/2
+            s3 = s3+wetiness/2
         lap_time = s1 + s2 + s3
         time_laps.append((lap_time, self.name, self.team, s1, s2, s3))
         self.time = self.time + self.wear/8 + lap_time
@@ -449,13 +469,14 @@ class Car:
                 self.drs = True
         return self.time, self.drs
 
-    def simuluj_ai(self, training):
+    def simuluj_ai(self, training, wetiness):
         if self.is_player == False:
             new_pneu = self.rozhodni_ai(tyre, lap, LAPS, Forecast)
             if new_pneu:
                 self.pit_stop(new_pneu)
+        wetiness = wetiness
 
-        self.simuluj_lap(tyre, training)
+        self.simuluj_lap(tyre, training, wetiness)
     def vhodne_pneu(self, tyre):
         if tyre in ["heavy rain", "rain"]:
                 return ["wet", "inter"]
@@ -612,19 +633,20 @@ if hi > 0:
     for _ in range(hi):
         sampionat.pop(random.randint(0, len(sampionat)-1))
 season_count = 0
-while len(names_free_drivers) > 1:
+while len(names_free_drivers) >= 0:
+    print(f"Season {season_count}")
     b = 1
     for zavod in sampionat:
         lap = 0
         if zavod == "Huawei GP SPA":
-            pneu = "soft"
+            pneu = "hard"
             speed = "quick"
             TIME_S1 = 22
             TIME_S2 = 25
             TIME_S3 = 18
             LAPS = 70
         if zavod == "LG TV Grand Prix du France":
-            pneu = "soft"
+            pneu = "hard"
             speed = "quick"
             TIME_S1 = 26
             TIME_S2 = 19
@@ -645,7 +667,7 @@ while len(names_free_drivers) > 1:
             TIME_S3 = 30
             LAPS = 56
         if zavod == "Ostrava Apple GP":
-            pneu = "soft"
+            pneu = "medium"
             speed = "quick"
             TIME_S1 = 20
             TIME_S2 = 26
@@ -680,7 +702,7 @@ while len(names_free_drivers) > 1:
             TIME_S3 = 40
             LAPS = 42
         if zavod == "eBay Skyline Turkey GP":
-            pneu = "hard"
+            pneu = "medium"
             speed = "slow"
             TIME_S1 = 27
             TIME_S2 = 24
@@ -692,7 +714,7 @@ while len(names_free_drivers) > 1:
             TIME_S1 = 30
             TIME_S2 = 16
             TIME_S3 = 18
-            LAPS = 70
+            LAPS = 50
         print(f"Current race {zavod} {b}/{len(sampionat)}")
         print(f"This track is characteristic for {pneu} pneu and {speed} pace. It has {LAPS} laps")
         strategy(LAPS, TIME_S1, TIME_S2, TIME_S3, pneu, speed)
@@ -753,7 +775,7 @@ while len(names_free_drivers) > 1:
         while lap <= LAPS:
             if lap == LAPS:
                 print("Last lap. Push push.")
-            info()
+            info(wetiness)
             for car in cars:
 
 
@@ -824,14 +846,14 @@ while len(names_free_drivers) > 1:
 
 
             #rank = [a.name for a in cars if not a.dnf]
-
+            wetiness = wet_track(weather_1, wetiness)
             #position = rank.index(driver_1) + 1 if driver_1 in rank else "DNF"
             print(f"\n📊 Rank {driver_1}: {position}. place from {len(rank)}")
             #position_2 = rank.index(driver_2) + 1 if driver_2 in rank else "DNF"
             print(f"\n📊 Rank {driver_2}: {position_2}. place from {len(rank)}")
             drivers_table()
             for car in cars:
-                car.simuluj_ai(training)
+                car.simuluj_ai(training, wetiness)
             boxy_po_teamu = {}
             for a in cars:
                 if not a.is_player and a.pit: 
@@ -1006,6 +1028,7 @@ while len(names_free_drivers) > 1:
         print(f"{i}. {t.nazev} – {t.points} points")
         if i == len(teams):
             t.skill -=1
+    wetiness = 0
     for c in cars:
         c.points = 0
     for t in teams:
