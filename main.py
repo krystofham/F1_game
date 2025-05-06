@@ -336,17 +336,17 @@ class Car:
             return safety_car
 
         speed = self.efectivity_pneu(tyre)
-        s1 = TIME_S1*random.uniform(0.98, 1.02)+self.skills+self.team.skill/ speed
-        s2 = TIME_S2*random.uniform(0.98, 1.02)+self.skills+self.team.skill/ speed
-        s3 = TIME_S3*random.uniform(0.98, 1.03)+self.skills+self.team.skill/ speed
+        s1 = (TIME_S1*random.uniform(0.99, 1.01)+self.skills/2+self.team.skill/2)/ speed
+        s2 = (TIME_S2*random.uniform(0.99, 1.01)+self.skills/2+self.team.skill/2)/ speed
+        s3 = (TIME_S3*random.uniform(0.99, 1.01)+self.skills/2+self.team.skill/2)/ speed
         if safety_car:
             s1 = s1*2.5
             s2 = s2*2.5
             s3 = s3*2.5
         if self.drs:
-            s1 = s1 - random.uniform(0.2, 0.3)
-            s2 = s2 - random.uniform(0.2, 0.3)
-            s3 = s3 - random.uniform(0.2, 0.3)
+            s1 = s1 - random.uniform(0.5, 1)
+            s2 = s2 - random.uniform(0.5, 1)
+            s3 = s3 - random.uniform(0.5, 1)
         if training == "1":
             s1 = s1 - random.uniform(0.1, 0.3)
             s2 = s2 - random.uniform(0.1, 0.3)
@@ -635,7 +635,7 @@ hi = len(sampionat) - lenght
 if hi > 0:
     for _ in range(hi):
         sampionat.pop(random.randint(0, len(sampionat)-1))
-season_count = 0
+season_count = 1
 while len(names_free_drivers) >= 0:
     print(f"Season {season_count}")
     b = 1
