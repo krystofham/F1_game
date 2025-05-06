@@ -74,5 +74,4 @@ Meine improve
     Když jsem poslední, ukazuje se delta za
     Reforma počítání času
     Biggest laps in history
-    3 možné počasí - slunečno, možný déšt, déšt
     Dát soubor do více - rozdělit

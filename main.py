@@ -32,7 +32,7 @@ def wet_track(weather, wetiness):
     if weather == "transitional":
         if wetiness < 60:
             wetiness += 10
-        else:
+        else:   
             wetiness -= 10
     if weather == "sunny":
         wetiness -= 20
@@ -79,14 +79,17 @@ def info(wetiness):
             print(random.choice(["Copy that, adjusting my pace.", "Understood, I’m keeping an eye on it.","OK"]))
     return Forecast
 def generate_weather(tyre):
-    if tyre == "sunny":
-        tyre = random.choice(["sunny", "sunny","sunny","sunny", "sunny", "sunny","sunny","sunny","sunny", "sunny","sunny","sunny", "sunny", "sunny","sunny","sunny","sunny", "sunny","sunny","sunny", "sunny", "sunny","sunny","sunny", "sunny", "sunny","sunny","sunny", "transitional"])
-    elif tyre == "transitional":
-        tyre = random.choice(["sunny", "transitional", "transitional","transitional","rain"])
-    elif tyre == "rain":
-        tyre = random.choice(["transitional", "rain", "rain", "rain", "rain", "rain", "rain", "rain", "rain", "rain", "heavy rain"])
-    elif tyre == "heavy rain":
-        tyre = random.choice(["rain", "rain", "heavy rain", "heavy rain", "heavy rain", "heavy rain", "heavy rain", "heavy rain", "heavy rain", "heavy rain"])
+    if climax == "transitional":
+        if tyre == "sunny":
+            tyre = random.choice(["sunny", "sunny","sunny","sunny", "sunny", "sunny","sunny","sunny","sunny", "sunny","sunny","sunny", "sunny", "sunny","sunny","sunny","sunny", "sunny","sunny","sunny", "sunny", "sunny","sunny","sunny", "sunny", "sunny","sunny","sunny", "transitional"])
+        elif tyre == "transitional":
+            tyre = random.choice(["sunny", "transitional", "transitional","transitional","rain"])
+        elif tyre == "rain":
+            tyre = random.choice(["transitional", "rain", "rain", "rain", "rain", "rain", "rain", "rain", "rain", "rain", "heavy rain"])
+        elif tyre == "heavy rain":
+            tyre = random.choice(["rain", "rain", "heavy rain", "heavy rain", "heavy rain", "heavy rain", "heavy rain", "heavy rain", "heavy rain", "heavy rain"])
+    if climax == "sunny":
+        tyre = "sunny"
     return tyre
 safety_car = False
 def drivers_table():
@@ -241,9 +244,9 @@ def strategy(LAPS, TIME_S1, TIME_S2, TIME_S3, pneu, speed):
                 if countlapsvydrz2 > 0:
                     print(f"Theoretical strategy - {round(wear[i] + wear[j] + wear[2], 0)} laps - {time} minutes - {nazev[i]}, {nazev[j]}, {nazev[2]}")
 drivers_mmr2 = [
-    "Noah Blake", "Felipe Sandoval", "Luca Moretti", "Brian Chen", "Adam newk", "Pierre Gauthier",
+    "Noah Blake", "Felipe Sandoval", "Luca Moretti", "Brian Chen", "Adam Kerdöl", "Pierre Gauthier",
     "Viktor Orlov", "Daisuke Tanaka", "Elias Müller", "Jordan Evans", "Diego Ramirez", "Anton Petrov",
-    "Kenji Nakamura", "Nicolas Dubois", "Thomas Fischer", "Miguel Lopez", "Alexei Solapv", "Ethan Zhang",
+    "Kenji Nakamura", "Nicolas Dubois", "Thomas Fischer", "Miguel Lopéz", "Alexei Solapov", "Ethan Zhang",
     "Leo Harrington", "Marco Silva"
 ]
 
@@ -637,6 +640,7 @@ while len(names_free_drivers) >= 0:
     print(f"Season {season_count}")
     b = 1
     for zavod in sampionat:
+        climax = random.choice(["transitional","sunny","sunny","sunny"])
         lap = 0
         if zavod == "Huawei GP SPA":
             pneu = "hard"
@@ -738,12 +742,18 @@ while len(names_free_drivers) >= 0:
         "wet": {"wear": k_wear[3], "speed": k_speed[3]},
         "inter": {"wear": k_wear[4], "speed": k_speed[4]},
         }
-        tyre = "sunny"
+        if climax == "sunny":
+            tyre = "sunny"
+        else:
+            tyre = random.choice(WEATHER_TYPES)
+        if tyre == "rain" or tyre == "heavy rain":
+            wetiness = 100
         weather_1 = generate_weather(tyre)
         weather_2 = generate_weather(weather_1)
         weather_3 = generate_weather(weather_2)
         weather_4 = generate_weather(weather_3)
         Forecast = [weather_1, weather_2, weather_3, weather_4]
+        print(f"It will be {climax}")
         for x in Forecast:
             print (f"Weather: 🌤️ ☁️  {x}")
         for car in cars:
@@ -758,6 +768,10 @@ while len(names_free_drivers) >= 0:
             player_2.pneu = input("Incorrect choice. Choose pneu for driver 2: [hard / medium / soft / wet / inter]\n")
             if player.pneu == "exit":
                 continue
+        for c in cars:
+            if c.is_player == False:
+                if tyre == "rain" or tyre == "heavy rain":
+                    c.pneu == random.choice(["wet", "inter"])
         simulation = []
         #Training
         training = input("Action: Do you want training on speed [1] or qualification [2]: ")
@@ -996,7 +1010,7 @@ while len(names_free_drivers) >= 0:
     best, worst = simulate_season_MMR2(list_drivers_mmr2)
     season_count +=1
     for d in list_drivers_mmr2:
-        d.skill -= 1/season_count
+        d.skill -= 1/(season_count*2)
     nahodne_name = random.choice(names_free_drivers)
     names_free_drivers.pop(names_free_drivers.index(nahodne_name))
     worst.nazev, worst.skill = nahodne_name, random.uniform(0.95,1.05)
@@ -1009,10 +1023,10 @@ while len(names_free_drivers) >= 0:
             print(f"Breaking!!!\n{new} changes {a.name} ({a.team.nazev})\nBreaking!!!")
             if a.is_player:
                 if driver_1 == a.name:
-                    driver_1 == new
+                    driver_1 = new
                     player.name, player.skills = new, skill
                 if driver_2 == a.name:
-                    driver_2 == new
+                    driver_2 = new
                     player_2.name, player_2.skills = new, skill
             best.name, best.skill = a.name, a.skills
             a.name, a.skills = new, skill
