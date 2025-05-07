@@ -13,7 +13,7 @@
 
  Track Temperature: Affects weather degradation and strategy.
 
- Weather Radar Forecast: With limited accuracy, requires guesswork.
+ Weather Radar forecast: With limited accuracy, requires guesswork.
 
 🔧 Simulation Mechanics
  Fuel Management: Light vs. heavy fuel loads affect speed and pit strategy.
@@ -69,4 +69,3 @@ Meine improve
     Biggest laps in history
     Dát soubor do více - rozdělit
     textové inputy -> informace atd.
-    Přepsat texty do čj
