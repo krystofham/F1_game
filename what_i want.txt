@@ -4,14 +4,14 @@
 
  Team Orders: Implement team strategy decisions like letting one driver pass another.
 
- Mechanical Failures: Simulate engine, gearbox, or suspension failures beyond just tyre issues.
+ Mechanical Failures: Simulate engine, gearbox, or suspension failures beyond just weather issues.
 
  Overtaking Probability Based on Sector: Different overtaking chances per sector and DRS zones.
 
 🌦️ Weather & Environment
- Live Weather Map: Sector-based rain simulation (one sector wet, others dry).
+ Live Weather Map: Sector-based déšť simulation (one sector mokré, others dry).
 
- Track Temperature: Affects tyre degradation and strategy.
+ Track Temperature: Affects weather degradation and strategy.
 
  Weather Radar Forecast: With limited accuracy, requires guesswork.
 
@@ -25,9 +25,9 @@
 📊 Analytics & Visualization
  Lap Time Delta Chart: Compare lap times of selected drivers.
 
- Telemetry View: Sector speed, tyre data, and pace graphs per lap.
+ Telemetry View: Sector speed, weather data, and pace graphs per lap.
 
- Interactive Strategy Dashboard: Click to change tyre or pit strategy in real-time.
+ Interactive Strategy Dashboard: Click to change weather or pit strategy in real-time.
 
 🛠️ Technical / Code Structure
  Modular Architecture: Split into race_engine, ui, drivers, teams, weather, etc.
@@ -37,7 +37,7 @@
  Replay System: Save and replay races.
 
 🌍 Multiplayer & Expansion
- Hotseat Multiplayer: Two human players alternating pit and tyre decisions.
+ Hotseat Multiplayer: Two human players alternating pit and weather decisions.
 
  Online Multiplayer: Socket-based simple multiplayer for race control.
 
@@ -50,20 +50,14 @@
 
  Season History: Track results, stats, and performance by year.
 
- CSV/Excel Export: For standings, lap times, stints, tyre usage.
+ CSV/Excel Export: For standings, lap times, stints, weather usage.
  Více funkcí
+
 Meine improve
-    Zvýšení času s koly (opotřebením) - doporučení
     Databáze JSON - řidiči a týmy
-    Koeficienty podle Loru
     Class track
-    Přepsat do aj
     Double box Ai moc často
-    Seřazení doporučování na začátku
-    Dopručování i AI
     Režim úspory pneu
-    Uprage v průběhu sezony
-    Dopuručení stintu na mokro
     trate ruzne DNF pravdepodobnost
     Radon + pylint + mccabe
     Pravděpodobnosti počasí
@@ -74,3 +68,5 @@ Meine improve
     Když jsem poslední, ukazuje se delta za
     Biggest laps in history
     Dát soubor do více - rozdělit
+    textové inputy -> informace atd.
+    Přepsat texty do čj
