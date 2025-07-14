@@ -1,10 +1,11 @@
 import random
 import matplotlib.pyplot as plt
 import matplotlib.image as mpimg
+random.seed()
 #import csv
 RANK = 0
 WETTINESS = 0
-names_free_drivers = [    "Maximilian Becker", "Santiago Cruz",   "Oliver Wright", "Hiroshi Takeda",     "Sebastian Fontaine", "Mateo Silva",     "Jonas Lindberg", "Ivan Kuznetsov",     "Lorenzo Bianchi", "Connor Mitchell",    "Rafael Ortega", "Tobias Schmidt",     "Yuto Nakamura", "Charles Lambert",     "Gabriel Costa", "Andrei Petrescu",    "Lutime Meyer", "Zhang Wei",     "Finn Gallagher", "Ricardo Santos"]
+names_free_drivers = [    "Maximilian Becker", "Santiago Cruz",   "Oliver Wright", "Hiroshi Takeda",     "Sebastian Fontaine", "Mateo Silva",     "Jonas Lindberg", "Ivan Kuznetsov",     "Lorenzo Bianchi", "Connor Mitchell",    "Rafael Ortega", "Tobias Schmidt",     "Yuto Nakamura", "Charles Lambert",     "Gabriel Costa", "Andrei Petrescu",    "Lutime Meyer", "Zhang Wei",     "Finn Gallagher", "Ricardo Santos", "Micheal Unide", "Tsu tsei chui", "Simon Lambert", "Sven Olisson", "Albert McHugh"]
 TIME_S1 = 15
 TIME_S2 = 23
 TIME_S3 = 22
@@ -137,6 +138,13 @@ def pit_player():
     if player.dnf is False:
         print("Akce: [1] pokračovat [2] box pro řidiče 1")
         pick = input("> ").strip()
+        if pick == "PNEUSTAV":
+            print(player.pneu, round(player.wear, 2), "%")
+            player.time += 2
+        if pick == "PNEUSAFE":
+            print("PNEUSAFE aktivní na 1 kolo")
+            player.wear -= 1
+            player.time += 3
         if pick == "2":
             print("Vyber pneu pro řidiče 1: [tvrdé / medium / měkké / mokré / inter]")
             strategy(LAPS-lap, TIME_S1, TIME_S2, TIME_S3, pneu, speed)                
@@ -147,6 +155,13 @@ def pit_player():
     if player_2.dnf is False:
         print("Akce: [1] pokračovat [2] box pro řidiče 2")
         pick_2 = input("> ").strip()
+        if pick == "PNEUSTAV":
+            print(player_2.pneu, round(player_2.wear, 2), "%")
+            player_2.time += 2
+        if pick == "PNEUSAFE":
+            print("PNEUSAFE aktivní na 1 kolo")
+            player.wear -= 1
+            player.time += 3
         if pick_2 == "2":
             print("Vyber pneu pro řidiče 2: [tvrdé / medium / měkké / mokré / inter]")
             strategy(LAPS-lap, TIME_S1, TIME_S2, TIME_S3, pneu, speed)  
@@ -189,8 +204,10 @@ def strategy(LAPS, TIME_S1, TIME_S2, TIME_S3, pneu, speed):
     vydrz_h =60/k_wear[0]*k_speed[0]
     wear = [vydrz_h, vydrz_m, vydrz_s]
     nazev = ["Hard", "Medium", "Soft"]
-    print(f"Měkké vydrží {vydrz_s}, medium {vydrz_m}, tvrdé {vydrz_h}")
+    print(f"Měkké vydrží {round(vydrz_s, 1)}, medium {round(vydrz_m, 1)}, tvrdé {round(vydrz_h, 1)}")
     box_time = (100/60)
+    if count_laps == 0:
+        count_laps = 1
     for i, stint in enumerate(wear, 0):
         if count_laps + 4 < wear[i] < count_laps +20:
             remain = wear[i] - count_laps
@@ -264,7 +281,7 @@ class Drivermmr2:
 def simulate_season_mmr2(drivers):
     for driver in drivers:
         for lap in range(50*12):  # For 50 laps per race For 12 races
-            driver.time += driver.skill * random.uniform(0.97, 1.02)  # Add time based on experience
+            driver.time += driver.skill * random.uniform(0.98, 1.02)  # Add time based on experience
     
     # Sort drivers by their time (lower is better)
     mmr2_sorted = sorted(drivers, key=lambda x: x.time)
@@ -318,6 +335,7 @@ class Car:
 
     def simuluj_lap(self, weather, training, wettiness):
         global SAFETY_CAR
+        global LAPS_REMAINING
         if self.dnf:
             return
         
@@ -330,11 +348,13 @@ class Car:
             print(f"{self.name} – defekt! ❌")
             SAFETY_CAR = True
             return SAFETY_CAR
+            LAPS_REMAINING = random.randint(3,6)
         if self.wear > 80 and random.random() < 0.55:
             print(f"{self.name} – defekt! ❌")
             self.puncture = True
             self.dnf = True
             SAFETY_CAR = True
+            LAPS_REMAINING = random.randint(3,6)
             return SAFETY_CAR
 
         speed = self.efectivity_pneu(weather)
@@ -456,7 +476,7 @@ class Car:
                 difference = self.time - car_pred.time
                 print(f"Delta před: {round(difference, 3)}s ({car_pred.team.nazev})")
             if self.wear >= 70:
-                print(random.choice(["The weathers are pretty done now.", "I don´t know what are you doing there, but I am boxing. Or at least I wish.", "The weathers are ***!", "Please, take me out from this hell." "Please box, please."]))
+                print(random.choice(["The tyres are pretty done now.", "I don´t know what are you doing there, but I am boxing. Or at least I wish.", "The tyres are ***!", "Please, take me out from this hell." "Please box, please."]))
         return 
     def drss(self):
         for i in range(1, len(cars)): 
@@ -594,6 +614,28 @@ class Team:
                 self.points += 1
             elif position == 23:
                 self.points += 1
+class Track:
+    def __init__(self, name, pneu, speed, TIME_S1, TIME_S2, TIME_S3, laps, dnf_probability):
+        self.name = name
+        self.pneu = pneu
+        self.speed = speed
+        self.TIME_S1 = TIME_S1
+        self.TIME_S2 = TIME_S2
+        self.TIME_S3 = TIME_S3
+        self.laps = laps
+        self.dnf_probability = dnf_probability
+tracks = []
+tracks.append(Track("Huawei GP SPA", "tvrdé", "quick", 22, 25, 18, 70, 4500))
+tracks.append(Track("LG TV Grand Prix du France", "tvrdé", "tvrdé", 26, 19, 22, 74, 4500))
+tracks.append(Track("Sony Varsava Grand Prix","tvrdé", "medium", 35, 18, 24, 62, 5000))
+tracks.append(Track("META China Grand Prix", "medium", "slow", 25, 34, 30, 56, 4500))
+tracks.append(Track("Ostrava Apple GP", "medium", "quick", 20, 26, 18, 67, 4500))
+tracks.append(Track("Python circuit Bahamas", "tvrdé", "medium", 25, 23, 38, 72, 5000))
+tracks.append(Track("HP Bulgarian GP", "medium", "medium", 23, 29, 20, 60, 5000))
+tracks.append(Track("AWS Grand Prix de Espana", "medium", "quick", 26, 31, 16, 51, 6000))
+tracks.append(Track("AirBNB Prague GP", "měkké", "quick", 20, 33, 40, 42, 4500))
+tracks.append(Track("eBay Skyline Turkey GP","medium", "slow", 27, 24, 36, 49, 4900))
+tracks.append(Track("Java airlines Monza IBM Italy GP","měkké", "quick", 30, 16, 18, 50, 5100))
 drivers = ["Alex Storme","Matteo Blaze","Hiro Tanaka","Lukas Renntvrdét","Diego Ventura","Aiden Falk","Pierre Lucien","Nikolai Vetrovski","Riku Yamashita","Carlos Navarro","Johan Reißer","Theo Hartman","Enzo DaCosta","Sebastian Krell","Marco Falcone","Ivan Vasiliev","Tyler Quinn","Jae-Min Han","Felipe Marquez","Elias Northgate","Arjun Desai","Tomás Moreira","Leo Krüger","Mikhail Antonov","Julian Stroud","Renzo Morandi"]
 x = 0
 cars = []
@@ -614,7 +656,7 @@ create_team(TEAM_PLAYER, player, player_2, teams,                               
 create_team("Scuderia Python", cars[0], cars[1], teams,                         random.uniform(4,   6.9))
 create_team("Racing 404",cars[2],cars[3], teams,                                random.uniform(4.5, 6))
 create_team("Formula 1.0 racing team",cars[4],cars[5], teams,                   random.uniform(4,   6))
-create_team("Microměkké PitStop Protocol racing team",cars[6],cars[7], teams,    random.uniform(4,   6))
+create_team("Microsoft PitStop Protocol racing team",cars[6],cars[7], teams,    random.uniform(4,   6))
 create_team("Intel QWERTY GP",cars[8],cars[9], teams,                           random.uniform(4.5, 6))
 create_team("Underbyte Nvidia GP",cars[10],cars[11], teams,                     random.uniform(4,   6.85))
 create_team("JavaScript Racing team",cars[12],cars[13], teams,                  random.uniform(4,   6.85))
@@ -637,94 +679,16 @@ while len(names_free_drivers) >= 0:
     for race in championship:
         climax = random.choice(["přechodný","slunečno","slunečno","slunečno"])
         lap = 0
-        if race == "Huawei GP SPA":
-            pneu = "tvrdé"
-            speed = "quick"
-            TIME_S1 = 22
-            TIME_S2 = 25
-            TIME_S3 = 18
-            LAPS = 70
-            dnf_probability = 4500
-        if race == "LG TV Grand Prix du France":
-            pneu = "tvrdé"
-            speed = "quick"
-            TIME_S1 = 26
-            TIME_S2 = 19
-            TIME_S3 = 22
-            LAPS = 74
-            dnf_probability = 4500
-        if race == "Sony Varsava Grand Prix":
-            pneu = "tvrdé"
-            speed = "medium"
-            TIME_S1 = 35
-            TIME_S2 = 18
-            TIME_S3 = 24
-            LAPS = 62
-            dnf_probability = 5000
-        if race == "META China Grand Prix":
-            pneu = "medium"
-            speed = "slow"
-            TIME_S1 = 25
-            TIME_S2 = 34
-            TIME_S3 = 30
-            LAPS = 56
-            dnf_probability = 4500
-        if race == "Ostrava Apple GP":
-            pneu = "medium"
-            speed = "quick"
-            TIME_S1 = 20
-            TIME_S2 = 26
-            TIME_S3 = 18
-            LAPS = 67
-            dnf_probability = 4500
-        if race == "Python circuit Bahamas":
-            pneu = "tvrdé"
-            speed = "medium"
-            TIME_S1 = 25
-            TIME_S2 = 23
-            TIME_S3 = 38
-            LAPS = 72  
-            dnf_probability = 5000
-        if race == "HP Bulgarian GP":
-            pneu = "medium"
-            speed = "medium"
-            TIME_S1 = 23
-            TIME_S2 = 29
-            TIME_S3 = 20
-            LAPS = 60
-            dnf_probability = 5000
-        if race == "AWS Grand Prix de Espana":
-            pneu = "medium"
-            speed = "quick"
-            TIME_S1 = 26
-            TIME_S2 = 31
-            TIME_S3 = 12
-            LAPS = 51
-            dnf_probability = 6000
-        if race == "AirBNB Prague GP":
-            pneu = "měkké"
-            speed = "quick"
-            TIME_S1 = 20
-            TIME_S2 = 33
-            TIME_S3 = 40
-            LAPS = 42
-            dnf_probability = 4500
-        if race == "eBay Skyline Turkey GP":
-            pneu = "medium"
-            speed = "slow"
-            TIME_S1 = 27
-            TIME_S2 = 24
-            TIME_S3 = 36
-            LAPS = 49
-            dnf_probability = 4900
-        if race == "Java airlines Monza IBM Italy GP":
-            pneu = "měkké"
-            speed = "quick"
-            TIME_S1 = 30
-            TIME_S2 = 16
-            TIME_S3 = 18
-            LAPS = 50
-            dnf_probability = 5100
+        for tip in tracks:
+            if race == tip.name:
+                pneu = tip.pneu
+                speed = tip.speed
+                TIME_S1 = tip.TIME_S1
+                TIME_S2 = tip.TIME_S2
+                TIME_S3 = tip.TIME_S3
+                LAPS = tip.laps
+                dnf_probability = tip.dnf_probability
+        
         print(f"Aktuální závod {race} {b}/{len(championship)}")
         print(f"Trať je charakteristická pro {pneu} pneu a {speed} rychlost. Má {LAPS} kol")
         strategy(LAPS, TIME_S1, TIME_S2, TIME_S3, pneu, speed)
@@ -799,8 +763,6 @@ while len(names_free_drivers) >= 0:
                 print("Poslední kolo. Push push.")
             info(WETTINESS)
             for car in cars:
-
-
                 if weather == "slunečno":
                     if random.randint(1, dnf_probability) == 1:
                         if lap >= 3:
@@ -1045,6 +1007,124 @@ while len(names_free_drivers) >= 0:
         print(f"{i}. {t.nazev} – {t.points} body")
         if i == len(teams):
             t.skill -=1
+    answear = input("Důležitá otázka!")
+    while answear == "":
+        answear = input("Důležitá otázka!")
+    new_pilot = input("Chceš nového pilota? ANO/NE\n").lower()   
+    if new_pilot == "ano":
+        new_pilot = input("Chceš z MMR1 nebo MMR2?\n")
+        if new_pilot == "MMR1":
+            average_skill = 0
+            for x in cars:
+                average_skill += x.skills
+            average_skill = average_skill/(len(cars) +1)
+            swap = input(f"Chceš vyměnit {DRIVER_1} nebo {DRIVER_2}\n")
+            tymy_ridic_1_trade = []
+            tymy_ridic_2_trade = []
+            mozne_prestupy = []
+            for x in teams:
+                for y in cars:
+                    if x.drivers[0] == y:
+                        if (x.skill - y.skills) >=0:
+                            tymy_ridic_1_trade.append(x)
+                    if x.drivers[1] == y:
+                        if (x.skill - y.skills) >=0:
+                            tymy_ridic_2_trade.append(x)
+            if DRIVER_1 == swap:
+                number = 1
+                if average_skill > player.skills:
+                    print(f"O výměnu za {DRIVER_1} má zájem jen málo týmů. Např:")
+                    nahodny_ridic = teams[-1].drivers[random.choice[0,1]]
+                    print(f"Možnost 1 {teams[-1].nazev} ({teams[-1].points} bodů/y) nabízí svého pilota {nahodny_ridic.name}")
+                    mozne_prestupy.append(teams[-1])
+                else:
+                    print("O řidiče je docela zájem. Např.")
+                    
+                    for x in teams:
+                        if random.uniform(0, 1) > 0.7:
+                            nahodny_ridic = x.drivers[random.choice([0,1])]
+                            print(f"Možnost {number} {x.nazev} ({x.points} bodů/y) {nahodny_ridic.name}")
+                            mozne_prestupy.append(nahodny_ridic)
+                            number +=1
+                for x in tymy_ridic_1_trade:
+                    print(f"Možnost {number} {x.nazev} ({x.points} bodů/y) nabízí {x.drivers[0].name}")
+                    mozne_prestupy.append(x.drivers[0])
+                    number +=1
+                for x in tymy_ridic_2_trade:
+                    print(f"Možnost {number} {x.nazev} ({x.points} bodů/y) nabízí {x.drivers[1].name}")
+                    mozne_prestupy.append(x.drivers[1])
+                    number+=1
+                new_pilot = input("Jakého chceš pilota? JMENO\n")
+                for x in mozne_prestupy:
+                    if x.name == new_pilot:
+                        DRIVER_1 = x.name
+                        player.name, x.name = x.name, player.name
+                        player.skills, x.skills = x.skills, player.skills
+            if DRIVER_2 == swap:
+                number = 1
+                if average_skill > player_2.skills:
+                    print(f"O výměnu za {DRIVER_2} má zájem jen málo týmů. Např:")
+                    nahodny_ridic = teams[-1].drivers[random.choice[0,1]]
+                    print(f"Možnost 1 {teams[-1].nazev} ({teams[-1].points} bodů/y) nabízí svého pilota {nahodny_ridic.name}")
+                    mozne_prestupy.append(teams[-1])
+                else:
+                    print("O řidiče je docela zájem. Např.")
+                    
+                    for x in teams:
+                        if random.uniform(0, 1) > 0.7:
+                            nahodny_ridic = x.drivers[random.choice([0,1])]
+                            print(f"Možnost {number} {x.nazev} ({x.points} bodů/y) {nahodny_ridic.name}")
+                            mozne_prestupy.append(nahodny_ridic)
+                            number +=1
+                for x in tymy_ridic_1_trade:
+                    print(f"Možnost {number} {x.nazev} ({x.points} bodů/y) nabízí {x.drivers[0].name}")
+                    mozne_prestupy.append(x.drivers[0])
+                    number +=1
+                for x in tymy_ridic_2_trade:
+                    print(f"Možnost {number} {x.nazev} ({x.points} bodů/y) nabízí {x.drivers[1].name}")
+                    mozne_prestupy.append(x.drivers[1])
+                    number+=1
+                new_pilot = input("Jakého chceš pilota? JMENO\n")
+                for x in mozne_prestupy:
+                    if x.name == new_pilot:
+                        DRIVER_2 = x.name
+                        player_2.name, x.name = x.name, player_2.name
+                        player_2.skills, x.skills = x.skills, player_2.skills
+        elif new_pilot == "MMR2":
+            best, worst = simulate_season_mmr2(list_drivers_mmr2)
+            print(f"Vyhrál {best.name}.")
+            final = input("Chceš ho? ANO/NE?\n")
+            if final == "ANO":
+                change = input(f"Chceš ho za {DRIVER_1} nebo {DRIVER_2}?\n")
+                new = best.name
+                skill = best.skill
+                if change == DRIVER_1:
+                    DRIVER_1 = new
+                    player.name, new = new, player.name 
+                    player.skills, skill = skill, player.skills
+                elif change == DRIVER_2:
+                    DRIVER_2 = new
+                    player_2.name, new = new, player_2.name 
+                    player_2.skills, skill = skill, player_2.skills
+    class Want:
+        def __init__(self, name):
+            self.name = name
+            self.transfer_did = False
+    want_trade = []
+    for x in teams:
+        for y in x.drivers:
+            if x.skill - y.skills > 0.8 and y.is_player == False:
+                want_trade.append(Want(y))
+    while len(want_trade) > 0:
+        driver_to_trade_1 = random.choice(want_trade)
+        driver_to_trade_2 = random.choice(want_trade)
+        while driver_to_trade_1 == driver_to_trade_2:
+            driver_to_trade_1 = random.choice(want_trade)
+        print(f"Breaking!!!\n {driver_to_trade_1.name.name} ({driver_to_trade_1.name.team.nazev}, {driver_to_trade_1.name.points} bodů) mění {driver_to_trade_2.name.name} ({driver_to_trade_2.name.team.nazev}, {driver_to_trade_2.name.points} bodů)\nBreaking!!!")
+        driver_to_trade_1.name, driver_to_trade_2.name == driver_to_trade_2.name, driver_to_trade_1.name
+        want_trade.remove(driver_to_trade_1)
+        want_trade.remove(driver_to_trade_2)
+
     WETTINESS = 0
     for c in cars:
         c.points = 0

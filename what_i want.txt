@@ -55,17 +55,13 @@
 
 Meine improve
     Databáze JSON - řidiči a týmy
-    Class track
     Double box Ai moc často
-    Režim úspory pneu
-    trate ruzne DNF pravdepodobnost
     Radon + pylint + mccabe
-    Pravděpodobnosti počasí
     Dešt box problem AI
     Upozernění na těsné výsledky
-    Vlhkost tratě - postupné nabývání
     Trady mezi týmy
     Když jsem poslední, ukazuje se delta za
     Biggest laps in history
     Dát soubor do více - rozdělit
-    textové inputy -> informace atd.
+    nastavení vozu (chasis, etc.)
+    Safety car nekončí
