@@ -42,6 +42,167 @@ def mokré_track(weather, wettiness):
     if wettiness < 0:
         wettiness = 0
     return wettiness
+
+def technical_sector_sim(settings):
+    speed_in_training = settings[0]/10
+    understeer_in_traning = settings[1]/5
+    oversteer_in_training = settings[2]/5
+    acceleration = settings[3]/10
+    grip = settings[4]/5
+    curb_handling = settings[5]/5
+    my_time = 30
+    my_time -= grip + acceleration + oversteer_in_training + understeer_in_traning + speed_in_training + curb_handling
+            
+    corner_slow = [1, 3, 5, 9, 11, 15]
+    corner_medium =  [2, 6, 7, 12, 13]
+    corner_fast = [4, 8, 10, 14]
+    speeds_on_exit_player = []
+    oversteers_player = []
+    understeers_player = []
+    time_sim_player = []
+    for x in range(1, 16):
+        chance_mistake = (settings[1] + settings[2]) * -1
+        if chance_mistake < 1:
+            chance_mistake = 1
+        if random.randint(0, 100) < chance_mistake:
+            mistake = True
+        else:
+            mistake = False
+        for y in corner_fast:
+            if x == y:
+                corner = "fast"
+        for y in corner_medium:
+            if x ==y:
+                corner = "medium"
+        for y in corner_slow:
+            if x==y:
+                corner = "slow"
+        under = settings[1]*random.uniform(0.98,1.02)
+        over = settings[2]*random.uniform(0.98,1.02)
+        if corner == "slow":
+            corner_speed = 100+ random.uniform(-5, 5)     
+            if grip < -1:
+                under += settings[1]*grip*2
+                if under <0:
+                    under *= -1
+                over += settings[2]*grip
+                if over <0:
+                    over *= -1
+            if curb_handling <-5:
+                under += settings[1]*grip
+                if under <0:
+                    under *= -1
+                over += settings[2]*grip*2
+                if over <0:
+                    over *= -1
+            time_sim_player.append(15 + under + over)
+        elif corner == "medium":
+            corner_speed = 150+ random.uniform(-5, 5)
+            if grip < -4:
+                under += settings[1]*grip*2
+                if under <0:
+                    under *= -1
+                over += settings[2]*grip
+                if over <0:
+                    over *= -1
+            if curb_handling <-4:
+                under += settings[1]*grip
+                if under <0:
+                    under *= -1
+                over += settings[2]*grip*2
+                if over <0:
+                    over *= -1
+            time_sim_player.append(10 + under + over)
+        elif corner == "fast":
+            corner_speed = 200+ random.uniform(-5, 5)
+            if grip < -5:
+                under += settings[1]*grip*2
+                if under <0:
+                    under *= -1
+                over += settings[2]*grip
+                if over <0:
+                    over *= -1
+            if curb_handling <-2:
+                under += settings[1]*grip
+                if under <0:
+                    under *= -1
+                over += settings[2]*grip*2
+                if over <0:
+                    over *= -1
+            time_sim_player.append(7 + under + over)
+        speed_on_exit = corner_speed * speed_in_training * acceleration
+
+        if mistake:
+            speed_on_exit = 30
+            under = 10
+            over = 10
+        if speed_on_exit <0:
+            speed_on_exit *=-1
+        if under <0:
+            under *=-1
+        if over <0:
+            over*=-1
+        speeds_on_exit_player.append(speed_on_exit)
+        understeers_player.append(under)
+        oversteers_player.append(over)
+
+
+
+    speeds_on_exit_bot = []
+    time_sim = []
+    for x in range(1, 16):
+        for y in corner_fast:
+            if x == y:
+                corner = "fast"
+        for y in corner_medium:
+            if x ==y:
+                corner = "medium"
+        for y in corner_slow:
+            if x==y:
+                corner = "slow"
+        under = 0
+        over = 0
+        if corner == "slow":
+            corner_speed = 100+ random.uniform(-15, 15)
+            time_sim.append(15 + random.uniform(-0.5, 0.5))
+        elif corner == "medium":
+            corner_speed = 150+ random.uniform(-15, 15)
+            time_sim.append(10 + random.uniform(-0.5, 0.5))
+        elif corner == "fast":
+            corner_speed = 200+ random.uniform(-15, 15)
+            time_sim.append(7+ random.uniform(-0.5, 0.5))
+        speeds_on_exit_bot.append(corner_speed)
+
+
+
+    turns = list(range(1, 16))
+    fig, axs = plt.subplots(3, 1, figsize=(14, 10), sharex=True)
+
+# Time comparison
+    axs[0].plot(turns, time_sim_player, label="Hráč – čas", marker='o', color='orange')
+    axs[0].plot(turns, time_sim, label="Bot – čas", marker='o', color='blue')
+    axs[0].set_ylabel("Čas [s]")
+    axs[0].legend()
+    axs[0].grid(True)
+
+# Speed comparison
+    axs[1].plot(turns, speeds_on_exit_player, label="Výjezd hráč [km/h]", marker='o', color='green')
+    axs[1].plot(turns, speeds_on_exit_bot, label="Výjezd bot [km/h]", marker='o', color='gray')
+    axs[1].set_ylabel("Rychlost [km/h]")
+    axs[1].legend()
+    axs[1].grid(True)
+
+# Understeer / Oversteer
+    axs[2].bar(turns, understeers_player, label="Understeer", color='purple', alpha=0.6)
+    axs[2].bar(turns, oversteers_player, bottom=understeers_player, label="Oversteer", color='red', alpha=0.6)
+    axs[2].set_ylabel("Chyby")
+    axs[2].set_xlabel("Zatáčka")
+    axs[2].legend()
+    axs[2].grid(True)
+
+    plt.tight_layout()
+    plt.show()
+
 def colours_graphs():
     for c in cars:
         if c.dnf:
@@ -203,7 +364,7 @@ def strategy(LAPS, TIME_S1, TIME_S2, TIME_S3, pneu, speed):
     vydrz_m = 60/k_wear[1]*k_speed[1]
     vydrz_h =60/k_wear[0]*k_speed[0]
     wear = [vydrz_h, vydrz_m, vydrz_s]
-    nazev = ["měkké", "Medium", "tvrdé"]
+    nazev = ["Tvrdé", "Medium", "Měkké"]
     print(f"Měkké vydrží {round(vydrz_s, 1)}, medium {round(vydrz_m, 1)}, tvrdé {round(vydrz_h, 1)}")
     box_time = (100/60)
     if count_laps == 0:
@@ -753,22 +914,93 @@ while len(names_free_drivers) >= 0:
         grip = 0
         curb_handling = 0
         training = input("Chceš trénink na [1] nebo kvalifikaci [2]: ")
-        print("Nastavení vozu. Máš deset pokusů")
-        print("Nastavujeme přední křídlo. Hodnota 0-11. Při menších rychlostech větší číslo.")
-        front_wing = input("Jak chceš nastavit přední křídlo?")
-        if speed == "quick":
-            front_wing_ideal = random.randint(0, 4)
-        elif speed == "medium":
-            
-        else:
+        for x in range(3):
+            print("Nastavení vozu. Máš tři pokusy")
+            print("Nastavujeme přední křídlo. Hodnota 0-11. Při menších rychlostech větší číslo.")
+            front_wing = int(input("Jak chceš nastavit přední křídlo? \n"))
+            if speed == "quick":
+                front_wing_ideal = random.randint(0, 4)
+            elif speed == "medium":
+                front_wing_ideal = random.randint(4, 7) 
+            else:
+               front_wing_ideal = random.randint(6, 11)
+            diff = front_wing_ideal - front_wing
+            speed_in_training += diff
+            if diff > 2 or diff < -2:
+                oversteer_in_training -= diff
+            else:
+                oversteer_in_training += diff
+            understeer_in_traning -= diff
+            acceleration += diff
+            grip += diff
 
-        print("Nastavujeme zadní křídlo.")
-        print("Nastavujeme akceleraci.")
-        print("Nastavujeme brzdy.")
-        print("Nastavujeme stabilizátory.")
-        print("Nastavujeme pružiny.")
-        print("Nastavujeme odklon.")
-        print("Nastavujeme sbíhavost.")
+
+            print("Nastavujeme zadní křídlo.")
+            rear_wing = int(input("Jak chceš nastavit zadní křídlo? \n"))
+            if speed == "quick":
+                rear_wing_ideal = random.randint(0, 4)
+            elif speed == "medium":
+               rear_wing_ideal = random.randint(4, 7) 
+            else:
+                rear_wing_ideal = random.randint(6, 11)
+            diff = rear_wing_ideal - rear_wing
+            speed_in_training += diff
+            if diff > 2 or diff < -2:
+                oversteer_in_training -= diff
+            else:
+                oversteer_in_training += diff
+            understeer_in_traning -= diff
+            acceleration += diff
+            grip += diff
+
+
+            print("Nastavujeme brzdy.")
+            brakes = int(input("Jak chceš nastavit brzdy? 50 - 60. Nižší číslo znamená větší přetáčivost, vyšší nedotáčivost \n"))
+            brakes__ideal = random.randint (50, 60)
+            diff = brakes__ideal - brakes
+            understeer_in_traning += diff * 2
+            oversteer_in_training += diff *-2
+
+            print("Nastavujeme stabilizátory. 1 = měkčí, 2 = tvrdší. Při tvrdším je rychlejší auto, ale horší grip a přejíždění.")
+            stabilizators = int(input("Jaké chceš stabilizátory\n"))
+            if stabilizators == 1:
+                grip -= 2
+                curb_handling -=2
+                speed_in_training +=2
+                acceleration +=2
+            else:
+                grip += 2
+                curb_handling +=2
+                speed_in_training -=2
+                acceleration -=2
+
+
+            print("Nastavujeme pružiny.")
+            suspension = int(input("Jaké pružiny chceš? 1-tvrdé 2-měkké. Tvrdé mají lepší akceleraci, horší přilnavost, nestabilní auto, větší nedotáčivost a přetáčivost.\n"))
+            if suspension == 1:
+                acceleration += 2
+                grip -=1
+                curb_handling -=2
+                oversteer_in_training -=1
+                understeer_in_traning -=1
+                speed_in_training +=3
+            else:
+                acceleration -= 2
+                grip +=1
+                curb_handling +=2
+                oversteer_in_training +=1
+                understeer_in_traning +=1
+                speed_in_training -=3
+
+            settings = [speed_in_training,understeer_in_traning,oversteer_in_training,acceleration,grip,curb_handling]
+            #if speed == "quick":
+             #   speed_sector_sim(settings)
+            #elif speed == "medium":    
+             #   medium_sector_sim(settings)
+            #else:
+            technical_sector_sim(settings)
+                
+
         #Quali
         for car in cars:
             sim_time = TIME_S1 * random.uniform(0.9, 1.1) + TIME_S2 * random.uniform(0.9, 1.1) + TIME_S3 * random.uniform(0.9, 1.1)
