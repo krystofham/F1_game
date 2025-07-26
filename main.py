@@ -130,7 +130,7 @@ def technical_sector_sim(settings):
                 if over <0:
                     over *= -1
             time_sim_player.append(7 + under + over)
-        speed_on_exit = corner_speed * speed_in_training * acceleration
+        speed_on_exit = corner_speed +speed_in_training*10+10* acceleration
 
         if mistake:
             speed_on_exit = 30
@@ -138,10 +138,6 @@ def technical_sector_sim(settings):
             over = 10
         if speed_on_exit <0:
             speed_on_exit *=-1
-        if under <0:
-            under *=-1
-        if over <0:
-            over*=-1
         speeds_on_exit_player.append(speed_on_exit)
         understeers_player.append(under)
         oversteers_player.append(over)
@@ -163,13 +159,13 @@ def technical_sector_sim(settings):
         under = 0
         over = 0
         if corner == "slow":
-            corner_speed = 100+ random.uniform(-15, 15)
+            corner_speed = 100+ random.uniform(-25, 25)
             time_sim.append(15 + random.uniform(-0.5, 0.5))
         elif corner == "medium":
-            corner_speed = 150+ random.uniform(-15, 15)
+            corner_speed = 150+ random.uniform(-25, 25)
             time_sim.append(10 + random.uniform(-0.5, 0.5))
         elif corner == "fast":
-            corner_speed = 200+ random.uniform(-15, 15)
+            corner_speed = 200+ random.uniform(-25, 25)
             time_sim.append(7+ random.uniform(-0.5, 0.5))
         speeds_on_exit_bot.append(corner_speed)
 
@@ -193,8 +189,8 @@ def technical_sector_sim(settings):
     axs[1].grid(True)
 
 # Understeer / Oversteer
-    axs[2].bar(turns, understeers_player, label="Understeer", color='purple', alpha=0.6)
-    axs[2].bar(turns, oversteers_player, bottom=understeers_player, label="Oversteer", color='red', alpha=0.6)
+    axs[2].bar(turns, understeers_player, label="Nedotáčivost", color='purple', alpha=0.6)
+    axs[2].bar(turns, oversteers_player, bottom=understeers_player, label="Přetáčivost", color='red', alpha=0.6)
     axs[2].set_ylabel("Chyby")
     axs[2].set_xlabel("Zatáčka")
     axs[2].legend()
@@ -470,6 +466,7 @@ class Car:
         self.is_player = is_player
         self.pneu = random.choice(["medium", "tvrdé"])
         self.wear = 0.0
+        self.safety_car_probability = 0
         self.skills = skill
         self.time = 0.0
         self.points = 0
@@ -534,6 +531,10 @@ class Car:
             s1 = s1 - random.uniform(0.1, 0.3)
             s2 = s2 - random.uniform(0.1, 0.3)
             s3 = s3 - random.uniform(0.1, 0.3)
+        if speed_bonus:
+            s1 = s1 - random.uniform(0.3, 0.5)
+            s2 = s2 - random.uniform(0.3, 0.5)
+            s3 = s3 - random.uniform(0.3, 0.5)
         if wettiness < 30 and self.pneu not in ["měkké", "medium", "tvrdé"]:
             s1 = s1+wettiness/2
             s2 = s2+wettiness/2
@@ -787,7 +788,7 @@ class Track:
         self.dnf_probability = dnf_probability
 tracks = []
 tracks.append(Track("Huawei GP SPA", "tvrdé", "quick", 22, 25, 18, 70, 4500))
-tracks.append(Track("LG TV Grand Prix du France", "tvrdé", "tvrdé", 26, 19, 22, 74, 4500))
+tracks.append(Track("LG TV Grand Prix du France", "tvrdé", "slow", 26, 19, 22, 74, 4500))
 tracks.append(Track("Sony Varsava Grand Prix","tvrdé", "medium", 35, 18, 24, 62, 5000))
 tracks.append(Track("META China Grand Prix", "medium", "slow", 25, 34, 30, 56, 4500))
 tracks.append(Track("Ostrava Apple GP", "medium", "quick", 20, 26, 18, 67, 4500))
@@ -849,7 +850,8 @@ while len(names_free_drivers) >= 0:
                 TIME_S3 = tip.TIME_S3
                 LAPS = tip.laps
                 dnf_probability = tip.dnf_probability
-        
+        for x in cars:
+            x.safety_car_probability = dnf_probability
         print(f"Aktuální závod {race} {b}/{len(championship)}")
         print(f"Trať je charakteristická pro {pneu} pneu a {speed} rychlost. Má {LAPS} kol")
         strategy(LAPS, TIME_S1, TIME_S2, TIME_S3, pneu, speed)
@@ -889,14 +891,14 @@ while len(names_free_drivers) >= 0:
             print (f"Počasí: 🌤️ ☁️  {x}")
         for car in cars:
             car.pneu = random.choice(["tvrdé", "medium"])
-        player.pneu = input("Vyber pneu pro řidiče 1: [tvrdé / medium / měkké / mokré / inter]\n")
+        player.pneu = input("Vyber pneu pro řidiče 1: [tvrdé / medium / měkké / mokré / inter]\n[> ")
         while player.pneu not in PNEU_types:
-            player.pneu = input("Špatná volba. Vyber pneu pro řidiče 1: [tvrdé / medium / měkké / mokré / inter]\n")
+            player.pneu = input("Špatná volba. Vyber pneu pro řidiče 1: [tvrdé / medium / měkké / mokré / inter]\n[> ")
             if player.pneu == "exit":
                 continue
-        player_2.pneu = input("Vyber pneu pro řidiče 2: [tvrdé / medium / měkké / mokré / inter]\n")
+        player_2.pneu = input("Vyber pneu pro řidiče 2: [tvrdé / medium / měkké / mokré / inter]\n[> ")
         while player_2.pneu not in PNEU_types:
-            player_2.pneu = input("Špatná volba. Vyber pneu pro řidiče 2: [tvrdé / medium / měkké / mokré / inter]\n")
+            player_2.pneu = input("Špatná volba. Vyber pneu pro řidiče 2: [tvrdé / medium / měkké / mokré / inter]\n[> ")
             if player.pneu == "exit":
                 continue
         for c in cars:
@@ -913,11 +915,16 @@ while len(names_free_drivers) >= 0:
         acceleration = 0
         grip = 0
         curb_handling = 0
-        training = input("Chceš trénink na [1] nebo kvalifikaci [2]: ")
+        front_wing = None
+        rear_wing = None
+        brakes = None
+        stabilizators = None
+        suspension = None
+        training = input("Chceš trénink na rychlost [1] nebo kvalifikaci [2]: ")
         for x in range(3):
             print("Nastavení vozu. Máš tři pokusy")
-            print("Nastavujeme přední křídlo. Hodnota 0-11. Při menších rychlostech větší číslo.")
-            front_wing = int(input("Jak chceš nastavit přední křídlo? \n"))
+            print("Nastavujeme přední křídlo. Hodnota 0-11. Při menších rychlostech větší číslo. Snižuje understeer.")
+            front_wing = int(input(f"Jak chceš nastavit přední křídlo? Minulá hodnota: {front_wing}\n"))
             if speed == "quick":
                 front_wing_ideal = random.randint(0, 4)
             elif speed == "medium":
@@ -936,7 +943,7 @@ while len(names_free_drivers) >= 0:
 
 
             print("Nastavujeme zadní křídlo.")
-            rear_wing = int(input("Jak chceš nastavit zadní křídlo? \n"))
+            rear_wing = int(input(f"Jak chceš nastavit zadní křídlo? Minulá hodnota: {rear_wing}\n"))
             if speed == "quick":
                 rear_wing_ideal = random.randint(0, 4)
             elif speed == "medium":
@@ -955,13 +962,15 @@ while len(names_free_drivers) >= 0:
 
 
             print("Nastavujeme brzdy.")
-            brakes = int(input("Jak chceš nastavit brzdy? 50 - 60. Nižší číslo znamená větší přetáčivost, vyšší nedotáčivost \n"))
+            brakes = int(input(f"Jak chceš nastavit brzdy? 50 - 60. Nižší číslo znamená větší přetáčivost, vyšší nedotáčivost Minulá hodnota: {brakes} \n"))
             brakes__ideal = random.randint (50, 60)
+            if brakes < 40 or brakes > 70:
+                brakes = 55
             diff = brakes__ideal - brakes
             understeer_in_traning += diff * 2
             oversteer_in_training += diff *-2
 
-            print("Nastavujeme stabilizátory. 1 = měkčí, 2 = tvrdší. Při tvrdším je rychlejší auto, ale horší grip a přejíždění.")
+            print(f"Nastavujeme stabilizátory. 1 = měkčí, 2 = tvrdší. Při tvrdším je rychlejší auto, ale horší grip a přejíždění. Minulá hodnota: {stabilizators}")
             stabilizators = int(input("Jaké chceš stabilizátory\n"))
             if stabilizators == 1:
                 grip -= 2
@@ -976,7 +985,7 @@ while len(names_free_drivers) >= 0:
 
 
             print("Nastavujeme pružiny.")
-            suspension = int(input("Jaké pružiny chceš? 1-tvrdé 2-měkké. Tvrdé mají lepší akceleraci, horší přilnavost, nestabilní auto, větší nedotáčivost a přetáčivost.\n"))
+            suspension = int(input(f"Jaké pružiny chceš? 1-tvrdé 2-měkké. Tvrdé mají lepší akceleraci, horší přilnavost, nestabilní auto, větší nedotáčivost a přetáčivost. Minulá hodnota: {suspension}\n"))
             if suspension == 1:
                 acceleration += 2
                 grip -=1
@@ -999,8 +1008,22 @@ while len(names_free_drivers) >= 0:
              #   medium_sector_sim(settings)
             #else:
             technical_sector_sim(settings)
-                
-
+            if understeer_in_traning > 3 or oversteer_in_training > 3 or grip > 3 or curb_handling >3:
+                for car in cars:
+                    if car.is_player:
+                        car.safety_car_probability -= 800
+            if oversteer_in_training < -2 or oversteer_in_training < -2 or grip < -2 or curb_handling <-2:
+                for car in cars:
+                    if car.is_player:
+                        car.safety_car_probability += 800
+            if oversteer_in_training + understeer_in_traning > 5:
+                for car in cars:
+                    if car.is_player:
+                        car.safety_car_probability -= 400
+            if speed_in_training + acceleration > 5:
+                speed_bonus = True
+            else:
+                speed_bonus = False
         #Quali
         for car in cars:
             sim_time = TIME_S1 * random.uniform(0.9, 1.1) + TIME_S2 * random.uniform(0.9, 1.1) + TIME_S3 * random.uniform(0.9, 1.1)
@@ -1018,7 +1041,7 @@ while len(names_free_drivers) >= 0:
             info(WETTINESS)
             for car in cars:
                 if weather == "slunečno":
-                    if random.randint(1, dnf_probability) == 1:
+                    if random.randint(1, car.safety_car_probability) == 1:
                         if lap >= 3:
                             car.dnf = True
                             SAFETY_CAR = True
@@ -1031,7 +1054,7 @@ while len(names_free_drivers) >= 0:
                         "Radio: Watch the debris – SC deployed!"
                     ]))
                 else:
-                    if random.randint(1, (dnf_probability/5)) == 1:
+                    if random.randint(1,int((car.safety_car_probability/5))) == 1:
                         if lap >= 3:
                             car.dnf = True
                             SAFETY_CAR = True
