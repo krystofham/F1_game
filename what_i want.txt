@@ -55,7 +55,6 @@
 
 Meine improve
     Databáze JSON - řidiči a týmy
-    Double box Ai moc často
     Radon + pylint + mccabe
     Dešt box problem AI
     Upozernění na těsné výsledky
@@ -63,5 +62,5 @@ Meine improve
     Když jsem poslední, ukazuje se delta za
     Biggest laps in history
     Dát soubor do více - rozdělit
+    styl řízení jezdců
     nastavení vozu (chasis, etc.)
-    Safety car nekončí

@@ -203,7 +203,7 @@ def strategy(LAPS, TIME_S1, TIME_S2, TIME_S3, pneu, speed):
     vydrz_m = 60/k_wear[1]*k_speed[1]
     vydrz_h =60/k_wear[0]*k_speed[0]
     wear = [vydrz_h, vydrz_m, vydrz_s]
-    nazev = ["Hard", "Medium", "Soft"]
+    nazev = ["měkké", "Medium", "tvrdé"]
     print(f"Měkké vydrží {round(vydrz_s, 1)}, medium {round(vydrz_m, 1)}, tvrdé {round(vydrz_h, 1)}")
     box_time = (100/60)
     if count_laps == 0:
@@ -636,7 +636,7 @@ tracks.append(Track("AWS Grand Prix de Espana", "medium", "quick", 26, 31, 16, 5
 tracks.append(Track("AirBNB Prague GP", "měkké", "quick", 20, 33, 40, 42, 4500))
 tracks.append(Track("eBay Skyline Turkey GP","medium", "slow", 27, 24, 36, 49, 4900))
 tracks.append(Track("Java airlines Monza IBM Italy GP","měkké", "quick", 30, 16, 18, 50, 5100))
-drivers = ["Alex Storme","Matteo Blaze","Hiro Tanaka","Lukas Renntvrdét","Diego Ventura","Aiden Falk","Pierre Lucien","Nikolai Vetrovski","Riku Yamashita","Carlos Navarro","Johan Reißer","Theo Hartman","Enzo DaCosta","Sebastian Krell","Marco Falcone","Ivan Vasiliev","Tyler Quinn","Jae-Min Han","Felipe Marquez","Elias Northgate","Arjun Desai","Tomás Moreira","Leo Krüger","Mikhail Antonov","Julian Stroud","Renzo Morandi"]
+drivers = ["Alex Storme","Matteo Blaze","Hiro Tanaka","Lukas Rennhardt","Diego Ventura","Aiden Falk","Pierre Lucien","Nikolai Vetrovski","Riku Yamashita","Carlos Navarro","Johan Reißer","Theo Hartman","Enzo DaCosta","Sebastian Krell","Marco Falcone","Ivan Vasiliev","Tyler Quinn","Jae-Min Han","Felipe Marquez","Elias Northgate","Arjun Desai","Tomás Moreira","Leo Krüger","Mikhail Antonov","Julian Stroud","Renzo Morandi"]
 x = 0
 cars = []
 for driver in drivers:
@@ -745,8 +745,30 @@ while len(names_free_drivers) >= 0:
                 if weather_1 == "přechodný":
                     c.pneu = random.choice(["měkké", "inter"])
         simulation = []
-        #Tdéšťing
+        #Training
+        speed_in_training = 0
+        understeer_in_traning = 0
+        oversteer_in_training = 0
+        acceleration = 0
+        grip = 0
+        curb_handling = 0
         training = input("Chceš trénink na [1] nebo kvalifikaci [2]: ")
+        print("Nastavení vozu. Máš deset pokusů")
+        print("Nastavujeme přední křídlo. Hodnota 0-11. Při menších rychlostech větší číslo.")
+        front_wing = input("Jak chceš nastavit přední křídlo?")
+        if speed == "quick":
+            front_wing_ideal = random.randint(0, 4)
+        elif speed == "medium":
+            
+        else:
+
+        print("Nastavujeme zadní křídlo.")
+        print("Nastavujeme akceleraci.")
+        print("Nastavujeme brzdy.")
+        print("Nastavujeme stabilizátory.")
+        print("Nastavujeme pružiny.")
+        print("Nastavujeme odklon.")
+        print("Nastavujeme sbíhavost.")
         #Quali
         for car in cars:
             sim_time = TIME_S1 * random.uniform(0.9, 1.1) + TIME_S2 * random.uniform(0.9, 1.1) + TIME_S3 * random.uniform(0.9, 1.1)
@@ -843,10 +865,6 @@ while len(names_free_drivers) >= 0:
             for team, count in boxy_po_teamu.items():
                 if count >= 2:
                     print(f"{team.nazev} jde do double stacku.")
-                    for a in cars:
-                        if a.team == team and a.pit:
-                            position = RANK.index(a) + 1 if a in RANK else COUNT_CARS
-                            a.time += 50
             boxy_po_teamu.clear()
             cars.sort(key=lambda x: (x.dnf, x.time))
             RANK = [a for a in cars if not a.dnf]  
