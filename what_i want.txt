@@ -65,3 +65,6 @@ Meine improve
     styl řízení jezdců
     nastavení vozu (chasis, etc.)
     auto vkstní dnf_probability
+    záporný čas
+    Zacyklení 1426
+    Understewrr se neukazuje, chci tam mít throtle
