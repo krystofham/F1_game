@@ -79,8 +79,15 @@ def technical_sector_sim(settings):
                 corner = "slow"
         under = settings[1]*random.uniform(0.98,1.02)
         over = settings[2]*random.uniform(0.98,1.02)
+        bonus_time = 0
         if corner == "slow":
-            corner_speed = 100+ random.uniform(-5, 5)     
+            corner_speed = 100+ random.uniform(-5, 5)
+            if under > 2:
+                corner_speed -= 10*under
+                bonus_time += 2
+            if over > 2:
+                corner_speed -= 10*over
+                bonus_time += 2
             if grip < -1:
                 under += settings[1]*grip*2
                 if under <0:
@@ -95,9 +102,15 @@ def technical_sector_sim(settings):
                 over += settings[2]*grip*2
                 if over <0:
                     over *= -1
-            time_sim_player.append(15 + under + over)
+            time_sim_player.append(15 + under + over+ bonus_time)
         elif corner == "medium":
             corner_speed = 150+ random.uniform(-5, 5)
+            if under > 2:
+                corner_speed -= 30*under
+                bonus_time += 2
+            if over > 2:
+                corner_speed -= 30*over
+                bonus_time += 2
             if grip < -4:
                 under += settings[1]*grip*2
                 if under <0:
@@ -112,9 +125,15 @@ def technical_sector_sim(settings):
                 over += settings[2]*grip*2
                 if over <0:
                     over *= -1
-            time_sim_player.append(10 + under + over)
+            time_sim_player.append(10 + under + over+ bonus_time)
         elif corner == "fast":
             corner_speed = 200+ random.uniform(-5, 5)
+            if under > 2:
+                corner_speed -= 30*under
+                bonus_time += 2
+            if over > 2:
+                corner_speed -= 30*over
+                bonus_time += 2
             if grip < -5:
                 under += settings[1]*grip*2
                 if under <0:
@@ -129,7 +148,9 @@ def technical_sector_sim(settings):
                 over += settings[2]*grip*2
                 if over <0:
                     over *= -1
-            time_sim_player.append(7 + under + over)
+            time_sim_player.append(7 + under + over + bonus_time)
+        if corner_speed < 0:
+            corner_speed = 0
         speed_on_exit = corner_speed +speed_in_training*10+10* acceleration
 
         if mistake:
@@ -160,27 +181,25 @@ def technical_sector_sim(settings):
         over = 0
         if corner == "slow":
             corner_speed = 100+ random.uniform(-25, 25)
-            time_sim.append(15 + random.uniform(-0.5, 0.5))
+            time_sim.append(15 + random.uniform(-1.5, 1.5))
         elif corner == "medium":
             corner_speed = 150+ random.uniform(-25, 25)
-            time_sim.append(10 + random.uniform(-0.5, 0.5))
+            time_sim.append(10 + random.uniform(-1.5, 1.5))
         elif corner == "fast":
             corner_speed = 200+ random.uniform(-25, 25)
-            time_sim.append(7+ random.uniform(-0.5, 0.5))
+            time_sim.append(7+ random.uniform(-1.5, 1.5))
         speeds_on_exit_bot.append(corner_speed)
 
 
 
     turns = list(range(1, 16))
     fig, axs = plt.subplots(3, 1, figsize=(14, 10), sharex=True)
-
 # Time comparison
     axs[0].plot(turns, time_sim_player, label="Hráč – čas", marker='o', color='orange')
     axs[0].plot(turns, time_sim, label="Bot – čas", marker='o', color='blue')
     axs[0].set_ylabel("Čas [s]")
     axs[0].legend()
     axs[0].grid(True)
-
 # Speed comparison
     axs[1].plot(turns, speeds_on_exit_player, label="Výjezd hráč [km/h]", marker='o', color='green')
     axs[1].plot(turns, speeds_on_exit_bot, label="Výjezd bot [km/h]", marker='o', color='gray')
@@ -189,8 +208,8 @@ def technical_sector_sim(settings):
     axs[1].grid(True)
 
 # Understeer / Oversteer
-    axs[2].bar(turns, understeers_player, label="Nedotáčivost", color='purple', alpha=0.6)
-    axs[2].bar(turns, oversteers_player, bottom=understeers_player, label="Přetáčivost", color='red', alpha=0.6)
+    axs[2].bar(turns, understeers_player, label="Nedotáčivost", color='blue', alpha=0.6)
+    axs[2].bar(turns, oversteers_player, label="Přetáčivost", color='green', alpha=0.6)
     axs[2].set_ylabel("Chyby")
     axs[2].set_xlabel("Zatáčka")
     axs[2].legend()
@@ -923,7 +942,7 @@ while len(names_free_drivers) >= 0:
         training = input("Chceš trénink na rychlost [1] nebo kvalifikaci [2]: ")
         for x in range(3):
             print("Nastavení vozu. Máš tři pokusy")
-            print("Nastavujeme přední křídlo. Hodnota 0-11. Při menších rychlostech větší číslo. Snižuje understeer.")
+            print("Nastavujeme přední křídlo. Hodnota 0-11. Při menších rychlostech větší číslo. Snižuje understeer. Při dešti je větší číslo.")
             front_wing = int(input(f"Jak chceš nastavit přední křídlo? Minulá hodnota: {front_wing}\n"))
             if speed == "quick":
                 front_wing_ideal = random.randint(0, 4)
@@ -931,6 +950,10 @@ while len(names_free_drivers) >= 0:
                 front_wing_ideal = random.randint(4, 7) 
             else:
                front_wing_ideal = random.randint(6, 11)
+            if climax == "přechodný":
+                front_wing_ideal += random.randint(3,5)
+            if front_wing_ideal > 11:
+                front_wing_ideal = 11
             diff = front_wing_ideal - front_wing
             speed_in_training += diff
             if diff > 2 or diff < -2:
@@ -950,6 +973,10 @@ while len(names_free_drivers) >= 0:
                rear_wing_ideal = random.randint(4, 7) 
             else:
                 rear_wing_ideal = random.randint(6, 11)
+            if climax == "přechodný":
+                rear_wing_ideal += random.randint(3,5)
+            if rear_wing_ideal > 11:
+                rear_wing_ideal = 11
             diff = rear_wing_ideal - rear_wing
             speed_in_training += diff
             if diff > 2 or diff < -2:
@@ -1008,18 +1035,42 @@ while len(names_free_drivers) >= 0:
              #   medium_sector_sim(settings)
             #else:
             technical_sector_sim(settings)
-            if understeer_in_traning > 3 or oversteer_in_training > 3 or grip > 3 or curb_handling >3:
+            if understeer_in_traning > 3 :
                 for car in cars:
                     if car.is_player:
-                        car.safety_car_probability -= 800
-            if oversteer_in_training < -2 or oversteer_in_training < -2 or grip < -2 or curb_handling <-2:
+                        car.safety_car_probability -= understeer_in_traning*250
+            if oversteer_in_training > 3 :
                 for car in cars:
                     if car.is_player:
-                        car.safety_car_probability += 800
+                        car.safety_car_probability -= oversteer_in_training*250
+            if grip > 3 :
+                for car in cars:
+                    if car.is_player:
+                        car.safety_car_probability -= 250*grip
+            if curb_handling >3:
+                for car in cars:
+                    if car.is_player:
+                        car.safety_car_probability -= curb_handling*250     
+            if oversteer_in_training < -2 :
+                for car in cars:
+                    if car.is_player:
+                        car.safety_car_probability += oversteer_in_training*250
+            if oversteer_in_training < -2 :
+                for car in cars:
+                    if car.is_player:
+                        car.safety_car_probability += oversteer_in_training*250
+            if grip < -2:
+                for car in cars:
+                    if car.is_player:
+                        car.safety_car_probability += 250*grip
+            if curb_handling <-2:
+                for car in cars:
+                    if car.is_player:
+                        car.safety_car_probability += curb_handling*250     
             if oversteer_in_training + understeer_in_traning > 5:
                 for car in cars:
                     if car.is_player:
-                        car.safety_car_probability -= 400
+                        car.safety_car_probability -= (oversteer_in_training + understeer_in_traning)*150
             if speed_in_training + acceleration > 5:
                 speed_bonus = True
             else:
@@ -1041,6 +1092,11 @@ while len(names_free_drivers) >= 0:
             info(WETTINESS)
             for car in cars:
                 if weather == "slunečno":
+                    if car.safety_car_probability < 1:
+                        car.safety_car_probability = 200
+                    if random.randint(1,int((car.safety_car_probability/10))) == 1:
+                        car.time += random.randint(10, 55)
+                        print("Mistake from driver")
                     if random.randint(1, car.safety_car_probability) == 1:
                         if lap >= 3:
                             car.dnf = True
@@ -1066,6 +1122,7 @@ while len(names_free_drivers) >= 0:
                         "Radio: Big crash, bring the delta in check.",
                         "Radio: Watch the debris – SC deployed!"
                     ]))
+                        
             if SAFETY_CAR is True:
                 LAPS_REMAINING -=1
             if LAPS_REMAINING == 0:
