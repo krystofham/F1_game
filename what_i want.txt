@@ -1,5 +1,3 @@
- AI Personalities: Aggressive vs. conservative drivers with varying risk profiles (e.g., overtaking, pit strategy).
-
  Driver Fatigue & Morale System: Fatigue affects performance; morale changes with results.
 
  Team Orders: Implement team strategy decisions like letting one driver pass another.
@@ -11,8 +9,6 @@
 🌦️ Weather & Environment
  Live Weather Map: Sector-based déšť simulation (one sector mokré, others dry).
 
- Track Temperature: Affects weather degradation and strategy.
-
  Weather Radar forecast: With limited accuracy, requires guesswork.
 
 🔧 Simulation Mechanics
@@ -23,11 +19,7 @@
  Driver Skill Evolution Over Time: Drivers improve or decline during seasons.
 
 📊 Analytics & Visualization
- Lap Time Delta Chart: Compare lap times of selected drivers.
-
- Telemetry View: Sector speed, weather data, and pace graphs per lap.
-
- Interactive Strategy Dashboard: Click to change weather or pit strategy in real-time.
+ Working web with dashboard
 
 🛠️ Technical / Code Structure
  Modular Architecture: Split into race_engine, ui, drivers, teams, weather, etc.
@@ -36,22 +28,12 @@
 
  Replay System: Save and replay races.
 
-🌍 Multiplayer & Expansion
- Hotseat Multiplayer: Two human players alternating pit and weather decisions.
-
- Online Multiplayer: Socket-based simple multiplayer for race control.
-
- Career Mode: Start as a rookie team and build up over seasons.
-
- Fantasy League Mode: Manage a team like F1 Fantasy – select drivers, score points weekly.
-
 💾 Persistence & Storage
  Save/Load Feature: Resume unfinished seasons or races.
 
  Season History: Track results, stats, and performance by year.
 
  CSV/Excel Export: For standings, lap times, stints, weather usage.
- Více funkcí
 
 Meine improve
     Databáze JSON - řidiči a týmy
@@ -67,4 +49,4 @@ Meine improve
     auto vkstní dnf_probability
     záporný čas
     Zacyklení 1426
-    Understewrr se neukazuje, chci tam mít throtle
+    Understeer se neukazuje, chci tam mít throtle
