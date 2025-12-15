@@ -1450,7 +1450,8 @@ while len(names_free_drivers) >= 0:
             final = input("Do you want him? YES/NO?\n")
             if final == "YES":
                 change = input(f"Do you want him for {DRIVER_1} or {DRIVER_2}?\n")
-                while change !=DRIVER_1 or change !=DRIVER_2
+                while change !=DRIVER_1 or change !=DRIVER_2:
+                    change = input(f"Do you want him for {DRIVER_1} or {DRIVER_2}?\n")
                 new = best.name
                 skill = best.skill
                 if change == DRIVER_1:
