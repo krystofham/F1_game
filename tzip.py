@@ -24,7 +24,7 @@ understeer_flags = []
 for i, corner in enumerate(corners):
     typ = corner["type"]
 
-    # Nastav ideální čas podle typu zatáčky
+    # Nastav ideální time podle typu zatáčky
     if typ == "slow":
         base_time = 4.0
         grip_importance = 0.3
@@ -46,7 +46,7 @@ for i, corner in enumerate(corners):
     under = max(0, understeer_in_traning + random.randint(-1, 2))
     corner_penalty = (over + under) * 0.15
 
-    # Výpočet času v zatáčce podle setupu a typu
+    # Výpočet timeu v zatáčce podle setupu a typu
     time = base_time \
         - grip * grip_importance \
         - acceleration * accel_importance \
@@ -54,7 +54,7 @@ for i, corner in enumerate(corners):
         + corner_penalty \
         + random.uniform(-0.1, 0.1)
 
-    # Rychlost výjezdu ze zatáčky (čistě ilustrační)
+    # Rychlost exitu ze zatáčky (čistě ilustrační)
     exit_speed = 150 if typ == "slow" else 200 if typ == "medium" else 270
     exit_speed += speed_in_training * 2 - (over + under) * 2 + random.randint(-5, 5)
 
@@ -64,29 +64,29 @@ for i, corner in enumerate(corners):
     oversteer_flags.append(over)
     understeer_flags.append(under)
 
-# === 📊 GRAF 1: Čas v zatáčkách
+# === 📊 GRAF 1: time v zatáčkách
 plt.figure(figsize=(12, 6))
 plt.subplot(2, 1, 1)
-plt.plot(sector_times, marker='o', color='orange', label='Čas v zatáčce (s)')
-plt.axhline(y=3.0, color='green', linestyle='--', label='Referenční čas')
-plt.title("🕒 Čas v zatáčkách podle typu")
-plt.xlabel("Zatáčka (číslo)")
-plt.ylabel("Čas (s)")
+plt.plot(sector_times, marker='o', color='orange', label='time v zatáčce (s)')
+plt.axhline(y=3.0, color='green', linestyle='--', label='Referenční time')
+plt.title("🕒 time v zatáčkách podle typu")
+plt.xlabel("corner (číslo)")
+plt.ylabel("time (s)")
 plt.legend()
 plt.grid(True)
 
 # === 📊 GRAF 2: Rychlost + chyby
 plt.subplot(2, 1, 2)
-plt.plot(corner_speeds, marker='s', color='blue', label='Rychlost výjezdu (km/h)')
-plt.bar(range(len(corners)), oversteer_flags, color='red', alpha=0.5, label='Přetáčivost')
-plt.bar(range(len(corners)), understeer_flags, bottom=oversteer_flags, color='purple', alpha=0.5, label='Nedotáčivost')
+plt.plot(corner_speeds, marker='s', color='blue', label='Rychlost exitu (km/h)')
+plt.bar(range(len(corners)), oversteer_flags, color='red', alpha=0.5, label='oversteer')
+plt.bar(range(len(corners)), understeer_flags, bottom=oversteer_flags, color='purple', alpha=0.5, label='understeer')
 
 # Popisky zatáček (typy)
 corner_labels = [f"{i+1} ({c['type']})" for i, c in enumerate(corners)]
 plt.xticks(ticks=range(len(corners)), labels=corner_labels, rotation=45)
 
 plt.title("📈 Rychlost a chyby v zatáčkách")
-plt.xlabel("Zatáčka")
+plt.xlabel("corner")
 plt.ylabel("Rychlost / chyby")
 plt.legend()
 plt.grid(True)

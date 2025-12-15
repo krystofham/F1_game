@@ -1,13 +1,13 @@
  Driver Fatigue & Morale System: Fatigue affects performance; morale changes with results.
 
- Team Orders: Implement team strategy decisions like letting one driver pass another.
+ Team Orders: Implement team strategy decisions like letting one driver pass yesther.
 
  Mechanical Failures: Simulate engine, gearbox, or suspension failures beyond just weather issues.
 
  Overtaking Probability Based on Sector: Different overtaking chances per sector and DRS zones.
 
 🌦️ Weather & Environment
- Live Weather Map: Sector-based déšť simulation (one sector mokré, others dry).
+ Live Weather Map: Sector-based rain simulation (one sector wet, others dry).
 
  Weather Radar forecast: With limited accuracy, requires guesswork.
 
@@ -36,7 +36,7 @@
  CSV/Excel Export: For standings, lap times, stints, weather usage.
 
 Meine improve
-    Databáze JSON - řidiči a týmy
+    Databáze JSON - Driveri a týmy
     Radon + pylint + mccabe
     Dešt box problem AI
     Upozernění na těsné výsledky
@@ -46,7 +46,7 @@ Meine improve
     Dát soubor do více - rozdělit
     styl řízení jezdců
     nastavení vozu (chasis, etc.)
-    auto vkstní dnf_probability
+    car vkstní dnf_probability
     záporný čas
     Zacyklení 1426
     Understeer se neukazuje, chci tam mít throtle
