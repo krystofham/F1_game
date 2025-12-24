@@ -210,7 +210,7 @@ def technical_sector_sim(settings):
 # Understeer / Oversteer
     axs[2].bar(turns, understeers_player, label="understeer", color='blue', alpha=0.6)
     axs[2].bar(turns, oversteers_player, label="oversteer", color='green', alpha=0.6)
-    axs[2].set_ylabel("Chyby")
+    axs[2].set_ylabel("mistakes")
     axs[2].set_xlabel("corner")
     axs[2].legend()
     axs[2].grid(True)
@@ -630,7 +630,7 @@ class Car:
             else:
                 position = RANK.index(DRIVER_2) + 1 if DRIVER_2 in RANK else  COUNT_CARS
                 print(f"Driver 2 - {player_2.name}")
-            print(f"\n📊 Pozice: {position}. z {len(RANK)}")
+            print(f"\n📊 Position: {position}. z {len(RANK)}")
             fake_o = int((self.wear) - random.uniform(-4, 4))
             if fake_o < 0:
                 fake_o = 0
@@ -1242,7 +1242,7 @@ while len(names_free_drivers) >= 0:
         # Rank count
         position_1 = RANK.index(DRIVER_1) + 1 if DRIVER_1 in RANK else "DNF"
         position_2 = RANK.index(DRIVER_2) + 1 if DRIVER_2 in RANK else "DNF"
-        print("\n🏁 Finalní pozice:")
+        print("\n🏁 Finalní Position:")
         print(f"{DRIVER_1}: {position_1}. position")
         print(f"{DRIVER_2}: {position_2}. position")
         #time.sleep(4)
