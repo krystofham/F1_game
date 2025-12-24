@@ -41,7 +41,7 @@ Meine improve
     Dešt box problem AI
     Upozernění na těsné výsledky
     Trady mezi týmy
-    Když jsem poslední, ukazuje se delta za
+    Když jsem Last, ukazuje se delta za
     Biggest laps in history
     Dát soubor do více - rozdělit
     styl řízení jezdců

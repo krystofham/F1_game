@@ -312,7 +312,7 @@ def pit_player():
     pick = 1
     pick_2 = 1
     if player.dnf is False:
-        print("Akce: [1] continue [2] box for driver 1")
+        print("Action: [1] continue [2] box for driver 1")
         pick = input("> ").strip()
         if pick == "PNEUSTAV":
             print(player.pneu, round(player.wear, 2), "%")
@@ -329,7 +329,7 @@ def pit_player():
                 new = input("Invalid choice. Pick pneu for driver 1: [hard / medium / soft / wet / inter]\n")
             player.pit_stop(new)
     if player_2.dnf is False:
-        print("Akce: [1] continue [2] box for driver 2")
+        print("Action: [1] continue [2] box for driver 2")
         pick_2 = input("> ").strip()
         if pick == "PNEUSTAV":
             print(player_2.pneu, round(player_2.wear, 2), "%")
@@ -379,7 +379,7 @@ def strategy(LAPS, TIME_S1, TIME_S2, TIME_S3, pneu, speed):
     endurance_h =60/k_wear[0]*k_speed[0]
     wear = [endurance_h, endurance_m, endurance_s]
     name = ["hard", "Medium", "soft"]
-    print(f"soft vydrží {round(endurance_s, 1)}, medium {round(endurance_m, 1)}, hard {round(endurance_h, 1)}")
+    print(f"soft can do {round(endurance_s, 1)} laps, medium {round(endurance_m, 1)} laps, hard {round(endurance_h, 1)} laps")
     box_time = (100/60)
     if count_laps == 0:
         count_laps = 1
@@ -516,17 +516,17 @@ class Car:
             return
         
         if self.wear >= 100:
-            print(f"{self.name} – extrémní Wear! ❌")
+            print(f"{self.name} – extreme Wear! ❌")
             self.dnf = True
             return
 
-        if self.puncture:
-            print(f"{self.name} – defekt! ❌")
+        if self.puncture:   
+            print(f"{self.name} – puncture! ❌")
             SAFETY_CAR = True
             return SAFETY_CAR
             LAPS_REMAINING = random.randint(3,6)
         if self.wear > 80 and random.random() < 0.55:
-            print(f"{self.name} – defekt! ❌")
+            print(f"{self.name} – puncture! ❌")
             self.puncture = True
             self.dnf = True
             SAFETY_CAR = True
@@ -585,44 +585,44 @@ class Car:
             return None, False
         unava = self.wear
         zustava = max_laps - laps
-        idealni = self.vhodne_pneu(forecast[0])
+        ideal = self.vhodne_pneu(forecast[0])
         ideal_2 = self.vhodne_pneu(forecast[2])
 
         self.pit = False
-        if self.pneu not in idealni and self.pneu not in ideal_2 and zustava > 5:
+        if self.pneu not in ideal and self.pneu not in ideal_2 and zustava > 5:
             self.pit = True
         elif unava >= 80 and random.random() < 0.95:
             self.pit = True
-        elif unava > 90 or (self.pneu not in idealni and random.random() > 0.9):
+        elif unava > 90 or (self.pneu not in ideal and random.random() > 0.9):
             self.pit = True
         elif SAFETY_CAR and self.wear > 70 and zustava > 5:
             self.pit = True
         if forecast[3] == "transitional":
-            idealni = "soft"
+            ideal = "soft"
         elif forecast[0] in ["rain", "heavy rain"] and LAPS - lap < 70/k_wear[3] and forecast[2] == forecast[0]:
-            idealni = "wet"
+            ideal = "wet"
         elif forecast[0] in ["rain", "heavy rain"] and LAPS - lap < 70/k_wear[4] and forecast[2] == forecast[0]:
-            idealni = "inter"
+            ideal = "inter"
         elif forecast[0] == "sunny" and LAPS - lap < 70/k_wear[0] and forecast[2] == forecast[0]:
-            idealni = "hard"
+            ideal = "hard"
         elif forecast[0] == "sunny" and LAPS- lap < 70/k_wear[1] and forecast[2] == forecast[0]:
-            idealni = "medium"
+            ideal = "medium"
         elif forecast[0] == "sunny" and LAPS - lap < 70/k_wear[2] and forecast[2] == forecast[0]:
-            idealni = "soft"
+            ideal = "soft"
         elif forecast[0] in ["transitional", "sunny", "rain"] and forecast[3] in ["rain", "heavy rain"] or forecast[0] in ["rain", "heavy rain"] and forecast[2] == forecast[0] or forecast[2] in ["rain", "heavy rain"]:
-            idealni = random.choice(["wet" ,"wet" , "inter"])
+            ideal = random.choice(["wet" ,"wet" , "inter"])
         elif forecast[0] == "sunny" and forecast[2] == forecast[0]:
-            idealni = random.choice(["soft" , "medium", "hard", "medium", "hard"])
+            ideal = random.choice(["soft" , "medium", "hard", "medium", "hard"])
         elif forecast[0] in ["transitional", "sunny", "rain"] and forecast[3] in ["sunny"]:
-            idealni = random.choice(["soft" , "medium", "hard", "medium", "hard"])
-        return idealni if self.pit else None
+            ideal = random.choice(["soft" , "medium", "hard", "medium", "hard"])
+        return ideal if self.pit else None
     def player_info(self):
         if self.dnf is False:
             if SAFETY_CAR is True:
                 print(random.choice(["Still safety car", "Still spinning slowly lap by lap."]))
                 if self.wear > 60:
                     print(random.choice(["Why didn’t we pit? We’ve just thrown away the race.", "I had no grip even before the safety car!", "Come on! These weathers are dead — what are we doing?!", "Are we sure about staying out? Tyres are cooked."]))
-            print(f"\n🚗 Tvé car {self.name}")
+            print(f"\n🚗 Your car {self.name}")
             RANK = [a.name for a in cars if not a.dnf]     
             if DRIVER_1 == self.name:
                 position = RANK.index(DRIVER_1) + 1 if DRIVER_1 in RANK else COUNT_CARS
@@ -646,15 +646,15 @@ class Car:
                     car_za = cars[index]
                 difference = self.time - car_pred.time    
                 difference_2 = car_za.time - self.time
-                print(f"Delta před: {round(difference, 3)}s ({car_pred.team.name})| Delta za: {round(difference_2, 3)}s ({car_za.team.name})")
+                print(f"Delta in front: {round(difference, 3)}s ({car_pred.team.name})| Delta za: {round(difference_2, 3)}s ({car_za.team.name})")
             elif index == 0:
                 car_za = cars[index + 1]
                 difference_2 = car_za.time - self.time
-                print(f"Delta za: {round(difference_2, 3)}s ({car_za.team.name})")
+                print(f"Delta behind: {round(difference_2, 3)}s ({car_za.team.name})")
             else:
                 car_pred = len(cars)
                 difference = self.time - car_pred.time
-                print(f"Delta před: {round(difference, 3)}s ({car_pred.team.name})")
+                print(f"Delta in front: {round(difference, 3)}s ({car_pred.team.name})")
             if self.wear >= 70:
                 print(random.choice(["The tyres are pretty done now.", "I don´t know what are you doing there, but I am boxing. Or at least I wish.", "The tyres are ***!", "Please, take me out from this hell." "Please box, please."]))
         return 
@@ -847,14 +847,14 @@ create_team("VS racing 22",cars[20],cars[21], teams,                            
 create_team("PyCharm motors",cars[22],cars[23], teams,                          random.uniform(4,   6))
 create_team("Pixel motors",cars[24],cars[25], teams,                            random.uniform(4,   6))
 championship = ["AWS Grand Prix de Espana", "AirBNB Prague GP", "eBay Skyline Turkey GP","Java airlines Monza IBM Italy GP","HP Bulgarian GP","Python circuit Bahamas", "Ostrava Apple GP", "META China Grand Prix", "Sony Varsava Grand Prix", "LG TV Grand Prix du France", "Huawei GP SPA"]
-lenght = int(input("Jaká je délka šampionátu: "))
+lenght = int(input("What is the lenght of the championship: "))
 hi = len(championship) - lenght
 if hi > 0:
     for _ in range(hi):
         championship.pop(random.randint(0, len(championship)-1))
 season_count = 1
 while len(names_free_drivers) >= 0:
-    print(f"Sezóna {season_count}")
+    print(f"Season {season_count}")
     b = 1
     for race in championship:
         climax = random.choice(["transitional","sunny","sunny","sunny"])
@@ -904,7 +904,7 @@ while len(names_free_drivers) >= 0:
         weather_3 = generate_weather(weather_2)
         weather_4 = generate_weather(weather_3)
         forecast = [weather_1, weather_2, weather_3, weather_4]
-        print(f"Bude {climax}")
+        print(f"Will be {climax}")
         for x in forecast:
             print (f"weather: 🌤️ ☁️  {x}")
         for car in cars:
@@ -1082,12 +1082,12 @@ while len(names_free_drivers) >= 0:
             simulation.append((car, sim_time))
         simulation.sort(key=lambda x: x[1])
         for i, (car, sim_time) in enumerate(simulation):
-            penalizovany_time =  5 * i
-            car.time += penalizovany_time
+            penalized_time =  5 * i
+            car.time += penalized_time
         ######################################################################################################################################################################
         while lap <= LAPS:
             if lap == LAPS:
-                print("Poslední lap. Push push.")
+                print("Last lap. Push push.")
             info(WETTINESS)
             for car in cars:
                 if weather == "sunny":
@@ -1159,9 +1159,9 @@ while len(names_free_drivers) >= 0:
             #RANK = [a.name for a in cars if not a.dnf]
             WETTINESS = wet_track(weather_1, WETTINESS)
             #position = RANK.index(DRIVER_1) + 1 if DRIVER_1 in RANK else "DNF"
-            print(f"\n📊 Pořadí {DRIVER_1}: {position}. position from {len(RANK)}")
+            print(f"\n📊 Leaderboard {DRIVER_1}: {position}. position from {len(RANK)}")
             #position_2 = RANK.index(DRIVER_2) + 1 if DRIVER_2 in RANK else "DNF"
-            print(f"\n📊 Pořadí {DRIVER_2}: {position_2}. position from {len(RANK)}")
+            print(f"\n📊 Leaderboard {DRIVER_2}: {position_2}. position from {len(RANK)}")
             drivers_table()
             for car in cars:
                 car.simuluj_ai(training, WETTINESS)
@@ -1194,7 +1194,7 @@ while len(names_free_drivers) >= 0:
             forecast.append(generate_weather(weather_3))
             weather_4 = forecast[3]
             lap += 1
-        print("\n🏁 KONEC raceU!!")
+        print("\n🏁 END race!!")
         
         time_laps.sort()
         print(f"{time_laps[0][1]} ({time_laps[0][2].name}) has fastest lap: {round(time_laps[0][0], 3)}")
@@ -1269,8 +1269,8 @@ while len(names_free_drivers) >= 0:
         plt.figure(figsize=(12, 6))
         plt.barh(jmena[::-1], [c if c is not None else 0 for c in timey][::-1], color=colours[::-1])
         plt.xlabel("time (min)")
-        plt.ylabel("Driveri")
-        plt.title("🏁 Výsledky raceu")
+        plt.ylabel("Drivers")
+        plt.title("🏁 Výsledky race")
         plt.tight_layout()
         plt.show()
         plt.figure(figsize=(10, 6))
@@ -1353,7 +1353,7 @@ while len(names_free_drivers) >= 0:
                 swap = input(f"Do you want change {DRIVER_1} or {DRIVER_2}\n")
             tymy_ridic_1_trade = []
             tymy_ridic_2_trade = []
-            mozne_prestupy = []
+            possible_transfer = []
             for x in teams:
                 for y in cars:
                     if x.drivers[0] == y:
@@ -1368,7 +1368,7 @@ while len(names_free_drivers) >= 0:
                     print(f"For exchange of {DRIVER_1} has interest just few teams. For example:")
                     nahodny_ridic = teams[-1].drivers[random.choice[0,1]]
                     print(f"Option 1 {teams[-1].name} ({teams[-1].points} points) offers its pilot {nahodny_ridic.name}")
-                    mozne_prestupy.append(teams[-1])
+                    possible_transfer.append(teams[-1])
                 else:
                     print("There is a big interest for a driver. For example:")
                     
@@ -1376,28 +1376,28 @@ while len(names_free_drivers) >= 0:
                         if random.uniform(0, 1) > 0.7:
                             nahodny_ridic = x.drivers[random.choice([0,1])]
                             print(f"Option {number} {x.name} ({x.points} points) {nahodny_ridic.name}")
-                            mozne_prestupy.append(nahodny_ridic)
+                            possible_transfer.append(nahodny_ridic)
                             number +=1
                 for x in tymy_ridic_1_trade:
                     print(f"Option {number} {x.name} ({x.points} points) offers {x.drivers[0].name}")
-                    mozne_prestupy.append(x.drivers[0])
+                    possible_transfer.append(x.drivers[0])
                     number +=1
                 for x in tymy_ridic_2_trade:
                     print(f"Option {number} {x.name} ({x.points} points) offers {x.drivers[1].name}")
-                    mozne_prestupy.append(x.drivers[1])
+                    possible_transfer.append(x.drivers[1])
                     number+=1
                 new_pilot = input("What pilot do you want? NAME\n")
                 found = False
-                for x in mozne_prestupy:
+                for x in possible_transfer:
                     if x == new_pilot:
                         found = True
                 while not found:
                     new_pilot = input("What pilot do you want? NAME\n")
                     found = False
-                    for x in mozne_prestupy:
+                    for x in possible_transfer:
                         if x == new_pilot:
                             found = True
-                for x in mozne_prestupy:
+                for x in possible_transfer:
                     if x.name == new_pilot:
                         DRIVER_1 = x.name
                         player.name, x.name = x.name, player.name
@@ -1409,7 +1409,7 @@ while len(names_free_drivers) >= 0:
                     print(f"For exchange of {DRIVER_2} has interest just few teams. For example:")
                     nahodny_ridic = teams[-1].drivers[random.choice[0,1]]
                     print(f"Option 1 {teams[-1].name} ({teams[-1].points} points) offers its pilot {nahodny_ridic.name}")
-                    mozne_prestupy.append(teams[-1])
+                    possible_transfer.append(teams[-1])
                 else:
                     print("There is a big interest for a driver. For example:")
                     
@@ -1417,28 +1417,28 @@ while len(names_free_drivers) >= 0:
                         if random.uniform(0, 1) > 0.7:
                             nahodny_ridic = x.drivers[random.choice([0,1])]
                             print(f"Option {number} {x.name} ({x.points} points) {nahodny_ridic.name}")
-                            mozne_prestupy.append(nahodny_ridic)
+                            possible_transfer.append(nahodny_ridic)
                             number +=1
                 for x in tymy_ridic_1_trade:
                     print(f"Option {number} {x.name} ({x.points} points) offers {x.drivers[0].name}")
-                    mozne_prestupy.append(x.drivers[0])
+                    possible_transfer.append(x.drivers[0])
                     number +=1
                 for x in tymy_ridic_2_trade:
                     print(f"Option {number} {x.name} ({x.points} points) offers {x.drivers[1].name}")
-                    mozne_prestupy.append(x.drivers[1])
+                    possible_transfer.append(x.drivers[1])
                     number+=1
                 new_pilot = input("What pilot do you want? NAME\n")
                 found = False
-                for x in mozne_prestupy:
+                for x in possible_transfer:
                     if x == new_pilot:
                         found = True
                 while not found:
                     new_pilot = input("What pilot do you want? NAME\n")
                     found = False
-                    for x in mozne_prestupy:
+                    for x in possible_transfer:
                         if x == new_pilot:
                             found = True
-                for x in mozne_prestupy:
+                for x in possible_transfer:
                     if x.name == new_pilot:
                         DRIVER_2 = x.name
                         player_2.name, x.name = x.name, player_2.name
