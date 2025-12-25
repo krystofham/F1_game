@@ -174,3 +174,153 @@ def technical_sector_sim(settings):
 
     plt.tight_layout()
     plt.show()
+import random
+def training(speed, climax, cars):
+    speed_in_training = 0
+    understeer_in_traning = 0
+    oversteer_in_training = 0
+    acceleration = 0
+    grip = 0
+    curb_handling = 0
+    front_wing = None
+    rear_wing = None
+    brakes = None
+    stabilizators = None
+    suspension = None
+    training = input("Do you want training for speed [1] or qualification [2]: ")
+    for x in range(3):
+        print("Settings of the car. You have three attemps")
+        print("We are setting front wing. Value 0-11. Při menších rychlostech větší číslo. Lowers understeer. During rain bigger number.")
+        front_wing = int(input(f"How do you want to set the front wing? Last value: {front_wing}\n"))
+        if speed == "quick":
+            front_wing_ideal = random.randint(0, 4)
+        elif speed == "medium":
+            front_wing_ideal = random.randint(4, 7) 
+        else:
+            front_wing_ideal = random.randint(6, 11)
+        if climax == "transitional":
+            front_wing_ideal += random.randint(3,5)
+        if front_wing_ideal > 11:
+            front_wing_ideal = 11
+        diff = front_wing_ideal - front_wing
+        speed_in_training += diff
+        if diff > 2 or diff < -2:
+            oversteer_in_training -= diff
+        else:
+            oversteer_in_training += diff
+        understeer_in_traning -= diff
+        acceleration += diff
+        grip += diff
+
+
+        print("We are setting rear wing.")
+        rear_wing = int(input(f"How do you want to set the rear wing? Last value: {rear_wing}\n"))
+        if speed == "quick":
+            rear_wing_ideal = random.randint(0, 4)
+        elif speed == "medium":
+            rear_wing_ideal = random.randint(4, 7) 
+        else:
+            rear_wing_ideal = random.randint(6, 11)
+        if climax == "transitional":
+            rear_wing_ideal += random.randint(3,5)
+        if rear_wing_ideal > 11:
+            rear_wing_ideal = 11
+        diff = rear_wing_ideal - rear_wing
+        speed_in_training += diff
+        if diff > 2 or diff < -2:
+            oversteer_in_training -= diff
+        else:
+            oversteer_in_training += diff
+        understeer_in_traning -= diff
+        acceleration += diff
+        grip += diff
+
+
+        print("We are setting brakes.")
+        brakes = int(input(f"How do you want to set the brakes? 50 - 60. Lower number means bigger oversteer, bigger understeer Last value: {brakes} \n"))
+        brakes__ideal = random.randint (50, 60)
+        if brakes < 40 or brakes > 70:
+            brakes = 55
+        diff = brakes__ideal - brakes
+        understeer_in_traning += diff * 2
+        oversteer_in_training += diff *-2
+
+        print(f"We are setting anti-roll bars. 1 = softer, 2 = harder. If you have harder, the car is faster, but has lower grip. Last value: {stabilizators}")
+        stabilizators = int(input("What anti-roll bars do you want\n"))
+        if stabilizators == 1:
+            grip -= 2
+            curb_handling -=2
+            speed_in_training +=2
+            acceleration +=2
+        else:
+            grip += 2
+            curb_handling +=2
+            speed_in_training -=2
+            acceleration -=2
+
+
+        print("We are setting springs.")
+        suspension = int(input(f"What springs do you want? 1-hard 2-soft. Hards have better acceleration, lower grip, unstable car, bigger understeer a oversteer. Last value: {suspension}\n"))
+        if suspension == 1:
+            acceleration += 2
+            grip -=1
+            curb_handling -=2
+            oversteer_in_training -=1
+            understeer_in_traning -=1
+            speed_in_training +=3
+        else:
+            acceleration -= 2
+            grip +=1
+            curb_handling +=2
+            oversteer_in_training +=1
+            understeer_in_traning +=1
+            speed_in_training -=3
+
+        settings = [speed_in_training,understeer_in_traning,oversteer_in_training,acceleration,grip,curb_handling]
+        #if speed == "quick":
+            #   speed_sector_sim(settings)
+        #elif speed == "medium":    
+            #   medium_sector_sim(settings)
+        #else:
+        technical_sector_sim(settings)
+        if understeer_in_traning > 3 :
+            for car in cars:
+                if car.is_player:
+                    car.safety_car_probability -= understeer_in_traning*250
+        if oversteer_in_training > 3 :
+            for car in cars:
+                if car.is_player:
+                    car.safety_car_probability -= oversteer_in_training*250
+        if grip > 3 :
+            for car in cars:
+                if car.is_player:
+                    car.safety_car_probability -= 250*grip
+        if curb_handling >3:
+            for car in cars:
+                if car.is_player:
+                    car.safety_car_probability -= curb_handling*250     
+        if oversteer_in_training < -2 :
+            for car in cars:
+                if car.is_player:
+                    car.safety_car_probability += oversteer_in_training*250
+        if oversteer_in_training < -2 :
+            for car in cars:
+                if car.is_player:
+                    car.safety_car_probability += oversteer_in_training*250
+        if grip < -2:
+            for car in cars:
+                if car.is_player:
+                    car.safety_car_probability += 250*grip
+        if curb_handling <-2:
+            for car in cars:
+                if car.is_player:
+                    car.safety_car_probability += curb_handling*250     
+        if oversteer_in_training + understeer_in_traning > 5:
+            for car in cars:
+                if car.is_player:
+                    car.safety_car_probability -= (oversteer_in_training + understeer_in_traning)*150
+    if speed_in_training + acceleration > 5:
+        speed_bonus = True
+    else:
+        speed_bonus = False
+    return speed_bonus
