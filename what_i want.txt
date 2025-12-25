@@ -39,7 +39,7 @@ Meine improve
     Databáze JSON - Driveri a týmy
     Radon + pylint + mccabe
     Dešt box problem AI
-    Upozernění na těsné výsledky
+    Upozernění na těsné Results
     Trady mezi týmy
     Když jsem Last, ukazuje se delta za
     Biggest laps in history
