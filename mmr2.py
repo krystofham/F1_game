@@ -31,5 +31,5 @@ def simulate_season_mmr2(drivers):
 # Create a list of drivers with random experience
 list_drivers_mmr2 = [Drivermmr2(name, random.uniform(5.95, 8.05)) for name in drivers_mmr2]
 
-# Run the simulation
+# Run the simulationvypocitej_points
 best, worst = simulate_season_mmr2(list_drivers_mmr2)

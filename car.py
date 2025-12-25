@@ -58,7 +58,7 @@ class Car:
             LAPS_REMAINING = random.randint(3,6)
             return SAFETY_CAR
 
-        speed = self.efectivity_pneu(weather)
+        speed = self.efectivity_pneu(weather, PNEU_types)
         s1 = (TIME_S1*random.uniform(0.99, 1.01)+self.skills/2+self.team.skill/2)/ speed
         s2 = (TIME_S2*random.uniform(0.99, 1.01)+self.skills/2+self.team.skill/2)/ speed
         s3 = (TIME_S3*random.uniform(0.99, 1.01)+self.skills/2+self.team.skill/2)/ speed
@@ -193,12 +193,12 @@ class Car:
                 self.drs = True
         return self.time, self.drs
 
-    def simuluj_ai(self, training, WETTINESS, lap, LAPS, forecast, weather):
+    def simuluj_ai(self, training, WETTINESS, lap, LAPS, forecast, weather, laps, max_laps, k_wear, wettiness, TIME_S1, TIME_S2, TIME_S3, speed_bonus, time_laps, PNEU_types):
         if self.is_player is False:
-            new_pneu = self.choose_ai(lap, LAPS, forecast)
+            new_pneu = self.choose_ai(laps, max_laps, forecast, LAPS, lap, k_wear)
             if new_pneu:
                 self.pit_stop(new_pneu)
-        self.simuluj_lap(weather, training, WETTINESS)
+        self.simuluj_lap(weather, training, wettiness, TIME_S1, TIME_S2, TIME_S3, speed_bonus, time_laps, PNEU_types)
     def vhodne_pneu(self, weather):
         if weather in ["heavy rain", "rain"]:
             best_pneu = ["wet", "inter"]
