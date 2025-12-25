@@ -1,81 +1,6 @@
-import random
-import matplotlib.pyplot as plt
-import matplotlib.image as mpimg
-from printing_info import pit_player, info, drivers_table
-from simulating_sectors import technical_sector_sim
-from strategy import strategy
-from mmr2 import *
-from track import *
-from team import *
-from car import *
-from weather import wet_track, generate_weather
+from init import *
 random.seed()
 #import csv
-RANK = 0
-WETTINESS = 0
-names_free_drivers = [    "Maximilian Becker", "Santiago Cruz",   "Oliver Wright", "Hiroshi Takeda",     "Sebastian Fontaine", "Mateo Silva",     "Jonas Lindberg", "Ivan Kuznetsov",     "Lorenzo Bianchi", "Connor Mitchell",    "Rafael Ortega", "Tobias Schmidt",     "Yuto Nakamura", "Charles Lambert",     "Gabriel Costa", "Andrei Petrescu",    "Lutime Meyer", "Zhang Wei",     "Finn Gallagher", "Ricardo Santos", "Micheal Unide", "Tsu tsei chui", "Simon Lambert", "Sven Olisson", "Albert McHugh"]
-TIME_S1 = 15
-TIME_S2 = 23
-TIME_S3 = 22
-time_laps = []
-LAPS = 0
-LAPS_REMAINING = 0
-DRIVER_1 = "Max Vershaeren"
-DRIVER_2 = "Kim Nguyen"
-TEAM_PLAYER = "MySql AWS Maxim racing team"
-COUNT_CARS = 28
-SAFETY_CAR = False
-WEATHER_TYPES = ["sunny", "transitional", "rain", "heavy rain"]
-pneu_colours = {
-    "hard": "gray",
-    "medium": "yellow",
-    "soft": "red",
-    "inter": "green",
-    "wet": "deepskyblue"
-}
-
-def colours_graphs():
-    for c in cars:
-        if c.dnf:
-            colours.append("red")
-        elif c.pneu.lower() == "hard":
-            colours.append("gray")
-        elif c.pneu.lower() == "medium":
-            colours.append("yellow")
-        elif c.pneu.lower() == "soft":
-            colours.append("red")
-        elif c.pneu.lower() == "wet":
-            colours.append("blue")
-        elif c.pneu.lower() == "inter":
-            colours.append("green")
-        else:
-            colours.append("green")  
-    return colours
-
-
-def reset_race():
-    global lap, time_laps, SAFETY_CAR, LAPS_REMAINING, forecast, weather
-    lap = 0
-    time_laps = []
-    SAFETY_CAR = False
-    LAPS_REMAINING = 0
-    weather = "sunny"
-    forecast = [generate_weather(weather, climax)]
-    for _ in range(3):
-        forecast.append(generate_weather(forecast[-1]))
-    for a in cars:
-        a.time = 0
-        a.dnf = False
-        a.wear = 0
-        a.position = []
-        a.puncture = False
-        a.box = 0
-        a.stints = []
-        a.last_stint_start = 0
-    return lap, time_laps, SAFETY_CAR, LAPS_REMAINING, weather, forecast, cars
-
-
-
 drivers = ["Alex Storme","Matteo Blaze","Hiro Tanaka","Lukas Rennhardt","Diego Ventura","Aiden Falk","Pierre Lucien","Nilapsai Vetrovski","Riku Yamashita","Carlos Navarro","Johan Reißer","Theo Hartman","Enzo DaCosta","Sebastian Krell","Marco Falcone","Ivan Vasiliev","Tyler Quinn","Jae-Min Han","Felipe Marquez","Elias Northgate","Arjun Desai","Tomás Moreira","Leo Krüger","Mikhail Antonov","Julian Stroud","Renzo Morandi"]
 x = 0
 cars = []
@@ -386,10 +311,10 @@ while len(names_free_drivers) >= 0:
             for car in cars:
             # sem patří tvůj kód
                 if car.is_player:
-                    car.player_info()
+                    car.player_info(cars, DRIVER_1, COUNT_CARS, player, DRIVER_2,player_2)
 
             cars.sort(key=lambda x: (x.dnf, x.time))
-            car.drss()
+            car.drss(cars)
 
             for i, car in enumerate(cars):
                 if i > 0:
@@ -420,7 +345,7 @@ while len(names_free_drivers) >= 0:
             print(f"\n📊 Leaderboard {DRIVER_2}: {position_2}. position from {len(RANK)}")
             drivers_table(cars, COUNT_CARS)
             for car in cars:
-                car.simuluj_ai(training, WETTINESS)
+                car.simuluj_ai(training, WETTINESS, lap, LAPS, forecast, weather, laps=LAPS, max_laps=lap, k_wear=k_wear, wettiness=WETTINESS, TIME_S1=TIME_S1, TIME_S2=TIME_S2, TIME_S3=TIME_S3, speed_bonus= speed_bonus, time_laps=time_laps, PNEU_types=PNEU_types)
             boxy_po_teamu = {}
             for a in cars:
                 if not a.is_player and a.pit: 
@@ -516,7 +441,7 @@ while len(names_free_drivers) >= 0:
         timey = [a.time/60 if not a.dnf else None for a in cars]
         # colours podle pneu
         colours = []
-        colours_graphs()
+        colours_graphs(cars, colours)
         # Last stint for every car
         for a in cars:
             if not a.dnf:
@@ -554,7 +479,7 @@ while len(names_free_drivers) >= 0:
         plt.grid(True)
         plt.tight_layout()
         plt.show()
-        reset_race()
+        reset_race(climax, cars)
         b += 1
     print("\n🏁 Drivers at the end of championship:")
     best, worst = simulate_season_mmr2(list_drivers_mmr2)
