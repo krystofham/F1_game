@@ -1,6 +1,14 @@
 import random
 import matplotlib.pyplot as plt
 import matplotlib.image as mpimg
+from printing_info import pit_player, info, drivers_table
+from simulating_sectors import technical_sector_sim
+from strategy import strategy
+from mmr2 import *
+from track import *
+from team import *
+from car import *
+from weather import wet_track, generate_weather
 random.seed()
 #import csv
 RANK = 0
@@ -16,7 +24,7 @@ DRIVER_1 = "Max Vershaeren"
 DRIVER_2 = "Kim Nguyen"
 TEAM_PLAYER = "MySql AWS Maxim racing team"
 COUNT_CARS = 28
-
+SAFETY_CAR = False
 WEATHER_TYPES = ["sunny", "transitional", "rain", "heavy rain"]
 pneu_colours = {
     "hard": "gray",
@@ -25,198 +33,6 @@ pneu_colours = {
     "inter": "green",
     "wet": "deepskyblue"
 }
-def wet_track(weather, wettiness):
-    if weather == "heavy rain":
-        wettiness += 30
-    if weather == "rain":
-        wettiness += 20
-    if weather == "transitional":
-        if wettiness < 60:
-            wettiness += 10
-        elif wettiness >40:  
-            wettiness -= 10
-    if weather == "sunny":
-        wettiness -= 20
-    if wettiness > 100:
-        wettiness = 100
-    if wettiness < 0:
-        wettiness = 0
-    return wettiness
-
-def technical_sector_sim(settings):
-    speed_in_training = settings[0]/10
-    understeer_in_traning = settings[1]/5
-    oversteer_in_training = settings[2]/5
-    acceleration = settings[3]/10
-    grip = settings[4]/5
-    curb_handling = settings[5]/5
-    my_time = 30
-    my_time -= (grip + acceleration + oversteer_in_training + understeer_in_traning + speed_in_training + curb_handling)
-            
-    corner_slow = [1, 3, 5, 9, 11, 15]
-    corner_medium =  [2, 6, 7, 12, 13]
-    corner_fast = [4, 8, 10, 14]
-    speeds_on_exit_player = []
-    oversteers_player = []
-    understeers_player = []
-    time_sim_player = []
-    for x in range(1, 16):
-        chance_mistake = (settings[1] + settings[2]) * -1
-        if chance_mistake < 1:
-            chance_mistake = 1
-        if random.randint(0, 100) < chance_mistake:
-            mistake = True
-        else:
-            mistake = False
-        for y in corner_fast:
-            if x == y:
-                corner = "fast"
-        for y in corner_medium:
-            if x ==y:
-                corner = "medium"
-        for y in corner_slow:
-            if x==y:
-                corner = "slow"
-        under = settings[1]*random.uniform(0.98,1.02)
-        over = settings[2]*random.uniform(0.98,1.02)
-        bonus_time = 0
-        if corner == "slow":
-            corner_speed = 100+ random.uniform(-5, 5)
-            if under > 2:
-                corner_speed -= 10*under
-                bonus_time += 2
-            if over > 2:
-                corner_speed -= 10*over
-                bonus_time += 2
-            if grip < -1:
-                under += settings[1]*grip*2
-                if under <0:
-                    under *= -1
-                over += settings[2]*grip
-                if over <0:
-                    over *= -1
-            if curb_handling <-5:
-                under += settings[1]*grip
-                if under <0:
-                    under *= -1
-                over += settings[2]*grip*2
-                if over <0:
-                    over *= -1
-            time_sim_player.append(15 + under + over+ bonus_time)
-        elif corner == "medium":
-            corner_speed = 150+ random.uniform(-5, 5)
-            if under > 2:
-                corner_speed -= 30*under
-                bonus_time += 2
-            if over > 2:
-                corner_speed -= 30*over
-                bonus_time += 2
-            if grip < -4:
-                under += settings[1]*grip*2
-                if under <0:
-                    under *= -1
-                over += settings[2]*grip
-                if over <0:
-                    over *= -1
-            if curb_handling <-4:
-                under += settings[1]*grip
-                if under <0:
-                    under *= -1
-                over += settings[2]*grip*2
-                if over <0:
-                    over *= -1
-            time_sim_player.append(10 + under + over+ bonus_time)
-        elif corner == "fast":
-            corner_speed = 200+ random.uniform(-5, 5)
-            if under > 2:
-                corner_speed -= 30*under
-                bonus_time += 2
-            if over > 2:
-                corner_speed -= 30*over
-                bonus_time += 2
-            if grip < -5:
-                under += settings[1]*grip*2
-                if under <0:
-                    under *= -1
-                over += settings[2]*grip
-                if over <0:
-                    over *= -1
-            if curb_handling <-2:
-                under += settings[1]*grip
-                if under <0:
-                    under *= -1
-                over += settings[2]*grip*2
-                if over <0:
-                    over *= -1
-            time_sim_player.append(7 + under + over + bonus_time)
-        if corner_speed < 0:
-            corner_speed = 0
-        speed_on_exit = corner_speed +speed_in_training*10+10* acceleration
-
-        if mistake:
-            speed_on_exit = 30
-            under = 10
-            over = 10
-        if speed_on_exit <0:
-            speed_on_exit *=-1
-        speeds_on_exit_player.append(speed_on_exit)
-        understeers_player.append(under)
-        oversteers_player.append(over)
-
-
-
-    speeds_on_exit_bot = []
-    time_sim = []
-    for x in range(1, 16):
-        for y in corner_fast:
-            if x == y:
-                corner = "fast"
-        for y in corner_medium:
-            if x ==y:
-                corner = "medium"
-        for y in corner_slow:
-            if x==y:
-                corner = "slow"
-        under = 0
-        over = 0
-        if corner == "slow":
-            corner_speed = 100+ random.uniform(-25, 25)
-            time_sim.append(15 + random.uniform(-1.5, 1.5))
-        elif corner == "medium":
-            corner_speed = 150+ random.uniform(-25, 25)
-            time_sim.append(10 + random.uniform(-1.5, 1.5))
-        elif corner == "fast":
-            corner_speed = 200+ random.uniform(-25, 25)
-            time_sim.append(7+ random.uniform(-1.5, 1.5))
-        speeds_on_exit_bot.append(corner_speed)
-
-
-
-    turns = list(range(1, 16))
-    fig, axs = plt.subplots(3, 1, figsize=(14, 10), sharex=True)
-# Time comparison
-    axs[0].plot(turns, time_sim_player, label="player – time", marker='o', color='orange')
-    axs[0].plot(turns, time_sim, label="Bot – time", marker='o', color='blue')
-    axs[0].set_ylabel("time [s]")
-    axs[0].legend()
-    axs[0].grid(True)
-# Speed comparison
-    axs[1].plot(turns, speeds_on_exit_player, label="exit player [km/h]", marker='o', color='green')
-    axs[1].plot(turns, speeds_on_exit_bot, label="exit bot [km/h]", marker='o', color='gray')
-    axs[1].set_ylabel("Speed [km/h]")
-    axs[1].legend()
-    axs[1].grid(True)
-
-# Understeer / Oversteer
-    axs[2].bar(turns, understeers_player, label="understeer", color='blue', alpha=0.6)
-    axs[2].bar(turns, oversteers_player, label="oversteer", color='green', alpha=0.6)
-    axs[2].set_ylabel("mistakes")
-    axs[2].set_xlabel("corner")
-    axs[2].legend()
-    axs[2].grid(True)
-
-    plt.tight_layout()
-    plt.show()
 
 def colours_graphs():
     for c in cars:
@@ -235,59 +51,8 @@ def colours_graphs():
         else:
             colours.append("green")  
     return colours
-def info(WETTINESS):
-    forecast = [weather_1, weather_2, weather_3, weather_4]
-    if lap == 0:
-        print(f"Qualification | Actual weather: {weather}")
-    else:
-        print(f"\n🌤️  lap {lap}/{LAPS} | Actual weather: {weather}")
-    if WETTINESS > 0:
-        print(f"Wet track {WETTINESS}%")
-    if random.randint(1, 10) < 8:
-        print(f"🔮 Forecast: {', '.join(forecast)}")
-        if weather_1 == "sunny" and weather_4 in ["rain", "heavy rain"]:
-            print(random.choice(["We’re monitoring the weather, expect rain in 3 laps.", "Rain is coming in now, you should start thinking about wet tires soon.", "Rain intensity increasing, we expect full wet conditions in the next 3 laps."]))
-            print(random.choice(["Copy that, adjusting my pace.", "Understood, I’m keeping an eye on it.","OK"]))
-    else:
-        fake = [generate_weather(weather) for _ in range(4)]
-        print(f"🔮 Forecast: {', '.join(fake)}")
-        if fake[0] == "sunny" and fake[3] in ["rain", "heavy rain"]:
-            print(random.choice(["We’re monitoring the weather, expect rain in 3 laps.", "Rain is coming in now, you should start thinking about wet tires soon.", "Rain intensity increasing, we expect full wet conditions in the next 3 laps."]))
-            print(random.choice(["Copy that, adjusting my pace.", "Understood, I’m keeping an eye on it.","OK"]))
-    return forecast
-def generate_weather(weather):
-    if climax == "transitional":
-        if weather == "sunny":
-            weather = random.choice(["sunny", "sunny","sunny","sunny", "sunny", "sunny","sunny","sunny","sunny", "sunny","sunny","sunny", "sunny", "sunny","sunny","sunny","sunny", "sunny","sunny","sunny", "sunny", "sunny","sunny","sunny", "sunny", "sunny","sunny","sunny", "transitional"])
-        elif weather == "transitional":
-            weather = random.choice(["sunny", "transitional", "transitional","transitional","rain"])
-        elif weather == "rain":
-            weather = random.choice(["transitional", "rain", "rain", "rain", "rain", "rain", "rain", "rain", "rain", "rain", "heavy rain"])
-        elif weather == "heavy rain":
-            weather = random.choice(["rain", "rain", "heavy rain", "heavy rain", "heavy rain", "heavy rain", "heavy rain", "heavy rain", "heavy rain", "heavy rain"])
-    if climax == "sunny":
-        weather = "sunny"
-    return weather
-SAFETY_CAR = False
-def drivers_table():
-    for i, a in enumerate(cars[:6], 1):
-        if a.dnf:
-            status = COUNT_CARS        
-        status = round(a.time, 3)
-        if i == 1:
-            status_1 = round(status/60, 3)
-            print(f"{i}. {a.name} – {status} min")
-            heloo = round(a.wear) * random.uniform(0.9, 1.1)
-            heloo = round(heloo, 1)
-            print(f"Number of pit stops: {a.box}| Wear: {heloo}%")
-            status_1 = round(status, 3)
-        else:
-            distance = round(status - status_1, 3)
-            print(f"{i}. {a.name} + {distance} s")
-            heloo = round(a.wear) * random.uniform(0.9, 1.1)
-            heloo = round(heloo, 1)
-            print(f"Number of pit stops: {a.box}| Wear: {heloo}%")
-            status_1 = status
+
+
 def reset_race():
     global lap, time_laps, SAFETY_CAR, LAPS_REMAINING, forecast, weather
     lap = 0
@@ -295,7 +60,7 @@ def reset_race():
     SAFETY_CAR = False
     LAPS_REMAINING = 0
     weather = "sunny"
-    forecast = [generate_weather(weather)]
+    forecast = [generate_weather(weather, climax)]
     for _ in range(3):
         forecast.append(generate_weather(forecast[-1]))
     for a in cars:
@@ -308,514 +73,9 @@ def reset_race():
         a.stints = []
         a.last_stint_start = 0
     return lap, time_laps, SAFETY_CAR, LAPS_REMAINING, weather, forecast, cars
-def pit_player():
-    pick = 1
-    pick_2 = 1
-    if player.dnf is False:
-        print("Action: [1] continue [2] box for driver 1")
-        pick = input("> ").strip()
-        if pick == "PNEUSTAV":
-            print(player.pneu, round(player.wear, 2), "%")
-            player.time += 2
-        if pick == "PNEUSAFE":
-            print("PNEUSAFE active for 1 lap")
-            player.wear -= 1
-            player.time += 3
-        if pick == "2":
-            print("Pick pneu for driver 1: [hard / medium / soft / wet / inter]")
-            strategy(LAPS-lap, TIME_S1, TIME_S2, TIME_S3, pneu, speed)                
-            new = input("> ").strip().lower()
-            while new not in PNEU_types:
-                new = input("Invalid choice. Pick pneu for driver 1: [hard / medium / soft / wet / inter]\n")
-            player.pit_stop(new)
-    if player_2.dnf is False:
-        print("Action: [1] continue [2] box for driver 2")
-        pick_2 = input("> ").strip()
-        if pick == "PNEUSTAV":
-            print(player_2.pneu, round(player_2.wear, 2), "%")
-            player_2.time += 2
-        if pick == "PNEUSAFE":
-            print("PNEUSAFE active for 1 lap")
-            player.wear -= 1
-            player.time += 3
-        if pick_2 == "2":
-            print("Pick pneu for driver 2: [hard / medium / soft / wet / inter]")
-            strategy(LAPS-lap, TIME_S1, TIME_S2, TIME_S3, pneu, speed)  
-            new = input("> ").strip().lower()
-            while new not in PNEU_types:
-                new = input("Invalid choice. Pick pneu for driver 1: [hard / medium / soft / wet / inter]\n")
-            player_2.pit_stop(new)
-    if player.dnf is True or player_2.dnf is True:
-        if pick == "2" and pick_2 == "2":
-            print(random.choice(["Box now, double stack. Maintain gap, all planned.",  "Box, box, double stack! Close gap, no mistakes!",  "Box this lap, we’re double stacking. Maintain delta, we’ve got margin.",  "Plan B, box now. You’ll be second in the stack, minimal delay expected.",  "Box this lap for double stack. First car in now, stand by for release.",  "Box this lap, we are double stacking. Pit crew is prepped for both."]))
-            print( "Copy. Keeping gap, I’m right za.",  "Understood. Staying tight.",  "Copy. I’m ready.",  "Confirmed. I’ll hit my marks.")
-            player.time += 3
-            player_2.time += 3
-        elif pick_2 == "2" and pick != "2":
-            print(random.choice(["Box, box. Box this lap. Tyres ready, confirm entry.",  "Pit window is open. Box this lap for new weathers.",  "Box now. Hitting your marks is critical.",  "Box, box. Tyre temps look good — execute clean entry.",  "Pit this lap. We’re switching compound."]))
-            print(random.choice([ "Copy. In this lap.",  "Understood. Coming in.",  "On my way in.", "Copy. Box, box",  "Copy, box this lap.", "Copy, confirmed."]))
-        elif pick == "2" and pick_2 != "2":
-            print(random.choice(["Box, box. Box this lap. Tyres ready, confirm entry.",  "Pit window is open. Box this lap for new weathers.",  "Box now. Hitting your marks is critical.",  "Box, box. Tyre temps look good — execute clean entry.",  "Pit this lap. We’re switching compound."]))
-            print(random.choice([ "Copy. In this lap.",  "Understood. Coming in.",  "On my way in.", "Copy. Box, box",  "Copy, box this lap.", "Copy, confirmed."]))
-def strategy(LAPS, TIME_S1, TIME_S2, TIME_S3, pneu, speed):
-    count_laps = LAPS
-    if count_laps < 2:
-        count_laps == 3
-    lap_time = (TIME_S1 + TIME_S2 + TIME_S3)/60
-    if pneu == "medium":
-        k_wear = [1.5,5,9,4.4,8.4]
-    elif pneu == "soft":
-        k_wear = [2,7,12,5,9]       
-    else:
-        k_wear = [1,4,7,4,8]
-    if speed == "medium":
-        k_speed = [1,1.04,1.08,0.6,0.65]
-    elif speed == "quick":
-        k_speed = [1.05,1.09,1.13,0.65,0.7]
-    else:
-        k_speed = [0.95,0.99,1.03,0.55,0.6]
-    endurance_s = 60/k_wear[2]*k_speed[2]
-    endurance_m = 60/k_wear[1]*k_speed[1]
-    endurance_h =60/k_wear[0]*k_speed[0]
-    wear = [endurance_h, endurance_m, endurance_s]
-    name = ["hard", "Medium", "soft"]
-    print(f"soft can do {round(endurance_s, 1)} laps, medium {round(endurance_m, 1)} laps, hard {round(endurance_h, 1)} laps")
-    box_time = (100/60)
-    if count_laps == 0:
-        count_laps = 1
-    for i, stint in enumerate(wear, 0):
-        if count_laps + 4 < wear[i] < count_laps +20:
-            remain = wear[i] - count_laps
-            average_speed = (wear[i] - remain)*k_speed[i]/count_laps
-            time = round((lap_time*LAPS)/average_speed, 2)
-
-            print(f"Possible strategy - {round(stint, 0)} laps - {time} minutes - {name[i]}")
 
 
 
-    for i in range(len(wear)):
-        if count_laps + 4 < wear[i] + wear[0] < count_laps +20:
-            remain = wear[i] + wear[0]- count_laps
-            countlapsendurance2 = wear[0] - remain
-            average_speed = (k_speed[i]*wear[i] + countlapsendurance2*k_speed[0])/count_laps
-            time = round(((lap_time*LAPS)/average_speed) + box_time, 2)
-            if countlapsendurance2 > 0:
-                print(f"Possible strategy - {round(wear[i] + wear[0],0)} laps - {time} minutes - {name[i]}, {name[0]}")
-        if count_laps + 4 < wear[i] + wear[1]  < count_laps +20:
-            remain = wear[i] + wear[1]- count_laps
-            countlapsendurance2 = wear[1] - remain
-            average_speed = (k_speed[i]*wear[i] + countlapsendurance2*k_speed[1])/count_laps
-            time = round(((lap_time*LAPS)/average_speed) + box_time, 2)
-            if countlapsendurance2 > 0:
-                print(f"Possible strategy - {round(wear[i] + wear[1],0)} laps - {time} minutes - {name[i]}, {name[1]}")
-        if count_laps + 4 < wear[i] + wear[2]  < count_laps +20:
-            remain = wear[i]+ wear[2] - count_laps
-            countlapsendurance2 = wear[2] - remain
-            average_speed = (k_speed[i]*wear[i] + countlapsendurance2*k_speed[2])/count_laps
-            time = round(((lap_time*LAPS)/average_speed) + box_time, 2)
-            if countlapsendurance2 > 0:
-                print(f"Possible strategy - {round(wear[i] + wear[2], 0)} laps - {time} minutes - {name[i]}, {name[2]}")
-    for i in range(len(wear)):
-        for j in range(len(wear)):
-            if count_laps + 4 <wear[i] + wear[j] + wear[0]  < count_laps +20:
-                remain = wear[i] + wear[j]  + wear[0] - count_laps
-                countlapsendurance2 = wear[0] - remain
-                average_speed = (k_speed[i]*wear[i] + k_speed[j]*wear[j]+ countlapsendurance2*k_speed[0])/count_laps
-                time = round((lap_time*LAPS/average_speed) + box_time*2, 2)
-                if countlapsendurance2 > 0:
-                    print(f"Possible strategy - {round(wear[i] + wear[j] + wear[0], 0)} laps - {round(lap_time*(wear[i] + wear[j]+wear[0]) + box_time*2, 0)} minutes - {name[i]}, {name[j]}, {name[0]}")
-            if count_laps + 4 <wear[i] + wear[j] + wear[1]  < count_laps +20:
-                remain = wear[i] + wear[j]  + wear[1]- count_laps
-                countlapsendurance2 = wear[1] - remain
-                average_speed = (k_speed[i]*wear[i] + k_speed[j]*wear[j]+ countlapsendurance2*k_speed[1])/count_laps
-                time = round(((lap_time*LAPS)/average_speed) + box_time*2, 2)
-                if countlapsendurance2 > 0:
-                    print(f"Possible strategy - {round(wear[i] + wear[j] + wear[1], 0)} laps - {round(lap_time*(wear[i] + wear[j]+wear[1]) + box_time*2, 0)} minutes - {name[i]}, {name[j]}, {name[1]}")
-            if count_laps + 4 <wear[i] + wear[j] + wear[2]  < count_laps +20:
-                remain = wear[i] + wear[j] + wear[2]- count_laps
-                countlapsendurance2 = wear[2] - remain
-                average_speed = (k_speed[i]*wear[i] + k_speed[j]*wear[j]+ countlapsendurance2*k_speed[2])/count_laps
-                time =  round(((lap_time*LAPS)/average_speed) + box_time*2, 2)
-                if countlapsendurance2 > 0:
-                    print(f"Possible strategy - {round(wear[i] + wear[j] + wear[2], 0)} laps - {time} minutes - {name[i]}, {name[j]}, {name[2]}")
-drivers_mmr2 = [
-    "Noah Blake", "Felipe Sandoval", "Luca Moretti", "Brian Chen", "Adam Kerdöl", "Pierre Gauthier",
-    "Viktor Orlov", "Daisuke Tanaka", "Elias Müller", "Jordan Evans", "Diego Ramirez", "Anton Petrov",
-    "Kenji Nakamura", "Nicolas Dubois", "Thomas Fischer", "Miguel Lopéz", "Alexei Solapov", "Ethan Zhang",
-    "Leo Harrington", "Marco Silva"
-]
-
-# Class to represent each driver
-class Drivermmr2:
-    def __init__(self, name, skill):
-        self.name = name
-        self.skill = skill
-        self.time = 0.0
-
-# Function to simulate the season
-def simulate_season_mmr2(drivers):
-    for driver in drivers:
-        for lap in range(50*12):  # For 50 laps per race For 12 races
-            driver.time += driver.skill * random.uniform(0.98, 1.02)  # Add time based on experience
-    
-    # Sort drivers by their time (lower is better)
-    mmr2_sorted = sorted(drivers, key=lambda x: x.time)
-    
-    # Best driver is the one with the lowest time
-    best = mmr2_sorted[0]
-    # Worst driver is the one with the highest time
-    worst = mmr2_sorted[-1]  
-    
-    return best, worst
-
-# Create a list of drivers with random experience
-list_drivers_mmr2 = [Drivermmr2(name, random.uniform(5.95, 8.05)) for name in drivers_mmr2]
-
-# Run the simulation
-best, worst = simulate_season_mmr2(list_drivers_mmr2)
-
-class Car:
-    def __init__(self, name, skill, is_player=False):
-        self.name = name
-        self.box = 0
-        self.stints = []  
-        self.position = []
-        self.last_stint_start = 0 
-        self.is_player = is_player
-        self.pneu = random.choice(["medium", "hard"])
-        self.wear = 0.0
-        self.safety_car_probability = 0
-        self.skills = skill
-        self.time = 0.0
-        self.points = 0
-        self.drs = False
-        self.team = None
-        self.dnf = False
-        self.puncture = False
-
-    def efectivity_pneu(self, weather):
-        if isinstance(self.pneu, list):
-            self.pneu = self.pneu[0]
-
-        base = PNEU_types[self.pneu]["speed"]
-
-        if weather in ["rain", "heavy rain"] and self.pneu not in ["wet", "inter"]:
-            base *= 0.3
-        if weather == "heavy rain" and self.pneu not in ["wet", "inter"]:
-            base *= 0.2
-        if weather == "sunny" and self.pneu in ["wet", "inter"]:
-            base *= 0.5
-
-        return base
-
-
-    def simuluj_lap(self, weather, training, wettiness):
-        global SAFETY_CAR
-        global LAPS_REMAINING
-        if self.dnf:
-            return
-        
-        if self.wear >= 100:
-            print(f"{self.name} – extreme Wear! ❌")
-            self.dnf = True
-            return
-
-        if self.puncture:   
-            print(f"{self.name} – puncture! ❌")
-            SAFETY_CAR = True
-            return SAFETY_CAR
-            LAPS_REMAINING = random.randint(3,6)
-        if self.wear > 80 and random.random() < 0.55:
-            print(f"{self.name} – puncture! ❌")
-            self.puncture = True
-            self.dnf = True
-            SAFETY_CAR = True
-            LAPS_REMAINING = random.randint(3,6)
-            return SAFETY_CAR
-
-        speed = self.efectivity_pneu(weather)
-        s1 = (TIME_S1*random.uniform(0.99, 1.01)+self.skills/2+self.team.skill/2)/ speed
-        s2 = (TIME_S2*random.uniform(0.99, 1.01)+self.skills/2+self.team.skill/2)/ speed
-        s3 = (TIME_S3*random.uniform(0.99, 1.01)+self.skills/2+self.team.skill/2)/ speed
-        if SAFETY_CAR:
-            s1 = s1*2.5
-            s2 = s2*2.5
-            s3 = s3*2.5
-        if self.drs:
-            s1 = s1 - random.uniform(0.5, 0.7)
-            s2 = s2 - random.uniform(0.5, 0.7)
-            s3 = s3 - random.uniform(0.5, 0.7)
-        if training == "1":
-            s1 = s1 - random.uniform(0.1, 0.3)
-            s2 = s2 - random.uniform(0.1, 0.3)
-            s3 = s3 - random.uniform(0.1, 0.3)
-        if speed_bonus:
-            s1 = s1 - random.uniform(0.3, 0.5)
-            s2 = s2 - random.uniform(0.3, 0.5)
-            s3 = s3 - random.uniform(0.3, 0.5)
-        if wettiness < 30 and self.pneu not in ["soft", "medium", "hard"]:
-            s1 = s1+wettiness/2
-            s2 = s2+wettiness/2
-            s3 = s3+wettiness/2
-        if wettiness > 55 and self.pneu not in ["wet" , "inter"]:
-            s1 = s1+wettiness/2
-            s2 = s2+wettiness/2
-            s3 = s3+wettiness/2
-        lap_time = s1 + s2 + s3
-        time_laps.append((lap_time, self.name, self.team, s1, s2, s3))
-        self.time = self.time + self.wear/8 + lap_time
-        self.wear += PNEU_types[self.pneu]["wear"]
-        prirustek = PNEU_types[self.pneu]["wear"] * random.uniform(0, 0.4)
-        self.wear += prirustek
-    def pit_stop(self, new_pneu):
-        if not self.dnf:
-            self.stints.append((self.last_stint_start, self.time - self.last_stint_start, self.pneu))
-        if SAFETY_CAR is True:
-            self.time += 50
-        else: 
-            self.time += 100
-        self.box += 1
-        self.last_pneu = self.pneu
-        self.pneu = new_pneu
-        self.wear = 0
-        self.last_stint_start = self.time  
-
-    def choose_ai(self, laps, max_laps, forecast):
-        if self.dnf:
-            return None, False
-        unava = self.wear
-        zustava = max_laps - laps
-        ideal = self.vhodne_pneu(forecast[0])
-        ideal_2 = self.vhodne_pneu(forecast[2])
-
-        self.pit = False
-        if self.pneu not in ideal and self.pneu not in ideal_2 and zustava > 5:
-            self.pit = True
-        elif unava >= 80 and random.random() < 0.95:
-            self.pit = True
-        elif unava > 90 or (self.pneu not in ideal and random.random() > 0.9):
-            self.pit = True
-        elif SAFETY_CAR and self.wear > 70 and zustava > 5:
-            self.pit = True
-        if forecast[3] == "transitional":
-            ideal = "soft"
-        elif forecast[0] in ["rain", "heavy rain"] and LAPS - lap < 70/k_wear[3] and forecast[2] == forecast[0]:
-            ideal = "wet"
-        elif forecast[0] in ["rain", "heavy rain"] and LAPS - lap < 70/k_wear[4] and forecast[2] == forecast[0]:
-            ideal = "inter"
-        elif forecast[0] == "sunny" and LAPS - lap < 70/k_wear[0] and forecast[2] == forecast[0]:
-            ideal = "hard"
-        elif forecast[0] == "sunny" and LAPS- lap < 70/k_wear[1] and forecast[2] == forecast[0]:
-            ideal = "medium"
-        elif forecast[0] == "sunny" and LAPS - lap < 70/k_wear[2] and forecast[2] == forecast[0]:
-            ideal = "soft"
-        elif forecast[0] in ["transitional", "sunny", "rain"] and forecast[3] in ["rain", "heavy rain"] or forecast[0] in ["rain", "heavy rain"] and forecast[2] == forecast[0] or forecast[2] in ["rain", "heavy rain"]:
-            ideal = random.choice(["wet" ,"wet" , "inter"])
-        elif forecast[0] == "sunny" and forecast[2] == forecast[0]:
-            ideal = random.choice(["soft" , "medium", "hard", "medium", "hard"])
-        elif forecast[0] in ["transitional", "sunny", "rain"] and forecast[3] in ["sunny"]:
-            ideal = random.choice(["soft" , "medium", "hard", "medium", "hard"])
-        return ideal if self.pit else None
-    def player_info(self):
-        if self.dnf is False:
-            if SAFETY_CAR is True:
-                print(random.choice(["Still safety car", "Still spinning slowly lap by lap."]))
-                if self.wear > 60:
-                    print(random.choice(["Why didn’t we pit? We’ve just thrown away the race.", "I had no grip even before the safety car!", "Come on! These weathers are dead — what are we doing?!", "Are we sure about staying out? Tyres are cooked."]))
-            print(f"\n🚗 Your car {self.name}")
-            RANK = [a.name for a in cars if not a.dnf]     
-            if DRIVER_1 == self.name:
-                position = RANK.index(DRIVER_1) + 1 if DRIVER_1 in RANK else COUNT_CARS
-                print(f"Driver 1 - {player.name}")
-            else:
-                position = RANK.index(DRIVER_2) + 1 if DRIVER_2 in RANK else  COUNT_CARS
-                print(f"Driver 2 - {player_2.name}")
-            print(f"\n📊 Position: {position}. z {len(RANK)}")
-            fake_o = int((self.wear) - random.uniform(-4, 4))
-            if fake_o < 0:
-                fake_o = 0
-            print(f"🛞  Pneu: {self.pneu} | Wear: {fake_o}%")
-            index = cars.index(self)
-            difference = 0
-            difference_2 = 0
-            if 0 < index < len(cars):
-                car_pred = cars[index - 1]
-                if index + 1 < len(cars):
-                    car_za = cars[index + 1]
-                else:
-                    car_za = cars[index]
-                difference = self.time - car_pred.time    
-                difference_2 = car_za.time - self.time
-                print(f"Delta in front: {round(difference, 3)}s ({car_pred.team.name})| Delta za: {round(difference_2, 3)}s ({car_za.team.name})")
-            elif index == 0:
-                car_za = cars[index + 1]
-                difference_2 = car_za.time - self.time
-                print(f"Delta behind: {round(difference_2, 3)}s ({car_za.team.name})")
-            else:
-                car_pred = len(cars)
-                difference = self.time - car_pred.time
-                print(f"Delta in front: {round(difference, 3)}s ({car_pred.team.name})")
-            if self.wear >= 70:
-                print(random.choice(["The tyres are pretty done now.", "I don´t know what are you doing there, but I am boxing. Or at least I wish.", "The tyres are ***!", "Please, take me out from this hell." "Please box, please."]))
-        return 
-    def drss(self):
-        for i in range(1, len(cars)): 
-            current_time = self.time  
-            previous_time = cars[i-1].time 
-            time_difference = current_time - previous_time
-
-            if time_difference < 1:
-                self.drs = True
-        return self.time, self.drs
-
-    def simuluj_ai(self, training, WETTINESS):
-        if self.is_player is False:
-            new_pneu = self.choose_ai(lap, LAPS, forecast)
-            if new_pneu:
-                self.pit_stop(new_pneu)
-        self.simuluj_lap(weather, training, WETTINESS)
-    def vhodne_pneu(self, weather):
-        if weather in ["heavy rain", "rain"]:
-            best_pneu = ["wet", "inter"]
-        elif weather == "transitional":
-            best_pneu = ["wet", "inter", "soft", "medium", "hard"]
-        else:
-            best_pneu =  ["soft", "medium", "hard"]
-        return best_pneu
-    def vypocitej_points_jezdec(self, RANK):
-        if self.dnf is False:
-            position = RANK.index(self.name) + 1
-            if position == 1:
-                self.points += 50
-            elif position == 2:
-                self.points += 45
-            elif position == 3:
-                self.points += 40
-            elif position == 4:
-                self.points += 35
-            elif position == 5:
-                self.points += 30
-            elif position == 6:
-                self.points += 25
-            elif position == 7:
-                self.points += 22
-            elif position == 8:
-                self.points += 20
-            elif position == 9:
-                self.points += 18
-            elif position == 10:
-                self.points += 15
-            elif position == 11:
-                self.points += 12
-            elif position == 12:
-                self.points += 10
-            elif position == 13:
-                self.points += 9
-            elif position == 14:
-                self.points += 8
-            elif position == 15:
-                self.points += 7
-            elif position == 16:
-                self.points += 6
-            elif position == 17:
-                self.points += 5
-            elif position == 18:
-                self.points += 4
-            elif position == 19:
-                self.points += 3
-            elif position == 20:
-                self.points += 2
-            elif position == 21:
-                self.points += 1
-            elif position == 22:
-                self.points += 1
-            elif position == 23:
-                self.points += 1
-class Team:
-    def __init__(self, name, skill):
-        self.name = name
-        self.skill = skill
-        self.drivers = [] 
-        self.points = 0   
-
-    def pridej_jezdce(self, car):
-        self.drivers.append(car)
-        car.team = self
-
-    def vypocitej_points(self, RANK):
-        for jezdec in self.drivers:
-            if jezdec.name in RANK:
-                position = RANK.index(jezdec.name) + 1
-            else:
-                position = COUNT_CARS
-            if position == 1:
-                self.points += 50
-            elif position == 2:
-                self.points += 45
-            elif position == 3:
-                self.points += 40
-            elif position == 4:
-                self.points += 35
-            elif position == 5:
-                self.points += 30
-            elif position == 6:
-                self.points += 25
-            elif position == 7:
-                self.points += 22
-            elif position == 8:
-                self.points += 20
-            elif position == 9:
-                self.points += 18
-            elif position == 10:
-                self.points += 15
-            elif position == 11:
-                self.points += 12
-            elif position == 12:
-                self.points += 10
-            elif position == 13:
-                self.points += 9
-            elif position == 14:
-                self.points += 8
-            elif position == 15:
-                self.points += 7
-            elif position == 16:
-                self.points += 6
-            elif position == 17:
-                self.points += 5
-            elif position == 18:
-                self.points += 4
-            elif position == 19:
-                self.points += 3
-            elif position == 20:
-                self.points += 2
-            elif position == 21:
-                self.points += 1
-            elif position == 22:
-                self.points += 1
-            elif position == 23:
-                self.points += 1
-class Track:
-    def __init__(self, name, pneu, speed, TIME_S1, TIME_S2, TIME_S3, laps, dnf_probability):
-        self.name = name
-        self.pneu = pneu
-        self.speed = speed
-        self.TIME_S1 = TIME_S1
-        self.TIME_S2 = TIME_S2
-        self.TIME_S3 = TIME_S3
-        self.laps = laps
-        self.dnf_probability = dnf_probability
-tracks = []
-tracks.append(Track("Huawei GP SPA", "hard", "quick", 22, 25, 18, 70, 4500))
-tracks.append(Track("LG TV Grand Prix du France", "hard", "slow", 26, 19, 22, 74, 4500))
-tracks.append(Track("Sony Varsava Grand Prix","hard", "medium", 35, 18, 24, 62, 5000))
-tracks.append(Track("META China Grand Prix", "medium", "slow", 25, 34, 30, 56, 4500))
-tracks.append(Track("Ostrava Apple GP", "medium", "quick", 20, 26, 18, 67, 4500))
-tracks.append(Track("Python circuit Bahamas", "hard", "medium", 25, 23, 38, 72, 5000))
-tracks.append(Track("HP Bulgarian GP", "medium", "medium", 23, 29, 20, 60, 5000))
-tracks.append(Track("AWS Grand Prix de Espana", "medium", "quick", 26, 31, 16, 51, 6000))
-tracks.append(Track("AirBNB Prague GP", "soft", "quick", 20, 33, 40, 42, 4500))
-tracks.append(Track("eBay Skyline Turkey GP","medium", "slow", 27, 24, 36, 49, 4900))
-tracks.append(Track("Java airlines Monza IBM Italy GP","soft", "quick", 30, 16, 18, 50, 5100))
 drivers = ["Alex Storme","Matteo Blaze","Hiro Tanaka","Lukas Rennhardt","Diego Ventura","Aiden Falk","Pierre Lucien","Nilapsai Vetrovski","Riku Yamashita","Carlos Navarro","Johan Reißer","Theo Hartman","Enzo DaCosta","Sebastian Krell","Marco Falcone","Ivan Vasiliev","Tyler Quinn","Jae-Min Han","Felipe Marquez","Elias Northgate","Arjun Desai","Tomás Moreira","Leo Krüger","Mikhail Antonov","Julian Stroud","Renzo Morandi"]
 x = 0
 cars = []
@@ -825,13 +85,7 @@ player = Car(DRIVER_1, random.uniform(5, 6), is_player=True)
 cars.append(player)
 player_2 = Car(DRIVER_2, random.uniform(5, 6), is_player=True)
 cars.append(player_2)
-teams = []
-def create_team(TEAM_PLAYER, player_1, player_2, teams, skill):
-    tym = Team(TEAM_PLAYER, skill)
-    tym.pridej_jezdce(player_1)
-    tym.pridej_jezdce(player_2)
-    teams.append(tym)
-    return tym
+
 create_team(TEAM_PLAYER, player, player_2, teams,                               random.uniform(5,   6))
 create_team("Scuderia Python", cars[0], cars[1], teams,                         random.uniform(4,   6.9))
 create_team("Racing 404",cars[2],cars[3], teams,                                random.uniform(4.5, 6))
@@ -846,6 +100,8 @@ create_team("AMD Assemblyte GP",cars[18],cars[19], teams,                       
 create_team("VS racing 22",cars[20],cars[21], teams,                            random.uniform(4,   6))
 create_team("PyCharm motors",cars[22],cars[23], teams,                          random.uniform(4,   6))
 create_team("Pixel motors",cars[24],cars[25], teams,                            random.uniform(4,   6))
+
+
 championship = ["AWS Grand Prix de Espana", "AirBNB Prague GP", "eBay Skyline Turkey GP","Java airlines Monza IBM Italy GP","HP Bulgarian GP","Python circuit Bahamas", "Ostrava Apple GP", "META China Grand Prix", "Sony Varsava Grand Prix", "LG TV Grand Prix du France", "Huawei GP SPA"]
 lenght = int(input("What is the lenght of the championship: "))
 hi = len(championship) - lenght
@@ -899,10 +155,10 @@ while len(names_free_drivers) >= 0:
             weather = random.choice(WEATHER_TYPES)
         if weather in ('rain', 'heavy rain'):
             WETTINESS = 100
-        weather_1 = generate_weather(weather)
-        weather_2 = generate_weather(weather_1)
-        weather_3 = generate_weather(weather_2)
-        weather_4 = generate_weather(weather_3)
+        weather_1 = generate_weather(weather, climax)
+        weather_2 = generate_weather(weather_1, climax)
+        weather_3 = generate_weather(weather_2, climax)
+        weather_4 = generate_weather(weather_3, climax)
         forecast = [weather_1, weather_2, weather_3, weather_4]
         print(f"Will be {climax}")
         for x in forecast:
@@ -1088,7 +344,7 @@ while len(names_free_drivers) >= 0:
         while lap <= LAPS:
             if lap == LAPS:
                 print("Last lap. Push push.")
-            info(WETTINESS)
+            info(WETTINESS, forecast, lap, weather, LAPS, climax)
             for car in cars:
                 if weather == "sunny":
                     if car.safety_car_probability < 1:
@@ -1149,7 +405,7 @@ while len(names_free_drivers) >= 0:
                             cars[i], cars[i - 1] = cars[i - 1], cars[i]
             cars.sort(key=lambda x: (x.dnf, x.time))
 
-            pit_player()
+            pit_player(player, player_2, LAPS, lap, TIME_S1, TIME_S2, TIME_S3, pneu, speed, PNEU_types)
             cars.sort(key=lambda x: (x.dnf, x.time))
             RANK = [a.name for a in cars if not a.dnf]  # Move this line here
             position = RANK.index(DRIVER_1) + 1 if DRIVER_1 in RANK else COUNT_CARS
@@ -1162,7 +418,7 @@ while len(names_free_drivers) >= 0:
             print(f"\n📊 Leaderboard {DRIVER_1}: {position}. position from {len(RANK)}")
             #position_2 = RANK.index(DRIVER_2) + 1 if DRIVER_2 in RANK else "DNF"
             print(f"\n📊 Leaderboard {DRIVER_2}: {position_2}. position from {len(RANK)}")
-            drivers_table()
+            drivers_table(cars, COUNT_CARS)
             for car in cars:
                 car.simuluj_ai(training, WETTINESS)
             boxy_po_teamu = {}
@@ -1186,12 +442,12 @@ while len(names_free_drivers) >= 0:
                     position = COUNT_CARS  
                 a.position.append(position)  # Add position
 
-            # posun weather
+            # move weather
             weather = forecast.pop(0)
             weather_1 = forecast[0]
             weather_2 = forecast[1]
             weather_3 = forecast[2]
-            forecast.append(generate_weather(weather_3))
+            forecast.append(generate_weather(weather_3, climax))
             weather_4 = forecast[3]
             lap += 1
         print("\n🏁 END race!!")
@@ -1237,7 +493,7 @@ while len(names_free_drivers) >= 0:
             driver.vypocitej_points_jezdec(RANK)
             driver.skills -= 0.01
         for team in teams:
-            team.vypocitej_points(RANK)
+            team.vypocitej_points(RANK,COUNT_CARS)
         points = sorted(teams, key=lambda x: (x.points))
         # Rank count
         position_1 = RANK.index(DRIVER_1) + 1 if DRIVER_1 in RANK else "DNF"
