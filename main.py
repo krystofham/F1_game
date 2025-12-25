@@ -51,7 +51,7 @@ def technical_sector_sim(settings):
     grip = settings[4]/5
     curb_handling = settings[5]/5
     my_time = 30
-    my_time -= grip + acceleration + oversteer_in_training + understeer_in_traning + speed_in_training + curb_handling
+    my_time -= (grip + acceleration + oversteer_in_training + understeer_in_traning + speed_in_training + curb_handling)
             
     corner_slow = [1, 3, 5, 9, 11, 15]
     corner_medium =  [2, 6, 7, 12, 13]
@@ -203,7 +203,7 @@ def technical_sector_sim(settings):
 # Speed comparison
     axs[1].plot(turns, speeds_on_exit_player, label="exit player [km/h]", marker='o', color='green')
     axs[1].plot(turns, speeds_on_exit_bot, label="exit bot [km/h]", marker='o', color='gray')
-    axs[1].set_ylabel("Rychlost [km/h]")
+    axs[1].set_ylabel("Speed [km/h]")
     axs[1].legend()
     axs[1].grid(True)
 
@@ -1074,7 +1074,7 @@ while len(names_free_drivers) >= 0:
                 speed_bonus = True
             else:
                 speed_bonus = False
-        #Quali
+        #Qualification
         for car in cars:
             sim_time = TIME_S1 * random.uniform(0.9, 1.1) + TIME_S2 * random.uniform(0.9, 1.1) + TIME_S3 * random.uniform(0.9, 1.1)
             if car.is_player and training == "2":
@@ -1270,7 +1270,7 @@ while len(names_free_drivers) >= 0:
         plt.barh(jmena[::-1], [c if c is not None else 0 for c in timey][::-1], color=colours[::-1])
         plt.xlabel("time (min)")
         plt.ylabel("Drivers")
-        plt.title("🏁 Výsledky race")
+        plt.title("🏁 Results of race")
         plt.tight_layout()
         plt.show()
         plt.figure(figsize=(10, 6))
