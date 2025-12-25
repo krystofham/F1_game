@@ -106,17 +106,9 @@ while len(names_free_drivers) >= 0:
                     c.pneu = random.choice(["soft", "inter"])
         simulation = []
         #Training
-        speed_bonus = training(speed, climax, cars)
+        speed_bonus, training_type = training(speed, climax, cars)
         #Qualification
-        for car in cars:
-            sim_time = TIME_S1 * random.uniform(0.9, 1.1) + TIME_S2 * random.uniform(0.9, 1.1) + TIME_S3 * random.uniform(0.9, 1.1)
-            if car.is_player and training == "2":
-                sim_time = sim_time/1.5 
-            simulation.append((car, sim_time))
-        simulation.sort(key=lambda x: x[1])
-        for i, (car, sim_time) in enumerate(simulation):
-            penalized_time =  5 * i
-            car.time += penalized_time
+        simulation = qualification(simulation, cars, TIME_S1, TIME_S2, TIME_S3, training_type)
         ######################################################################################################################################################################
         while lap <= LAPS:
             if lap == LAPS:
@@ -197,7 +189,7 @@ while len(names_free_drivers) >= 0:
             print(f"\n📊 Leaderboard {DRIVER_2}: {position_2}. position from {len(RANK)}")
             drivers_table(cars, COUNT_CARS)
             for car in cars:
-                car.simuluj_ai(training, WETTINESS, lap, LAPS, forecast, weather, laps=LAPS, max_laps=lap, k_wear=k_wear, wettiness=WETTINESS, TIME_S1=TIME_S1, TIME_S2=TIME_S2, TIME_S3=TIME_S3, speed_bonus= speed_bonus, time_laps=time_laps, PNEU_types=PNEU_types)
+                car.simuluj_ai(training_type, WETTINESS, lap, LAPS, forecast, weather, laps=LAPS, max_laps=lap, k_wear=k_wear, wettiness=WETTINESS, TIME_S1=TIME_S1, TIME_S2=TIME_S2, TIME_S3=TIME_S3, speed_bonus= speed_bonus, time_laps=time_laps, PNEU_types=PNEU_types)
             boxy_po_teamu = {}
             for a in cars:
                 if not a.is_player and a.pit: 
@@ -227,112 +219,10 @@ while len(names_free_drivers) >= 0:
             forecast.append(generate_weather(weather_3, climax))
             weather_4 = forecast[3]
             lap += 1
-        print("\n🏁 END race!!")
-        
-        time_laps.sort()
-        print(f"{time_laps[0][1]} ({time_laps[0][2].name}) has fastest lap: {round(time_laps[0][0], 3)}")
-        for a in cars:
-            a.skills -= 0.01
-        sector_1 = min(time_laps, key=lambda x: x[3])
-        sector_2 = min(time_laps, key=lambda x: x[4])
-        sector_3 = min(time_laps, key=lambda x: x[5])
-
-        print(f"{sector_1[1]} ({sector_1[2].name}) has fastest sector 1 {round(sector_1[3], 3)}")
-        print(f"{sector_2[1]} ({sector_2[2].name}) has fastest sector 2 {round(sector_2[4], 3)}")
-        print(f"{sector_3[1]} ({sector_3[2].name}) has fastest sector 3 {round(sector_3[5], 3)}")
-
-        time_laps[0][2].points += 2
-        for d in range(len(time_laps)):
-            if time_laps[d][1] == player.name:
-                print(f"{time_laps[d][1]} ({time_laps[d][2].name}) has fastest lap {round(time_laps[d][0], 3)}, sector 1 {round(time_laps[d][3], 3)}, sector 2 {round(time_laps[d][4], 3)}, sector 3 {round(time_laps[d][5], 3)}")
-                break
-        for d in range(len(time_laps)):
-            if time_laps[d][1] == player_2.name:
-                print(f"{time_laps[d][1]} ({time_laps[d][2].name}) has fastest lap {round(time_laps[d][0], 3)}, sector 1 {round(time_laps[d][3], 3)}, sector 2 {round(time_laps[d][4], 3)}, sector 3 {round(time_laps[d][5], 3)}")
-                break
-        #time.sleep(6)
-        #
-        ## Import to CSV
-        #with open("vysledky_zavodu.csv", "w", newline="", encoding="utf-8") as file:
-        #    writer = csv.writer(file)
-        #    writer.writerow(["Rank", "Jezdec", "time (min)", "Počet pit stopů", "DNF", "Stinty"])
-        #    for i, a in enumerate(cars, 1):
-        #        time = round(a.time / 60, 2) if not a.dnf else "DNF"
-        #        stint_popis = "; ".join(
-        #            [f"{round(start/60, 1)}–{round((start+doba)/60, 1)}min: {typ}" for start, doba, typ in a.stints]
-        #        )
-        #        writer.writerow([i, a.name, time, a.box, a.dnf, stint_popis])
-
-
-        # Make sure, list is without dnf
-        RANK = [a.name for a in cars if not a.dnf]
-        for driver in cars:
-            driver.vypocitej_points_jezdec(RANK)
-            driver.skills -= 0.01
-        for team in teams:
-            team.vypocitej_points(RANK,COUNT_CARS)
-        points = sorted(teams, key=lambda x: (x.points))
-        # Rank count
-        position_1 = RANK.index(DRIVER_1) + 1 if DRIVER_1 in RANK else "DNF"
-        position_2 = RANK.index(DRIVER_2) + 1 if DRIVER_2 in RANK else "DNF"
-        print("\n🏁 Finalní Position:")
-        print(f"{DRIVER_1}: {position_1}. position")
-        print(f"{DRIVER_2}: {position_2}. position")
-        #time.sleep(4)
-        # Results
-        cars.sort(key=lambda x: (x.dnf, x.time))
-        for i, a in enumerate(cars, 1):
-            stav = "DNF" if a.dnf else f"{round(a.time, 2)}s"
-            print(f"{i}. {a.name} ({a.team.name}) {a.points} body")
-        teams.sort(key=lambda team: team.points, reverse=True)
-        #time.sleep(8)
-        for i, team in enumerate(teams,1):
-            print (f"{i}.{team.name} {team.points} body")
-        #time.sleep(8)
-        jmena = [a.name for a in cars]
-        timey = [a.time/60 if not a.dnf else None for a in cars]
-        # colours podle pneu
-        colours = []
-        colours_graphs(cars, colours)
-        # Last stint for every car
-        for a in cars:
-            if not a.dnf:
-                a.stints.append((a.last_stint_start, a.time - a.last_stint_start, a.pneu))
-        # Print graph
-        plt.figure(figsize=(12, 6))
-        plt.barh(jmena[::-1], [c if c is not None else 0 for c in timey][::-1], color=colours[::-1])
-        plt.xlabel("time (min)")
-        plt.ylabel("Drivers")
-        plt.title("🏁 Results of race")
-        plt.tight_layout()
-        plt.show()
-        plt.figure(figsize=(10, 6))
-        for a in cars:
-            plt.plot(range(1, len(a.position) + 1), a.position, label=a.name)
-
-        plt.gca().invert_yaxis()  # cause first place is the best
-        plt.xlabel("lap")
-        plt.ylabel("Position")
-        plt.title("Position during race")
-        plt.legend()
-        plt.grid(True)
-        plt.tight_layout()
-        plt.show()
-        plt.figure(figsize=(10, 6))
-        players = [player, player_2]
-        for a in players:
-            plt.plot(range(len(a.position)), a.position, label=a.name)
-
-        plt.gca().invert_yaxis()  # cause first place is the best
-        plt.xlabel("lap")
-        plt.ylabel("Position")
-        plt.title("Position during race")
-        plt.legend()
-        plt.grid(True)
-        plt.tight_layout()
-        plt.show()
-        reset_race(climax, cars)
-        b += 1
+        teams, cars, time_laps = post_race_info(time_laps, player, player_2, cars, teams, COUNT_CARS)
+        points, cars, teams, players = plot_graph(RANK, DRIVER_1, DRIVER_2, teams, cars, player, player_2, climax)
+        lap, time_laps, SAFETY_CAR, LAPS_REMAINING, weather, forecast, cars, WETTINESS = reset_race(climax, cars)
+        b+=1
     print("\n🏁 Drivers at the end of championship:")
     best, worst = simulate_season_mmr2(list_drivers_mmr2)
     season_count +=1
@@ -343,7 +233,7 @@ while len(names_free_drivers) >= 0:
     worst.name, worst.skill = random_name, random.uniform(0.95,1.05)
     cars.sort(key=lambda x: x.points, reverse=True)
     for i, a in enumerate(cars, 1):
-        print(f"{i}. {a.name} – {a.points} body ({a.team.name})")
+        print(f"{i}. {a.name} – {a.points} points ({a.team.name})")
         if i == len(cars):
             new = best.name
             skill = best.skill
@@ -366,7 +256,7 @@ while len(names_free_drivers) >= 0:
             plt.imshow(img)
             plt.axis('off')  # Optional: hides axis for image display
             plt.show()
-        print(f"{i}. {t.name} – {t.points} body")
+        print(f"{i}. {t.name} – {t.points} points")
         if i == len(teams):
             t.skill -=1
     answear = input("Important question")
@@ -374,127 +264,7 @@ while len(names_free_drivers) >= 0:
         answear = input("Important question")
     new_pilot = input("Do you want new pilot? YES/NO\n").lower()   
     if new_pilot == "yes":
-        new_pilot = input("Do you want z MMR1 nebo MMR2?\n")
-        if new_pilot == "MMR1":
-            average_skill = 0
-            for x in cars:
-                average_skill += x.skills
-            average_skill = average_skill/(len(cars) +1)
-            swap = input(f"Do you want change {DRIVER_1} or {DRIVER_2}\n")
-            while swap != DRIVER_1 or swap != DRIVER_2:
-                print("Invalid choice")
-                swap = input(f"Do you want change {DRIVER_1} or {DRIVER_2}\n")
-            tymy_ridic_1_trade = []
-            tymy_ridic_2_trade = []
-            possible_transfer = []
-            for x in teams:
-                for y in cars:
-                    if x.drivers[0] == y:
-                        if (x.skill - y.skills) >=0:
-                            tymy_ridic_1_trade.append(x)
-                    if x.drivers[1] == y:
-                        if (x.skill - y.skills) >=0:
-                            tymy_ridic_2_trade.append(x)
-            if DRIVER_1 == swap:
-                number = 1
-                if average_skill > player.skills:
-                    print(f"For exchange of {DRIVER_1} has interest just few teams. For example:")
-                    nahodny_ridic = teams[-1].drivers[random.choice[0,1]]
-                    print(f"Option 1 {teams[-1].name} ({teams[-1].points} points) offers its pilot {nahodny_ridic.name}")
-                    possible_transfer.append(teams[-1])
-                else:
-                    print("There is a big interest for a driver. For example:")
-                    
-                    for x in teams:
-                        if random.uniform(0, 1) > 0.7:
-                            nahodny_ridic = x.drivers[random.choice([0,1])]
-                            print(f"Option {number} {x.name} ({x.points} points) {nahodny_ridic.name}")
-                            possible_transfer.append(nahodny_ridic)
-                            number +=1
-                for x in tymy_ridic_1_trade:
-                    print(f"Option {number} {x.name} ({x.points} points) offers {x.drivers[0].name}")
-                    possible_transfer.append(x.drivers[0])
-                    number +=1
-                for x in tymy_ridic_2_trade:
-                    print(f"Option {number} {x.name} ({x.points} points) offers {x.drivers[1].name}")
-                    possible_transfer.append(x.drivers[1])
-                    number+=1
-                new_pilot = input("What pilot do you want? NAME\n")
-                found = False
-                for x in possible_transfer:
-                    if x == new_pilot:
-                        found = True
-                while not found:
-                    new_pilot = input("What pilot do you want? NAME\n")
-                    found = False
-                    for x in possible_transfer:
-                        if x == new_pilot:
-                            found = True
-                for x in possible_transfer:
-                    if x.name == new_pilot:
-                        DRIVER_1 = x.name
-                        player.name, x.name = x.name, player.name
-                        player.skills, x.skills = x.skills, player.skills
-                        print("succesfull swap")
-            if DRIVER_2 == swap:
-                number = 1
-                if average_skill > player_2.skills:
-                    print(f"For exchange of {DRIVER_2} has interest just few teams. For example:")
-                    nahodny_ridic = teams[-1].drivers[random.choice[0,1]]
-                    print(f"Option 1 {teams[-1].name} ({teams[-1].points} points) offers its pilot {nahodny_ridic.name}")
-                    possible_transfer.append(teams[-1])
-                else:
-                    print("There is a big interest for a driver. For example:")
-                    
-                    for x in teams:
-                        if random.uniform(0, 1) > 0.7:
-                            nahodny_ridic = x.drivers[random.choice([0,1])]
-                            print(f"Option {number} {x.name} ({x.points} points) {nahodny_ridic.name}")
-                            possible_transfer.append(nahodny_ridic)
-                            number +=1
-                for x in tymy_ridic_1_trade:
-                    print(f"Option {number} {x.name} ({x.points} points) offers {x.drivers[0].name}")
-                    possible_transfer.append(x.drivers[0])
-                    number +=1
-                for x in tymy_ridic_2_trade:
-                    print(f"Option {number} {x.name} ({x.points} points) offers {x.drivers[1].name}")
-                    possible_transfer.append(x.drivers[1])
-                    number+=1
-                new_pilot = input("What pilot do you want? NAME\n")
-                found = False
-                for x in possible_transfer:
-                    if x == new_pilot:
-                        found = True
-                while not found:
-                    new_pilot = input("What pilot do you want? NAME\n")
-                    found = False
-                    for x in possible_transfer:
-                        if x == new_pilot:
-                            found = True
-                for x in possible_transfer:
-                    if x.name == new_pilot:
-                        DRIVER_2 = x.name
-                        player_2.name, x.name = x.name, player_2.name
-                        player_2.skills, x.skills = x.skills, player_2.skills
-                        print("succesfull swap")
-        elif new_pilot == "MMR2":
-            best, worst = simulate_season_mmr2(list_drivers_mmr2)
-            print(f"MMR2 {best.name} was won by.")
-            final = input("Do you want him? YES/NO?\n")
-            if final == "YES":
-                change = input(f"Do you want him for {DRIVER_1} or {DRIVER_2}?\n")
-                while change !=DRIVER_1 or change !=DRIVER_2:
-                    change = input(f"Do you want him for {DRIVER_1} or {DRIVER_2}?\n")
-                new = best.name
-                skill = best.skill
-                if change == DRIVER_1:
-                    DRIVER_1 = new
-                    player.name, new = new, player.name 
-                    player.skills, skill = skill, player.skills
-                elif change == DRIVER_2:
-                    DRIVER_2 = new
-                    player_2.name, new = new, player_2.name 
-                    player_2.skills, skill = skill, player_2.skills
+        player, player_2, DRIVER_1, DRIVER_2, cars = transfer()        
     class Want:
         def __init__(self, name):
             self.name = name

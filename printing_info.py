@@ -92,3 +92,31 @@ def drivers_table(cars, COUNT_CARS):
             heloo = round(heloo, 1)
             print(f"Number of pit stops: {a.box}| Wear: {heloo}%")
             status_1 = status
+def post_race_info(time_laps, player, player_2, cars, teams, COUNT_CARS):
+    print("\n🏁 END race!!")
+    time_laps.sort()
+    print(f"{time_laps[0][1]} ({time_laps[0][2].name}) has fastest lap: {round(time_laps[0][0], 3)}")
+    sector_1 = min(time_laps, key=lambda x: x[3])
+    sector_2 = min(time_laps, key=lambda x: x[4])
+    sector_3 = min(time_laps, key=lambda x: x[5])
+
+    print(f"{sector_1[1]} ({sector_1[2].name}) has fastest sector 1 {round(sector_1[3], 3)}")
+    print(f"{sector_2[1]} ({sector_2[2].name}) has fastest sector 2 {round(sector_2[4], 3)}")
+    print(f"{sector_3[1]} ({sector_3[2].name}) has fastest sector 3 {round(sector_3[5], 3)}")
+
+    time_laps[0][2].points += 2
+    for d in range(len(time_laps)):
+        if time_laps[d][1] == player.name:
+            print(f"{time_laps[d][1]} ({time_laps[d][2].name}) has fastest lap {round(time_laps[d][0], 3)}, sector 1 {round(time_laps[d][3], 3)}, sector 2 {round(time_laps[d][4], 3)}, sector 3 {round(time_laps[d][5], 3)}")
+            break
+    for d in range(len(time_laps)):
+        if time_laps[d][1] == player_2.name:
+            print(f"{time_laps[d][1]} ({time_laps[d][2].name}) has fastest lap {round(time_laps[d][0], 3)}, sector 1 {round(time_laps[d][3], 3)}, sector 2 {round(time_laps[d][4], 3)}, sector 3 {round(time_laps[d][5], 3)}")
+            break
+    RANK = [a.name for a in cars if not a.dnf]
+    for driver in cars:
+        driver.vypocitej_points_jezdec(RANK)
+        driver.skills -= 0.01
+    for team in teams:
+        team.vypocitej_points(RANK,COUNT_CARS)
+    return teams, cars, time_laps
