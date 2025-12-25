@@ -323,4 +323,4 @@ def training(speed, climax, cars):
         speed_bonus = True
     else:
         speed_bonus = False
-    return speed_bonus
+    return speed_bonus, training
