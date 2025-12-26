@@ -113,79 +113,47 @@ while len(names_free_drivers) >= 0:
         while lap <= LAPS:
             if lap == LAPS:
                 print("Last lap. Push push.")
+            #print info
             info(WETTINESS, forecast, lap, weather, LAPS, climax)
+            #safety car
             for car in cars:
-                if weather == "sunny":
-                    if car.safety_car_probability < 1:
-                        car.safety_car_probability = 200
-                    if random.randint(1,int((car.safety_car_probability/10))) == 1:
-                        car.time += random.randint(10, 55)
-                        print("Mistake from driver")
-                    if random.randint(1, car.safety_car_probability) == 1:
-                        if lap >= 3:
-                            car.dnf = True
-                            SAFETY_CAR = True
-                            LAPS_REMAINING = random.randint(3,6)
-                            print(f"{car.name} recieved DNF")
-                            print(random.choice([
-                        "Radio: Crash ahead, safety car is out!",
-                        "Radio: We’ve got yellow flags – full course yellow!",
-                        "Radio: Big crash, bring the delta in check.",
-                        "Radio: Watch the debris – SC deployed!"
-                    ]))
-                else:
-                    if random.randint(1,int((car.safety_car_probability/5))) == 1:
-                        if lap >= 3:
-                            car.dnf = True
-                            SAFETY_CAR = True
-                            LAPS_REMAINING = random.randint(3,6)
-                            print(f"{car.name} recieved DNF")
-                            print(random.choice([
-                        "Radio: Crash ahead, safety car is out!",
-                        "Radio: We’ve got yellow flags – full course yellow!",
-                        "Radio: Big crash, bring the delta in check.",
-                        "Radio: Watch the debris – SC deployed!"
-                    ]))
-                        
+                SAFETY_CAR, LAPS_REMAINING, car.dnf, car.time = safety_car(car)
             if SAFETY_CAR is True:
                 LAPS_REMAINING -=1
             if LAPS_REMAINING == 0:
                 SAFETY_CAR = False
             cars.sort(key=lambda x: (x.dnf, x.time))
+            #print info
             for car in cars:
-            # sem patří tvůj kód
                 if car.is_player:
-                    car.player_info(cars, DRIVER_1, COUNT_CARS, player, DRIVER_2,player_2)
-
+                    forecast = car.player_info(cars, DRIVER_1, COUNT_CARS, player, DRIVER_2,player_2)
             cars.sort(key=lambda x: (x.dnf, x.time))
-            car.drss(cars)
-
+            #drs check
+            for i, car in enumerate(cars, 1):
+                if i!=1:
+                    car.drs = car.drss(cars[i-1])
+            #harder overtaking mechanism
             for i, car in enumerate(cars):
                 if i > 0:
                     car_pred = cars[i - 1]
                     difference = car.time - car_pred.time
                     if difference < 1.5 and difference > 0:
                         defence = random.uniform(0.6, 0.95)
-                        chance_predjeti = max(0.1, 1.5 - difference) * 0.4  # 
+                        chance_predjeti = max(0.1, 1.5 - difference) * 0.4 
                         if car.drs is True:
                             chance_predjeti += 0.3
                         if defence  < chance_predjeti:
                             car.wear += 3
                             cars[i], cars[i - 1] = cars[i - 1], cars[i]
             cars.sort(key=lambda x: (x.dnf, x.time))
-
-            pit_player(player, player_2, LAPS, lap, TIME_S1, TIME_S2, TIME_S3, pneu, speed, PNEU_types)
+            #check pitting
+            player, player_2 = pit_player(player, player_2, LAPS, lap, TIME_S1, TIME_S2, TIME_S3, pneu, speed, PNEU_types)
             cars.sort(key=lambda x: (x.dnf, x.time))
-            RANK = [a.name for a in cars if not a.dnf]  # Move this line here
+            RANK = [a.name for a in cars if not a.dnf] 
             position = RANK.index(DRIVER_1) + 1 if DRIVER_1 in RANK else COUNT_CARS
             position_2 = RANK.index(DRIVER_2) + 1 if DRIVER_2 in RANK else COUNT_CARS
-
-
-            #RANK = [a.name for a in cars if not a.dnf]
             WETTINESS = wet_track(weather_1, WETTINESS)
-            #position = RANK.index(DRIVER_1) + 1 if DRIVER_1 in RANK else "DNF"
             print(f"\n📊 Leaderboard {DRIVER_1}: {position}. position from {len(RANK)}")
-            #position_2 = RANK.index(DRIVER_2) + 1 if DRIVER_2 in RANK else "DNF"
             print(f"\n📊 Leaderboard {DRIVER_2}: {position_2}. position from {len(RANK)}")
             drivers_table(cars, COUNT_CARS)
             for car in cars:
@@ -219,10 +187,12 @@ while len(names_free_drivers) >= 0:
             forecast.append(generate_weather(weather_3, climax))
             weather_4 = forecast[3]
             lap += 1
+        #post race
         teams, cars, time_laps = post_race_info(time_laps, player, player_2, cars, teams, COUNT_CARS)
         points, cars, teams, players = plot_graph(RANK, DRIVER_1, DRIVER_2, teams, cars, player, player_2, climax)
         lap, time_laps, SAFETY_CAR, LAPS_REMAINING, weather, forecast, cars, WETTINESS = reset_race(climax, cars)
         b+=1
+    #post chamiponship
     print("\n🏁 Drivers at the end of championship:")
     best, worst = simulate_season_mmr2(list_drivers_mmr2)
     season_count +=1

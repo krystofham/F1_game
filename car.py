@@ -183,15 +183,10 @@ class Car:
             if self.wear >= 70:
                 print(random.choice(["The tyres are pretty done now.", "I don´t know what are you doing there, but I am boxing. Or at least I wish.", "The tyres are ***!", "Please, take me out from this hell." "Please box, please."]))
         return 
-    def drss(self, cars):
-        for i in range(1, len(cars)): 
-            current_time = self.time  
-            previous_time = cars[i-1].time 
-            time_difference = current_time - previous_time
-
-            if time_difference < 1:
-                self.drs = True
-        return self.time, self.drs
+    def drss(self, car_in_front):
+        if car_in_front.time - self.time < 1:
+            self.drs = True
+        return self.drs
 
     def simuluj_ai(self, training, WETTINESS, lap, LAPS, forecast, weather, laps, max_laps, k_wear, wettiness, TIME_S1, TIME_S2, TIME_S3, speed_bonus, time_laps, PNEU_types):
         if self.is_player is False:

@@ -50,6 +50,7 @@ def pit_player(player, player_2, LAPS, lap, TIME_S1, TIME_S2, TIME_S3, pneu, spe
         elif pick == "2" and pick_2 != "2":
             print(random.choice(["Box, box. Box this lap. Tyres ready, confirm entry.",  "Pit window is open. Box this lap for new weathers.",  "Box now. Hitting your marks is critical.",  "Box, box. Tyre temps look good — execute clean entry.",  "Pit this lap. We’re switching compound."]))
             print(random.choice([ "Copy. In this lap.",  "Understood. Coming in.",  "On my way in.", "Copy. Box, box",  "Copy, box this lap.", "Copy, confirmed."]))
+    return player, player_2
 def info(WETTINESS, forecast, lap, weather, LAPS, climax):
     weather_1 = forecast[0]
     weather_2 = forecast[1]
