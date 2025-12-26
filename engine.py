@@ -156,3 +156,37 @@ def transfer(cars, teams, player, player_2):
                 player_2.name, new = new, player_2.name 
                 player_2.skills, skill = skill, player_2.skills
     return player, player_2, DRIVER_1, DRIVER_2, cars
+def safety_car(car):
+    if weather == "sunny":
+        if car.safety_car_probability < 1:
+            car.safety_car_probability = 200
+        if random.randint(1,int((car.safety_car_probability/10))) == 1:
+            car.time += random.randint(10, 55)
+            print("Mistake from driver")
+        if random.randint(1, car.safety_car_probability) == 1:
+            if lap >= 3:
+                car.dnf = True
+                SAFETY_CAR = True
+                LAPS_REMAINING = random.randint(3,6)
+                print(f"{car.name} recieved DNF")
+                print(random.choice([
+            "Radio: Crash ahead, safety car is out!",
+            "Radio: We’ve got yellow flags – full course yellow!",
+            "Radio: Big crash, bring the delta in check.",
+            "Radio: Watch the debris – SC deployed!"
+        ]))
+    else:
+        if random.randint(1,int((car.safety_car_probability/5))) == 1:
+            if lap >= 3:
+                car.dnf = True
+                SAFETY_CAR = True
+                LAPS_REMAINING = random.randint(3,6)
+                print(f"{car.name} recieved DNF")
+                print(random.choice([
+            "Radio: Crash ahead, safety car is out!",
+            "Radio: We’ve got yellow flags – full course yellow!",
+            "Radio: Big crash, bring the delta in check.",
+            "Radio: Watch the debris – SC deployed!"
+        ]))
+    if car.dnf != True: car.dnf =False
+    return SAFETY_CAR, LAPS_REMAINING, car.dnf, car.time
