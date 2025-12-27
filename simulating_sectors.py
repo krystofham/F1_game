@@ -34,11 +34,11 @@ def technical_sector_sim(settings):
         for y in corner_slow:
             if x==y:
                 corner = "slow"
-        under = settings[1]*random.uniform(0.98,1.02)
-        over = settings[2]*random.uniform(0.98,1.02)
+        under = settings[1]*random.uniform(0.8,1.2)
+        over = settings[2]*random.uniform(0.8,1.2)
         bonus_time = 0
         if corner == "slow":
-            corner_speed = 100+ random.uniform(-5, 5)
+            corner_speed = 100+ random.uniform(-50, 50)
             if under > 2:
                 corner_speed -= 10*under
                 bonus_time += 2
@@ -47,21 +47,16 @@ def technical_sector_sim(settings):
                 bonus_time += 2
             if grip < -1:
                 under += settings[1]*grip*2
-                if under <0:
-                    under *= -1
                 over += settings[2]*grip
-                if over <0:
-                    over *= -1
             if curb_handling <-5:
                 under += settings[1]*grip
-                if under <0:
-                    under *= -1
                 over += settings[2]*grip*2
-                if over <0:
-                    over *= -1
+            if over < 0: over*=-1
+            if under < 0: under*=-1
+            if corner_speed < 10:corner_speed=10
             time_sim_player.append(15 + under + over+ bonus_time)
         elif corner == "medium":
-            corner_speed = 150+ random.uniform(-5, 5)
+            corner_speed = 150+ random.uniform(-50, 50)
             if under > 2:
                 corner_speed -= 30*under
                 bonus_time += 2
@@ -82,9 +77,12 @@ def technical_sector_sim(settings):
                 over += settings[2]*grip*2
                 if over <0:
                     over *= -1
+            if over < 0: over*=-1
+            if under < 0: under*=-1
+            if corner_speed < 10:corner_speed=10
             time_sim_player.append(10 + under + over+ bonus_time)
         elif corner == "fast":
-            corner_speed = 200+ random.uniform(-5, 5)
+            corner_speed = 200+ random.uniform(-50, 50)
             if under > 2:
                 corner_speed -= 30*under
                 bonus_time += 2
@@ -93,18 +91,13 @@ def technical_sector_sim(settings):
                 bonus_time += 2
             if grip < -5:
                 under += settings[1]*grip*2
-                if under <0:
-                    under *= -1
                 over += settings[2]*grip
-                if over <0:
-                    over *= -1
             if curb_handling <-2:
                 under += settings[1]*grip
-                if under <0:
-                    under *= -1
                 over += settings[2]*grip*2
-                if over <0:
-                    over *= -1
+            if over < 0: over*=-1
+            if under < 0: under*=-1
+            if corner_speed < 10:corner_speed=10
             time_sim_player.append(7 + under + over + bonus_time)
         if corner_speed < 0:
             corner_speed = 0
@@ -119,7 +112,6 @@ def technical_sector_sim(settings):
         speeds_on_exit_player.append(speed_on_exit)
         understeers_player.append(under)
         oversteers_player.append(over)
-
 
 
     speeds_on_exit_bot = []
@@ -137,14 +129,14 @@ def technical_sector_sim(settings):
         under = 0
         over = 0
         if corner == "slow":
-            corner_speed = 100+ random.uniform(-25, 25)
-            time_sim.append(15 + random.uniform(-1.5, 1.5))
+            corner_speed = 100+ random.uniform(-50, 50)
+            time_sim.append(15 + random.uniform(-3.5, 3.5))
         elif corner == "medium":
-            corner_speed = 150+ random.uniform(-25, 25)
-            time_sim.append(10 + random.uniform(-1.5, 1.5))
+            corner_speed = 150+ random.uniform(-50, 50)
+            time_sim.append(10 + random.uniform(-3.5, 3.5))
         elif corner == "fast":
-            corner_speed = 200+ random.uniform(-25, 25)
-            time_sim.append(7+ random.uniform(-1.5, 1.5))
+            corner_speed = 200+ random.uniform(-50, 50)
+            time_sim.append(7+ random.uniform(-3.5, 3.5))
         speeds_on_exit_bot.append(corner_speed)
 
 
@@ -174,7 +166,6 @@ def technical_sector_sim(settings):
 
     plt.tight_layout()
     plt.show()
-import random
 def training(speed, climax, cars):
     speed_in_training = 0
     understeer_in_traning = 0
@@ -190,7 +181,7 @@ def training(speed, climax, cars):
     training = input("Do you want training for speed [1] or qualification [2]: ")
     for x in range(3):
         print("Settings of the car. You have three attemps")
-        print("We are setting front wing. Value 0-11. Při menších rychlostech větší číslo. Lowers understeer. During rain bigger number.")
+        print("We are setting front wing. Value 0-11. In lower speed higher number. Lowers understeer. During rain bigger number.")
         front_wing = int(input(f"How do you want to set the front wing? Last value: {front_wing}\n"))
         if speed == "quick":
             front_wing_ideal = random.randint(0, 4)
@@ -277,11 +268,6 @@ def training(speed, climax, cars):
             speed_in_training -=3
 
         settings = [speed_in_training,understeer_in_traning,oversteer_in_training,acceleration,grip,curb_handling]
-        #if speed == "quick":
-            #   speed_sector_sim(settings)
-        #elif speed == "medium":    
-            #   medium_sector_sim(settings)
-        #else:
         technical_sector_sim(settings)
         if understeer_in_traning > 3 :
             for car in cars:

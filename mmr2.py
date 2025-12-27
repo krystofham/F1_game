@@ -21,8 +21,8 @@ def simulate_season_mmr2(drivers):
     print("TOP 5 MMR2 drivers:")
     mmr2_sorted = sorted(drivers, key=lambda x: x.time)
     for i, x in enumerate(mmr2_sorted, 1):
-        random_n = random.uniform()*6
-        print(f"{i}. {x.name} (rating: {x.rating + random_n - 3})")
+        random_n = random.uniform(0,4)
+        print(f"{i}. {x.name} (rating: {round(x.rating + random_n - 2, 1)})")
         if i == 5:
             break
     # Best driver is the one with the lowest time
@@ -35,6 +35,3 @@ def simulate_season_mmr2(drivers):
 
 # Create a list of drivers with random experience
 list_drivers_mmr2 = [Drivermmr2(name, random.uniform(5.95, 8.05)) for name in drivers_mmr2]
-
-# Run the simulationvypocitej_points
-best, worst = simulate_season_mmr2(list_drivers_mmr2)
