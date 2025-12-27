@@ -22,7 +22,7 @@ def reset_race(climax, cars):
     weather = "sunny"
     forecast = [generate_weather(weather, climax)]
     for _ in range(3):
-        forecast.append(generate_weather(forecast[-1]))
+        forecast.append(generate_weather(forecast[-1], climax))
     for a in cars:
         a.time = 0
         a.dnf = False
@@ -33,7 +33,7 @@ def reset_race(climax, cars):
         a.stints = []
         a.last_stint_start = 0
     return lap, time_laps, SAFETY_CAR, LAPS_REMAINING, weather, forecast, cars, WETTINESS
-def transfer(cars, teams, player, player_2):
+def transfer(cars, teams, player, player_2, DRIVER_1, DRIVER_2):
     new_pilot = input("Do you want from MMR1 or MMR2?\n")
     if new_pilot == "MMR1":
         average_skill = 0
@@ -156,7 +156,7 @@ def transfer(cars, teams, player, player_2):
                 player_2.name, new = new, player_2.name 
                 player_2.skills, skill = skill, player_2.skills
     return player, player_2, DRIVER_1, DRIVER_2, cars
-def safety_car(car):
+def safety_car(car, weather, lap, SAFETY_CAR, LAPS_REMAINING):
     if weather == "sunny":
         if car.safety_car_probability < 1:
             car.safety_car_probability = 200
@@ -189,4 +189,7 @@ def safety_car(car):
             "Radio: Watch the debris – SC deployed!"
         ]))
     if car.dnf != True: car.dnf =False
+    if SAFETY_CAR !=True: 
+        SAFETY_CAR=False
+        LAPS_REMAINING = 0
     return SAFETY_CAR, LAPS_REMAINING, car.dnf, car.time

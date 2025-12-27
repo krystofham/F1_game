@@ -1,4 +1,4 @@
-def strategy(LAPS, TIME_S1, TIME_S2, TIME_S3, pneu, speed):
+def strategy(LAPS, TIME_S1, TIME_S2, TIME_S3, pneu, speed, climax):
     count_laps = LAPS
     if count_laps < 2:
         count_laps == 3
@@ -18,9 +18,14 @@ def strategy(LAPS, TIME_S1, TIME_S2, TIME_S3, pneu, speed):
     endurance_s = 60/k_wear[2]*k_speed[2]
     endurance_m = 60/k_wear[1]*k_speed[1]
     endurance_h =60/k_wear[0]*k_speed[0]
+    endurance_i = 60/k_wear[4]*k_speed[4]
+    endurance_w = 60/k_wear[3]*k_speed[3]
     wear = [endurance_h, endurance_m, endurance_s]
-    name = ["hard", "Medium", "soft"]
-    print(f"soft can do {round(endurance_s, 1)} laps, medium {round(endurance_m, 1)} laps, hard {round(endurance_h, 1)} laps")
+    name = ["hard", "medium", "soft"]
+    if climax == "sunny":
+        print(f"soft can do {round(endurance_s, 1)} laps, medium {round(endurance_m, 1)} laps, hard {round(endurance_h, 1)} laps")
+    else:
+        print(f"soft can do {round(endurance_s, 1)} laps, medium {round(endurance_m, 1)} laps, hard {round(endurance_h, 1)} laps, inter {round(endurance_i, 1)}, wet {round(endurance_w, 1)}")
     box_time = (100/60)
     if count_laps == 0:
         count_laps = 1

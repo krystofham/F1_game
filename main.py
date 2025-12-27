@@ -2,7 +2,6 @@ from init import *
 random.seed()
 x = 0
 cars = []
-
 for driver in drivers:
     cars.append(Car(driver,random.uniform(5, 6)))
 player = Car(DRIVER_1, random.uniform(5, 6), is_player=True)
@@ -51,7 +50,7 @@ while len(names_free_drivers) >= 0:
             x.safety_car_probability = dnf_probability
         print(f"Actual race {race} {b}/{len(championship)}")
         print(f"Track is known for {pneu} pneu and {speed} speed. Has {LAPS} laps")
-        strategy(LAPS, TIME_S1, TIME_S2, TIME_S3, pneu, speed)
+        strategy(LAPS, TIME_S1, TIME_S2, TIME_S3, pneu, speed, climax)
 
         if pneu == "medium":
             k_wear = [1.5,5,9,4.4,8.4]
@@ -106,7 +105,9 @@ while len(names_free_drivers) >= 0:
                     c.pneu = random.choice(["soft", "inter"])
         simulation = []
         #Training
-        speed_bonus, training_type = training(speed, climax, cars)
+        #speed_bonus, training_type = training(speed, climax, cars)
+        training_type = "1"
+        speed_bonus = True
         #Qualification
         simulation = qualification(simulation, cars, TIME_S1, TIME_S2, TIME_S3, training_type)
         ######################################################################################################################################################################
@@ -117,7 +118,7 @@ while len(names_free_drivers) >= 0:
             info(WETTINESS, forecast, lap, weather, LAPS, climax)
             #safety car
             for car in cars:
-                SAFETY_CAR, LAPS_REMAINING, car.dnf, car.time = safety_car(car)
+                SAFETY_CAR, LAPS_REMAINING, car.dnf, car.time = safety_car(car, weather, lap, SAFETY_CAR, LAPS_REMAINING)
             if SAFETY_CAR is True:
                 LAPS_REMAINING -=1
             if LAPS_REMAINING == 0:
@@ -126,7 +127,7 @@ while len(names_free_drivers) >= 0:
             #print info
             for car in cars:
                 if car.is_player:
-                    forecast = car.player_info(cars, DRIVER_1, COUNT_CARS, player, DRIVER_2,player_2)
+                    car.player_info(cars, DRIVER_1, COUNT_CARS, player, DRIVER_2,player_2, SAFETY_CAR)
             cars.sort(key=lambda x: (x.dnf, x.time))
             #drs check
             for i, car in enumerate(cars, 1):
@@ -147,7 +148,7 @@ while len(names_free_drivers) >= 0:
                             cars[i], cars[i - 1] = cars[i - 1], cars[i]
             cars.sort(key=lambda x: (x.dnf, x.time))
             #check pitting
-            player, player_2 = pit_player(player, player_2, LAPS, lap, TIME_S1, TIME_S2, TIME_S3, pneu, speed, PNEU_types)
+            player, player_2 = pit_player(player, player_2, LAPS, lap, TIME_S1, TIME_S2, TIME_S3, pneu, speed, PNEU_types, SAFETY_CAR, climax)
             cars.sort(key=lambda x: (x.dnf, x.time))
             RANK = [a.name for a in cars if not a.dnf] 
             position = RANK.index(DRIVER_1) + 1 if DRIVER_1 in RANK else COUNT_CARS
@@ -157,7 +158,7 @@ while len(names_free_drivers) >= 0:
             print(f"\n📊 Leaderboard {DRIVER_2}: {position_2}. position from {len(RANK)}")
             drivers_table(cars, COUNT_CARS)
             for car in cars:
-                car.simuluj_ai(training_type, WETTINESS, lap, LAPS, forecast, weather, laps=LAPS, max_laps=lap, k_wear=k_wear, wettiness=WETTINESS, TIME_S1=TIME_S1, TIME_S2=TIME_S2, TIME_S3=TIME_S3, speed_bonus= speed_bonus, time_laps=time_laps, PNEU_types=PNEU_types)
+                SAFETY_CAR, LAPS_REMAINING = car.simuluj_ai(training_type, WETTINESS, lap, LAPS, forecast, weather, laps=LAPS, max_laps=lap, k_wear=k_wear, wettiness=WETTINESS, TIME_S1=TIME_S1, TIME_S2=TIME_S2, TIME_S3=TIME_S3, speed_bonus= speed_bonus, time_laps=time_laps, PNEU_types=PNEU_types, SAFETY_CAR=SAFETY_CAR, LAPS_REMAINING = LAPS_REMAINING)
             boxy_po_teamu = {}
             for a in cars:
                 if not a.is_player and a.pit: 
@@ -188,6 +189,7 @@ while len(names_free_drivers) >= 0:
             weather_4 = forecast[3]
             lap += 1
         #post race
+        RANK = [a for a in cars if not a.dnf]
         teams, cars, time_laps = post_race_info(time_laps, player, player_2, cars, teams, COUNT_CARS)
         points, cars, teams, players = plot_graph(RANK, DRIVER_1, DRIVER_2, teams, cars, player, player_2, climax)
         lap, time_laps, SAFETY_CAR, LAPS_REMAINING, weather, forecast, cars, WETTINESS = reset_race(climax, cars)
@@ -234,7 +236,7 @@ while len(names_free_drivers) >= 0:
         answear = input("Important question")
     new_pilot = input("Do you want new pilot? YES/NO\n").lower()   
     if new_pilot == "yes":
-        player, player_2, DRIVER_1, DRIVER_2, cars = transfer()        
+        player, player_2, DRIVER_1, DRIVER_2, cars = transfer(cars, teams, player, player_2, DRIVER_1, DRIVER_2)        
     class Want:
         def __init__(self, name):
             self.name = name

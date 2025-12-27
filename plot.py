@@ -22,8 +22,17 @@ def colours_graphs(cars, colours):
 def plot_graph(RANK, DRIVER_1, DRIVER_2, teams, cars, player, player_2, climax):
     points = sorted(teams, key=lambda x: (x.points))
     # Rank count
-    position_1 = RANK.index(DRIVER_1) + 1 if DRIVER_1 in RANK else "DNF"
-    position_2 = RANK.index(DRIVER_2) + 1 if DRIVER_2 in RANK else "DNF"
+    position_1 = None
+    position_2 =None
+    for x in RANK:
+        if x.name == DRIVER_1:
+            position_1 = RANK.index(x) + 1
+        if x.name == DRIVER_2:
+            position_2 = RANK.index(x) + 1
+    if position_1 == None: 
+        position_1 = 'DNF'    
+    if position_2 == None: 
+        position_2 = 'DNF'
     print("\n🏁 Final Position:")
     print(f"{DRIVER_1}: {position_1}. position")
     print(f"{DRIVER_2}: {position_2}. position")
