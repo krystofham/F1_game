@@ -1,7 +1,7 @@
 class Team:
-    def __init__(self, name, skill):
+    def __init__(self, name, rating):
         self.name = name
-        self.skill = skill
+        self.rating = rating
         self.drivers = [] 
         self.points = 0   
 
@@ -63,8 +63,8 @@ class Team:
                 self.points += 1
 
 teams = []
-def create_team(TEAM_PLAYER, player_1, player_2, teams, skill):
-    tym = Team(TEAM_PLAYER, skill)
+def create_team(TEAM_PLAYER, player_1, player_2, teams, rating):
+    tym = Team(TEAM_PLAYER, rating)
     tym.pridej_jezdce(player_1)
     tym.pridej_jezdce(player_2)
     teams.append(tym)

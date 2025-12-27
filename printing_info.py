@@ -117,7 +117,7 @@ def post_race_info(time_laps, player, player_2, cars, teams, COUNT_CARS):
     RANK = [a.name for a in cars if not a.dnf]
     for driver in cars:
         driver.vypocitej_points_jezdec(RANK)
-        driver.skills -= 0.01
+        driver.ratings -= 0.01
     for team in teams:
         team.vypocitej_points(RANK,COUNT_CARS)
     return teams, cars, time_laps

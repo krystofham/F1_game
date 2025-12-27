@@ -1,6 +1,6 @@
 import random
 class Car:
-    def __init__(self, name, skill, is_player=False):
+    def __init__(self, name, rating, is_player=False):
         self.name = name
         self.box = 0
         self.stints = []  
@@ -10,7 +10,7 @@ class Car:
         self.pneu = random.choice(["medium", "hard"])
         self.wear = 0.0
         self.safety_car_probability = 0
-        self.skills = skill
+        self.ratings = rating
         self.time = 0.0
         self.points = 0
         self.drs = False
@@ -61,9 +61,9 @@ class Car:
             LAPS_REMAINING = random.randint(3,6)
 
         speed = self.efectivity_pneu(weather, PNEU_types)
-        s1 = (TIME_S1*random.uniform(0.99, 1.01)+self.skills/2+self.team.skill/2)/ speed
-        s2 = (TIME_S2*random.uniform(0.99, 1.01)+self.skills/2+self.team.skill/2)/ speed
-        s3 = (TIME_S3*random.uniform(0.99, 1.01)+self.skills/2+self.team.skill/2)/ speed
+        s1 = (TIME_S1*random.uniform(0.99, 1.01)+self.ratings/2+self.team.rating/2)/ speed
+        s2 = (TIME_S2*random.uniform(0.99, 1.01)+self.ratings/2+self.team.rating/2)/ speed
+        s3 = (TIME_S3*random.uniform(0.99, 1.01)+self.ratings/2+self.team.rating/2)/ speed
         if SAFETY_CAR:
             s1 = s1*2.5
             s2 = s2*2.5
@@ -151,6 +151,8 @@ class Car:
                 if self.wear > 60:
                     print(random.choice(["Why didn’t we pit? We’ve just thrown away the race.", "I had no grip even before the safety car!", "Come on! These weathers are dead — what are we doing?!", "Are we sure about staying out? Tyres are cooked."]))
             print(f"\n🚗 Your car {self.name}")
+            if self.drs:
+                print("DRS active")
             RANK = [a.name for a in cars if not a.dnf]     
             if DRIVER_1 == self.name:
                 position = RANK.index(DRIVER_1) + 1 if DRIVER_1 in RANK else COUNT_CARS

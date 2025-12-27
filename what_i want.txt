@@ -16,7 +16,7 @@
 
  Tyre Temperature Simulation: Influence grip and wear depending on pace and compound.
 
- Driver Skill Evolution Over Time: Drivers improve or decline during seasons.
+ Driver rating Evolution Over Time: Drivers improve or decline during seasons.
 
 📊 Analytics & Visualization
  Working web with dashboard

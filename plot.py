@@ -1,5 +1,6 @@
 import matplotlib.pyplot as plt
 import matplotlib.image as mpimg
+import random
 from engine import reset_race
 def colours_graphs(cars, colours):
     for c in cars:
@@ -41,11 +42,11 @@ def plot_graph(RANK, DRIVER_1, DRIVER_2, teams, cars, player, player_2, climax):
     cars.sort(key=lambda x: (x.dnf, x.time))
     for i, a in enumerate(cars, 1):
         stav = "DNF" if a.dnf else f"{round(a.time, 2)}s"
-        print(f"{i}. {a.name} ({a.team.name}) {a.points} body")
+        print(f"{i}. {a.name} ({a.team.name}) {a.points} points ({a.ratings+ random.uniform()*5 - random.uniform()*5} rating)")
     teams.sort(key=lambda team: team.points, reverse=True)
     #time.sleep(8)
     for i, team in enumerate(teams,1):
-        print (f"{i}.{team.name} {team.points} body")
+        print (f"{i}.{team.name} {team.points} points")
     #time.sleep(8)
     jmena = [a.name for a in cars]
     timey = [a.time/60 if not a.dnf else None for a in cars]

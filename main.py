@@ -24,8 +24,13 @@ create_team("VS racing 22",cars[20],cars[21], teams,                            
 create_team("PyCharm motors",cars[22],cars[23], teams,                          random.uniform(4,   6))
 create_team("Pixel motors",cars[24],cars[25], teams,                            random.uniform(4,   6))
 
-
-lenght = int(input("What is the lenght of the championship: "))
+lenght = 0
+while lenght <= 0:
+    lenght = input("What is the lenght of the championship: ")
+    try:
+        lenght = int(lenght)
+    except:
+        lenght = 0
 hi = len(championship) - lenght
 if hi > 0:
     for _ in range(hi):
@@ -105,9 +110,9 @@ while len(names_free_drivers) >= 0:
                     c.pneu = random.choice(["soft", "inter"])
         simulation = []
         #Training
-        #speed_bonus, training_type = training(speed, climax, cars)
-        training_type = "1"
-        speed_bonus = True
+        speed_bonus, training_type = training(speed, climax, cars)
+        #training_type = "1"
+        #speed_bonus = True
         #Qualification
         simulation = qualification(simulation, cars, TIME_S1, TIME_S2, TIME_S3, training_type)
         ######################################################################################################################################################################
@@ -133,20 +138,6 @@ while len(names_free_drivers) >= 0:
             for i, car in enumerate(cars, 1):
                 if i!=1:
                     car.drs = car.drss(cars[i-1])
-            #harder overtaking mechanism
-            for i, car in enumerate(cars):
-                if i > 0:
-                    car_pred = cars[i - 1]
-                    difference = car.time - car_pred.time
-                    if difference < 1.5 and difference > 0:
-                        defence = random.uniform(0.6, 0.95)
-                        chance_predjeti = max(0.1, 1.5 - difference) * 0.4 
-                        if car.drs is True:
-                            chance_predjeti += 0.3
-                        if defence  < chance_predjeti:
-                            car.wear += 3
-                            cars[i], cars[i - 1] = cars[i - 1], cars[i]
-            cars.sort(key=lambda x: (x.dnf, x.time))
             #check pitting
             player, player_2 = pit_player(player, player_2, LAPS, lap, TIME_S1, TIME_S2, TIME_S3, pneu, speed, PNEU_types, SAFETY_CAR, climax)
             cars.sort(key=lambda x: (x.dnf, x.time))
@@ -199,42 +190,44 @@ while len(names_free_drivers) >= 0:
     best, worst = simulate_season_mmr2(list_drivers_mmr2)
     season_count +=1
     for d in list_drivers_mmr2:
-        d.skill -= 1/(season_count*2)
+        d.rating -= 1/(season_count*2)
     random_name = random.choice(names_free_drivers)
     names_free_drivers.pop(names_free_drivers.index(random_name))
-    worst.name, worst.skill = random_name, random.uniform(0.95,1.05)
+    worst.name, worst.rating = random_name, random.uniform(0.95,1.05)
     cars.sort(key=lambda x: x.points, reverse=True)
     for i, a in enumerate(cars, 1):
         print(f"{i}. {a.name} – {a.points} points ({a.team.name})")
         if i == len(cars):
             new = best.name
-            skill = best.skill
+            rating = best.rating
             print(f"Breaking!!!\n{new} changes {a.name} ({a.team.name})\nBreaking!!!")
             if a.is_player:
                 if DRIVER_1 == a.name:
                     DRIVER_1 = new
-                    player.name, player.skills = new, skill
+                    player.name, player.ratings = new, rating
                 if DRIVER_2 == a.name:
                     DRIVER_2 = new
-                    player_2.name, player_2.skills = new, skill
-            best.name, best.skill = a.name, a.skills
-            a.name, a.skills = new, skill
+                    player_2.name, player_2.ratings = new, rating
+            best.name, best.rating = a.name, a.ratings
+            a.name, a.ratings = new, rating
     print("\n🏆 Teams at the end of championship:")
     teams.sort(key=lambda t: t.points, reverse=True)
     for i, t in enumerate(teams, 1):
         if i == 1:  
-            t.skill += 1
+            t.rating += 1
             img = mpimg.imread(f'{t.name}.png')
             plt.imshow(img)
             plt.axis('off')  # Optional: hides axis for image display
             plt.show()
         print(f"{i}. {t.name} – {t.points} points")
         if i == len(teams):
-            t.skill -=1
+            t.rating -=1
     answear = input("Important question")
     while answear == "":
         answear = input("Important question")
     new_pilot = input("Do you want new pilot? YES/NO\n").lower()   
+    while new_pilot not in ("yes", "no"):
+        new_pilot = input("Do you want new pilot? YES/NO\n").lower()   
     if new_pilot == "yes":
         player, player_2, DRIVER_1, DRIVER_2, cars = transfer(cars, teams, player, player_2, DRIVER_1, DRIVER_2)        
     class Want:
@@ -244,13 +237,10 @@ while len(names_free_drivers) >= 0:
     want_trade = []
     for x in teams:
         for y in x.drivers:
-            if x.skill - y.skills > 0.8 and y.is_player == False:
+            if x.rating - y.ratings > 0.8 and y.is_player == False:
                 want_trade.append(Want(y))
-    while len(want_trade) > 0:
-        driver_to_trade_1 = random.choice(want_trade)
-        driver_to_trade_2 = random.choice(want_trade)
-        while driver_to_trade_1 == driver_to_trade_2:
-            driver_to_trade_1 = random.choice(want_trade)
+    while len(want_trade) >= 2:
+        driver_to_trade_1, driver_to_trade_2 = random.sample(want_trade, 2)
         print(f"Breaking!!!\n {driver_to_trade_1.name.name} ({driver_to_trade_1.name.team.name}, {driver_to_trade_1.name.points} points) changes {driver_to_trade_2.name.name} ({driver_to_trade_2.name.team.name}, {driver_to_trade_2.name.points} points)\nBreaking!!!")
         driver_to_trade_1.name, driver_to_trade_2.name == driver_to_trade_2.name, driver_to_trade_1.name
         want_trade.remove(driver_to_trade_1)
