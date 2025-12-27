@@ -16,6 +16,7 @@ class Car:
         self.drs = False
         self.team = None
         self.dnf = False
+        self.destroy = False
         self.puncture = False
 
     def efectivity_pneu(self, weather, PNEU_types):
@@ -34,29 +35,30 @@ class Car:
         return base
 
 
-    def simuluj_lap(self, weather, training, wettiness, TIME_S1, TIME_S2, TIME_S3, speed_bonus, time_laps, PNEU_types):
-        global SAFETY_CAR
-        global LAPS_REMAINING
-        if self.dnf:
-            return
+    def simuluj_lap(self, weather, training, wettiness, TIME_S1, TIME_S2, TIME_S3, speed_bonus, time_laps, PNEU_types, SAFETY_CAR, LAPS_REMAINING):
+        if not SAFETY_CAR:
+            LAPS_REMAINING = 0
         
-        if self.wear >= 100:
+        if self.wear >= 100 and not self.destroy:
             print(f"{self.name} – extreme Wear! ❌")
             self.dnf = True
-            return
+            self.destroy = True
+            SAFETY_CAR = True
+            LAPS_REMAINING = random.randint(3,6)
 
-        if self.puncture:   
+        if self.puncture and not self.destroy:
+            self.destroy = True
             print(f"{self.name} – puncture! ❌")
             SAFETY_CAR = True
-            return SAFETY_CAR
             LAPS_REMAINING = random.randint(3,6)
-        if self.wear > 80 and random.random() < 0.55:
+            
+        if self.wear > 80 and random.random() < 0.55 and not self.destroy:
             print(f"{self.name} – puncture! ❌")
             self.puncture = True
             self.dnf = True
+            self.destroy = True
             SAFETY_CAR = True
             LAPS_REMAINING = random.randint(3,6)
-            return SAFETY_CAR
 
         speed = self.efectivity_pneu(weather, PNEU_types)
         s1 = (TIME_S1*random.uniform(0.99, 1.01)+self.skills/2+self.team.skill/2)/ speed
@@ -92,7 +94,8 @@ class Car:
         self.wear += PNEU_types[self.pneu]["wear"]
         prirustek = PNEU_types[self.pneu]["wear"] * random.uniform(0, 0.4)
         self.wear += prirustek
-    def pit_stop(self, new_pneu):
+        return SAFETY_CAR, LAPS_REMAINING
+    def pit_stop(self, new_pneu, SAFETY_CAR):
         if not self.dnf:
             self.stints.append((self.last_stint_start, self.time - self.last_stint_start, self.pneu))
         if SAFETY_CAR is True:
@@ -105,9 +108,9 @@ class Car:
         self.wear = 0
         self.last_stint_start = self.time  
 
-    def choose_ai(self, laps, max_laps, forecast, LAPS, lap, k_wear):
+    def choose_ai(self, laps, max_laps, forecast, LAPS, lap, k_wear, SAFETY_CAR):
         if self.dnf:
-            return None, False
+            return None
         unava = self.wear
         zustava = max_laps - laps
         ideal = self.vhodne_pneu(forecast[0])
@@ -141,7 +144,7 @@ class Car:
         elif forecast[0] in ["transitional", "sunny", "rain"] and forecast[3] in ["sunny"]:
             ideal = random.choice(["soft" , "medium", "hard", "medium", "hard"])
         return ideal if self.pit else None
-    def player_info(self, cars, DRIVER_1, COUNT_CARS, player, DRIVER_2,player_2):
+    def player_info(self, cars, DRIVER_1, COUNT_CARS, player, DRIVER_2,player_2, SAFETY_CAR):
         if self.dnf is False:
             if SAFETY_CAR is True:
                 print(random.choice(["Still safety car", "Still spinning slowly lap by lap."]))
@@ -182,18 +185,19 @@ class Car:
                 print(f"Delta in front: {round(difference, 3)}s ({car_pred.team.name})")
             if self.wear >= 70:
                 print(random.choice(["The tyres are pretty done now.", "I don´t know what are you doing there, but I am boxing. Or at least I wish.", "The tyres are ***!", "Please, take me out from this hell." "Please box, please."]))
-        return 
+        return None
     def drss(self, car_in_front):
         if car_in_front.time - self.time < 1:
             self.drs = True
         return self.drs
 
-    def simuluj_ai(self, training, WETTINESS, lap, LAPS, forecast, weather, laps, max_laps, k_wear, wettiness, TIME_S1, TIME_S2, TIME_S3, speed_bonus, time_laps, PNEU_types):
+    def simuluj_ai(self, training, WETTINESS, lap, LAPS, forecast, weather, laps, max_laps, k_wear, wettiness, TIME_S1, TIME_S2, TIME_S3, speed_bonus, time_laps, PNEU_types, SAFETY_CAR, LAPS_REMAINING):
         if self.is_player is False:
-            new_pneu = self.choose_ai(laps, max_laps, forecast, LAPS, lap, k_wear)
+            new_pneu = self.choose_ai(laps, max_laps, forecast, LAPS, lap, k_wear, SAFETY_CAR)
             if new_pneu:
-                self.pit_stop(new_pneu)
-        self.simuluj_lap(weather, training, wettiness, TIME_S1, TIME_S2, TIME_S3, speed_bonus, time_laps, PNEU_types)
+                self.pit_stop(new_pneu, SAFETY_CAR)
+        SAFETY_CAR, LAPS_REMAINING = self.simuluj_lap(weather, training, wettiness, TIME_S1, TIME_S2, TIME_S3, speed_bonus, time_laps, PNEU_types, SAFETY_CAR, LAPS_REMAINING)
+        return SAFETY_CAR, LAPS_REMAINING
     def vhodne_pneu(self, weather):
         if weather in ["heavy rain", "rain"]:
             best_pneu = ["wet", "inter"]
