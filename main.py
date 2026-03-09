@@ -30,9 +30,9 @@ while lenght <= 0:
         lenght = int(lenght)
     except:
         lenght = 0
-hi = len(championship) - lenght
-if hi > 0:
-    for _ in range(hi):
+championshionship_race_count = len(championship) - lenght
+if championshionship_race_count > 0:
+    for _ in range(championshionship_race_count):
         championship.pop(random.randint(0, len(championship)-1))
 season_count = 1
 while len(names_free_drivers) >= 0:
@@ -41,15 +41,15 @@ while len(names_free_drivers) >= 0:
     for race in championship:
         climax = random.choice(["transitional","sunny","sunny","sunny"])
         lap = 0
-        for tip in tracks:
-            if race == tip.name:
-                pneu = tip.pneu
-                speed = tip.speed
-                TIME_S1 = tip.TIME_S1
-                TIME_S2 = tip.TIME_S2
-                TIME_S3 = tip.TIME_S3
-                LAPS = tip.laps
-                dnf_probability = tip.dnf_probability
+        for track in tracks:
+            if race == track.name:
+                pneu = track.pneu
+                speed = track.speed
+                TIME_S1 = track.TIME_S1
+                TIME_S2 = track.TIME_S2
+                TIME_S3 = track.TIME_S3
+                LAPS = track.laps
+                dnf_probability = track.dnf_probability
         for x in cars:
             x.safety_car_probability = dnf_probability
         print(f"Actual race {race} {b}/{len(championship)}")
@@ -68,6 +68,7 @@ while len(names_free_drivers) >= 0:
             k_speed = [1.05,1.09,1.13,0.65,0.7]
         else:
             k_speed = [0.95,0.99,1.03,0.55,0.6]
+
         PNEU_types = {
         "hard": {"wear": k_wear[0], "speed": k_speed[0]},
         "medium": {"wear": k_wear[1], "speed": k_speed[1]},
@@ -87,8 +88,8 @@ while len(names_free_drivers) >= 0:
         weather_4 = generate_weather(weather_3, climax)
         forecast = [weather_1, weather_2, weather_3, weather_4]
         print(f"Will be {climax}")
-        for x in forecast:
-            print (f"weather: 🌤️ ☁️  {x}")
+        for weather in forecast:
+            print (f"weather: 🌤️ ☁️  {weather}")
         for car in cars:
             car.pneu = random.choice(["hard", "medium"])
         player.pneu = input("Pick pneu for driver 1: [hard / medium / soft / wet / inter]\n[> ")
@@ -101,12 +102,12 @@ while len(names_free_drivers) >= 0:
             player_2.pneu = input("Invalid choice. Pick pneu for driver 2: [hard / medium / soft / wet / inter]\n[> ")
             if player.pneu == "exit":
                 continue
-        for c in cars:
-            if c.is_player is False:
+        for car in cars:
+            if car.is_player is False:
                 if weather_1 in ('rain', 'heavy rain'):
-                    c.pneu = random.choice(["wet", "inter"])
+                    car.pneu = random.choice(["wet", "inter"])
                 if weather_1 == "transitional":
-                    c.pneu = random.choice(["soft", "inter"])
+                    car.pneu = random.choice(["soft", "inter"])
         simulation = []
         #Training
         speed_bonus, training_type = training(speed, climax, cars)
@@ -118,8 +119,6 @@ while len(names_free_drivers) >= 0:
         while lap <= LAPS:
             if lap == LAPS:
                 print("Last lap. Push push.")
-            #print info
-            info(WETTINESS, forecast, lap, weather, LAPS, climax)
             #safety car
             for car in cars:
                 SAFETY_CAR, LAPS_REMAINING, car.dnf, car.time = safety_car(car, weather, lap, SAFETY_CAR, LAPS_REMAINING)
@@ -128,6 +127,8 @@ while len(names_free_drivers) >= 0:
             if LAPS_REMAINING == 0:
                 SAFETY_CAR = False
             cars.sort(key=lambda x: (x.dnf, x.time))
+            #print info
+            info(WETTINESS, forecast, lap, weather, LAPS, climax)
             #print info
             for car in cars:
                 if car.is_player:
@@ -143,9 +144,11 @@ while len(names_free_drivers) >= 0:
             RANK = [a.name for a in cars if not a.dnf] 
             position = RANK.index(DRIVER_1) + 1 if DRIVER_1 in RANK else COUNT_CARS
             position_2 = RANK.index(DRIVER_2) + 1 if DRIVER_2 in RANK else COUNT_CARS
+            #Wettiness
             WETTINESS = wet_track(weather_1, WETTINESS)
             print(f"\n📊 Leaderboard {DRIVER_1}: {position}. position from {len(RANK)}")
             print(f"\n📊 Leaderboard {DRIVER_2}: {position_2}. position from {len(RANK)}")
+            # Print drivers table
             drivers_table(cars, COUNT_CARS)
             for car in cars:
                 SAFETY_CAR, LAPS_REMAINING = car.simuluj_ai(training_type, WETTINESS, lap, LAPS, forecast, weather, laps=LAPS, max_laps=lap, k_wear=k_wear, wettiness=WETTINESS, TIME_S1=TIME_S1, TIME_S2=TIME_S2, TIME_S3=TIME_S3, speed_bonus= speed_bonus, time_laps=time_laps, PNEU_types=PNEU_types, SAFETY_CAR=SAFETY_CAR, LAPS_REMAINING = LAPS_REMAINING)
@@ -188,8 +191,8 @@ while len(names_free_drivers) >= 0:
     print("\n🏁 Drivers at the end of championship:")
     best, worst = simulate_season_mmr2(list_drivers_mmr2)
     season_count +=1
-    for d in list_drivers_mmr2:
-        d.rating -= 1/(season_count*2)
+    for mmr2_driver in list_drivers_mmr2:
+        mmr2_driver.rating -= 1/(season_count*2)
     random_name = random.choice(names_free_drivers)
     names_free_drivers.pop(names_free_drivers.index(random_name))
     worst.name, worst.rating = random_name, random.uniform(0.95,1.05)
