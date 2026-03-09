@@ -483,12 +483,12 @@ From `what_i_want.txt` and the developer notes:
 - [ ] Overtaking probability per sector / DRS zone
 - [ ] Fuel management (light vs heavy load)
 - [ ] Tyre temperature simulation
-- [ ] Driver rating evolution over seasons
+- [X] Driver rating evolution over seasons
 - [ ] Driving style per driver (aggressive, conservative, etc.)
 
 **Weather**
 - [ ] Sector-based rain (one sector wet, others dry)
-- [ ] Weather radar with limited accuracy
+- [X] Weather radar with limited accuracy
 
 **Analytics**
 - [ ] Web dashboard for standings and lap data
@@ -497,7 +497,7 @@ From `what_i_want.txt` and the developer notes:
 - [ ] JSON/YAML config files for circuits, teams, drivers
 - [ ] Save / load season state
 - [ ] Season history & CSV export
-- [ ] Modular architecture refactor
+- [X] Modular architecture refactor
 - [ ] Replay system
 
 ---
