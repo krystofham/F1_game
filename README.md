@@ -19,4 +19,9 @@ Install required dependencies:
 
 ```bash
 pip install matplotlib
-
+```
+## Start
+start the game with this command 
+```bash
+python3 main.py
+```
