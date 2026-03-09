@@ -176,14 +176,14 @@ class Car:
                     car_za = cars[index]
                 difference = self.time - car_pred.time    
                 difference_2 = car_za.time - self.time
-                print(f"Delta in front: {round(difference, 3)}s ({car_pred.team.name})| Delta za: {round(difference_2, 3)}s ({car_za.team.name})")
+                print(f"Delta in front: {round(difference, 3)}s ({car_pred.team.name})| Delta behind: {round(difference_2, 3)}s ({car_za.team.name})")
             elif index == 0:
                 car_za = cars[index + 1]
                 difference_2 = car_za.time - self.time
                 print(f"Delta behind: {round(difference_2, 3)}s ({car_za.team.name})")
             else:
-                car_pred = len(cars)
-                difference = self.time - car_pred.time
+                car_pred = cars[-2]
+                difference =  car_pred.time- self.time
                 print(f"Delta in front: {round(difference, 3)}s ({car_pred.team.name})")
             if self.wear >= 70:
                 print(random.choice(["The tyres are pretty done now.", "I don´t know what are you doing there, but I am boxing. Or at least I wish.", "The tyres are ***!", "Please, take me out from this hell." "Please box, please."]))
