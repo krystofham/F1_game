@@ -215,9 +215,9 @@ while len(names_free_drivers) >= 0:
     for i, t in enumerate(teams, 1):
         if i == 1:  
             t.rating += 1
-            img = mpimg.imread(f'{t.name}.png')
+            img = mpimg.imread(f'img/{t.name}.png')
             plt.imshow(img)
-            plt.axis('off')  # Optional: hides axis for image display
+            plt.axis('off')
             plt.show()
         print(f"{i}. {t.name} – {t.points} points")
         if i == len(teams):
