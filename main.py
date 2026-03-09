@@ -1,6 +1,5 @@
 from init import *
 random.seed()
-x = 0
 cars = []
 for driver in drivers:
     cars.append(Car(driver,random.uniform(5, 6)))
@@ -9,20 +8,20 @@ cars.append(player)
 player_2 = Car(DRIVER_2, random.uniform(5, 6), is_player=True)
 cars.append(player_2)
 
-create_team(TEAM_PLAYER, player, player_2, teams,                               random.uniform(5,   6))
-create_team("Scuderia Python", cars[0], cars[1], teams,                         random.uniform(4,   6.9))
-create_team("Racing 404",cars[2],cars[3], teams,                                random.uniform(4.5, 6))
-create_team("Formula 1.0 racing team",cars[4],cars[5], teams,                   random.uniform(4,   6))
-create_team("Microsoft PitStop Protocol racing team",cars[6],cars[7], teams,    random.uniform(4,   6))
-create_team("Intel QWERTY GP",cars[8],cars[9], teams,                           random.uniform(4.5, 6))
-create_team("Underbyte Nvidia GP",cars[10],cars[11], teams,                     random.uniform(4,   6.85))
-create_team("JavaScript Racing team",cars[12],cars[13], teams,                  random.uniform(4,   6.85))
-create_team("Java motors",cars[14],cars[15], teams,                             random.uniform(4,   6))
-create_team("Jawa Surenate Linux racing team",cars[16],cars[17], teams,         random.uniform(4,   6))
-create_team("AMD Assemblyte GP",cars[18],cars[19], teams,                       random.uniform(4,   6))
-create_team("VS racing 22",cars[20],cars[21], teams,                            random.uniform(4,   6))
-create_team("PyCharm motors",cars[22],cars[23], teams,                          random.uniform(4,   6))
-create_team("Pixel motors",cars[24],cars[25], teams,                            random.uniform(4,   6))
+create_team(TEAM_PLAYER,                                player, player_2, teams,    random.uniform(5,   6))
+create_team("Scuderia Python",                          cars[0], cars[1], teams,    random.uniform(4,   6.9))
+create_team("Racing 404",                               cars[2],cars[3], teams,     random.uniform(4.5, 6))
+create_team("Formula 1.0 racing team",                  cars[4],cars[5], teams,     random.uniform(4,   6))
+create_team("Microsoft PitStop Protocol racing team",   cars[6],cars[7], teams,     random.uniform(4,   6))
+create_team("Intel QWERTY GP",                          cars[8],cars[9], teams,     random.uniform(4.5, 6))
+create_team("Underbyte Nvidia GP",                      cars[10],cars[11], teams,   random.uniform(4,   6.85))
+create_team("JavaScript Racing team",                   cars[12],cars[13], teams,   random.uniform(4,   6.85))
+create_team("Java motors",                              cars[14],cars[15], teams,   random.uniform(4,   6))
+create_team("Jawa Surenate Linux racing team",          cars[16],cars[17], teams,   random.uniform(4,   6))
+create_team("AMD Assemblyte GP",                        cars[18],cars[19], teams,   random.uniform(4,   6))
+create_team("VS racing 22",                             cars[20],cars[21], teams,   random.uniform(4,   6))
+create_team("PyCharm motors",                           cars[22],cars[23], teams,   random.uniform(4,   6))
+create_team("Pixel motors",                             cars[24],cars[25], teams,   random.uniform(4,   6))
 
 lenght = 0
 while lenght <= 0:
