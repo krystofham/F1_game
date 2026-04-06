@@ -34,6 +34,49 @@ def reset_race(climax, cars):
         a.last_stint_start = 0
         a.destroy = False
     return lap, time_laps, SAFETY_CAR, LAPS_REMAINING, weather, forecast, cars, WETTINESS
+def make_a_deal(DRIVER_1, average_rating, player, teams, tymy_ridic_1_trade, tymy_ridic_2_trade, possible_transfer):
+    number = 1
+    if average_rating > player.ratings:
+        print(f"For exchange of {DRIVER_1} has interest just few teams. For example:")
+        random_number = random.choice([0, 1])
+        nahodny_ridic = teams[-1].drivers[random_number]
+        print(f"Option 1 {teams[-1].name} ({teams[-1].points} points) offers its pilot {nahodny_ridic.name}")
+        possible_transfer.append(teams[-1])
+    else:
+        print("There is a big interest for a driver. For example:")
+        
+        for x in teams:
+            if random.uniform(0, 1) > 0.7:
+                a = random.choice([0,1])
+                nahodny_ridic = x.drivers[a]
+                print(f"Option {number} {x.name} ({x.points} points) {nahodny_ridic.name}")
+                possible_transfer.append(nahodny_ridic)
+                number +=1
+    for x in tymy_ridic_1_trade:
+        print(f"Option {number} {x.name} ({x.points} points) offers {x.drivers[0].name}")
+        possible_transfer.append(x.drivers[0])
+        number +=1
+    for x in tymy_ridic_2_trade:
+        print(f"Option {number} {x.name} ({x.points} points) offers {x.drivers[1].name}")
+        possible_transfer.append(x.drivers[1])
+        number+=1
+    new_pilot = input("What pilot do you want? NAME\n")
+    found = False
+    for x in possible_transfer:
+        if x.name == new_pilot:
+            found = True
+    while not found:
+        new_pilot = input("What pilot do you want? NAME\n")
+        found = False
+        for x in possible_transfer:
+            if x.name == new_pilot:
+                found = True
+    for x in possible_transfer:
+        if x.name == new_pilot:
+            DRIVER_1 = x.name
+            player.name, x.name = x.name, player.name
+            player.ratings, x.ratings = x.ratings, player.ratings
+            print("succesfull swap")
 def transef_mmr1(cars, teams, player, player_2, DRIVER_1, DRIVER_2):
     average_rating = 0
     for x in cars:
@@ -55,92 +98,9 @@ def transef_mmr1(cars, teams, player, player_2, DRIVER_1, DRIVER_2):
                 if (x.rating - y.ratings) >=0:
                     tymy_ridic_2_trade.append(x)
     if DRIVER_1 == swap:
-        number = 1
-        if average_rating > player.ratings:
-            print(f"For exchange of {DRIVER_1} has interest just few teams. For example:")
-            random_number = random.choice([0, 1])
-            nahodny_ridic = teams[-1].drivers[random_number]
-            print(f"Option 1 {teams[-1].name} ({teams[-1].points} points) offers its pilot {nahodny_ridic.name}")
-            possible_transfer.append(teams[-1])
-        else:
-            print("There is a big interest for a driver. For example:")
-            
-            for x in teams:
-                if random.uniform(0, 1) > 0.7:
-                    a = random.choice([0,1])
-                    nahodny_ridic = x.drivers[a]
-                    print(f"Option {number} {x.name} ({x.points} points) {nahodny_ridic.name}")
-                    possible_transfer.append(nahodny_ridic)
-                    number +=1
-        for x in tymy_ridic_1_trade:
-            print(f"Option {number} {x.name} ({x.points} points) offers {x.drivers[0].name}")
-            possible_transfer.append(x.drivers[0])
-            number +=1
-        for x in tymy_ridic_2_trade:
-            print(f"Option {number} {x.name} ({x.points} points) offers {x.drivers[1].name}")
-            possible_transfer.append(x.drivers[1])
-            number+=1
-        new_pilot = input("What pilot do you want? NAME\n")
-        found = False
-        for x in possible_transfer:
-            if x.name == new_pilot:
-                found = True
-        while not found:
-            new_pilot = input("What pilot do you want? NAME\n")
-            found = False
-            for x in possible_transfer:
-                if x.name == new_pilot:
-                    found = True
-        for x in possible_transfer:
-            if x.name == new_pilot:
-                DRIVER_1 = x.name
-                player.name, x.name = x.name, player.name
-                player.ratings, x.ratings = x.ratings, player.ratings
-                print("succesfull swap")
+        make_a_deal(DRIVER_1, average_rating, player, teams, tymy_ridic_1_trade, tymy_ridic_2_trade, possible_transfer)
     if DRIVER_2 == swap:
-        number = 1
-        if average_rating > player_2.ratings:
-            print(f"For exchange of {DRIVER_2} has interest just few teams. For example:")
-            random_number = random.choice([0, 1])
-            nahodny_ridic = teams[-1].drivers[random_number]
-            print(f"Option 1 {teams[-1].name} ({teams[-1].points} points) offers its pilot {nahodny_ridic.name}")
-            possible_transfer.append(teams[-1])
-        else:
-            print("There is a big interest for a driver. For example:")
-            
-            for x in teams:
-                if random.uniform(0, 1) > 0.7:
-                    random_number = random.choice([0,1])
-                    nahodny_ridic = x.drivers[random_number]
-                    print(f"Option {number} {x.name} ({x.points} points) {nahodny_ridic.name}")
-                    possible_transfer.append(nahodny_ridic)
-                    number +=1
-        for x in tymy_ridic_1_trade:
-            print(f"Option {number} {x.name} ({x.points} points) offers {x.drivers[0].name}")
-            possible_transfer.append(x.drivers[0])
-            number +=1
-        for x in tymy_ridic_2_trade:
-            print(f"Option {number} {x.name} ({x.points} points) offers {x.drivers[1].name}")
-            possible_transfer.append(x.drivers[1])
-            number+=1
-        new_pilot = input("What pilot do you want? NAME\n")
-        found = False
-        for x in possible_transfer:
-            if x.name == new_pilot:
-                found = True
-        while not found:
-            new_pilot = input("What pilot do you want? NAME\n")
-            found = False
-            for x in possible_transfer:
-                if x.name == new_pilot:
-                    found = True
-        for x in possible_transfer:
-            if x.name == new_pilot:
-                DRIVER_2 = x.name
-                player_2.name, x.name = x.name, player_2.name
-                player_2.ratings, x.ratings = x.ratings, player_2.ratings
-                print("succesfull swap")
-    
+        make_a_deal(DRIVER_2, average_rating, player_2, teams, tymy_ridic_1_trade, tymy_ridic_2_trade, possible_transfer) 
 def transfer(cars, teams, player, player_2, DRIVER_1, DRIVER_2):
     new_pilot = input("Do you want from MMR1 or MMR2?\n").upper()
     while new_pilot not in ("MMR1", "MMR2"):
