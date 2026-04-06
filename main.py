@@ -151,7 +151,7 @@ while len(names_free_drivers) >= 0:
             # Print drivers table
             drivers_table(cars, COUNT_CARS)
             for car in cars:
-                SAFETY_CAR, LAPS_REMAINING = car.simuluj_ai(training_type, WETTINESS, lap, LAPS, forecast, weather, laps=LAPS, max_laps=lap, k_wear=k_wear, wettiness=WETTINESS, TIME_S1=TIME_S1, TIME_S2=TIME_S2, TIME_S3=TIME_S3, speed_bonus= speed_bonus, time_laps=time_laps, PNEU_types=PNEU_types, SAFETY_CAR=SAFETY_CAR, LAPS_REMAINING = LAPS_REMAINING)
+                SAFETY_CAR, LAPS_REMAINING = car.simuluj_ai(training_type, WETTINESS, lap, LAPS, forecast, weather, laps=lap, max_laps=LAPS, k_wear=k_wear, wettiness=WETTINESS, TIME_S1=TIME_S1, TIME_S2=TIME_S2, TIME_S3=TIME_S3, speed_bonus= speed_bonus, time_laps=time_laps, PNEU_types=PNEU_types, SAFETY_CAR=SAFETY_CAR, LAPS_REMAINING = LAPS_REMAINING)
             boxy_po_teamu = {}
             for a in cars:
                 if not a.is_player and a.pit: 
@@ -244,7 +244,7 @@ while len(names_free_drivers) >= 0:
     while len(want_trade) >= 2:
         driver_to_trade_1, driver_to_trade_2 = random.sample(want_trade, 2)
         print(f"Breaking!!!\n {driver_to_trade_1.name.name} ({driver_to_trade_1.name.team.name}, {driver_to_trade_1.name.points} points) changes {driver_to_trade_2.name.name} ({driver_to_trade_2.name.team.name}, {driver_to_trade_2.name.points} points)\nBreaking!!!")
-        driver_to_trade_1.name, driver_to_trade_2.name == driver_to_trade_2.name, driver_to_trade_1.name
+        driver_to_trade_1.name, driver_to_trade_2.name = driver_to_trade_2.name, driver_to_trade_1.name
         want_trade.remove(driver_to_trade_1)
         want_trade.remove(driver_to_trade_2)
 
