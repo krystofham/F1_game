@@ -1,7 +1,7 @@
 def strategy(LAPS, TIME_S1, TIME_S2, TIME_S3, pneu, speed, climax):
     count_laps = LAPS
     if count_laps < 2:
-        count_laps == 3
+        count_laps = 3
     lap_time = (TIME_S1 + TIME_S2 + TIME_S3)/60
     if pneu == "medium":
         k_wear = [1.5,5,9,4.4,8.4]
