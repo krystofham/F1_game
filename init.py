@@ -1,4 +1,5 @@
 import random
+import json
 import matplotlib.pyplot as plt
 import matplotlib.image as mpimg
 from printing_info import *
