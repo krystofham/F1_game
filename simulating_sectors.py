@@ -1,5 +1,23 @@
 import random
 import matplotlib.pyplot as plt
+def ask_for_int(prompt, min, max, variable):
+    valid = False
+    while not valid:
+        x = input(prompt).strip()
+        if x != "":
+            try:
+                x = int(x)
+                if x >= min and x <= max:
+                    valid = True
+                    return x
+                else: 
+                    print("Not valid input. Lower or higher than you can.")
+            except:
+                valid = False
+                print("Not valid data type.")     
+        else:
+            valid = True
+            return variable 
 def technical_sector_sim(settings):
     speed_in_training = settings[0]/10
     understeer_in_traning = settings[1]/5
@@ -8,8 +26,7 @@ def technical_sector_sim(settings):
     grip = settings[4]/5
     curb_handling = settings[5]/5
     my_time = 30
-    my_time -= (grip + acceleration + oversteer_in_training + understeer_in_traning + speed_in_training + curb_handling)
-            
+    my_time -= (grip + acceleration + oversteer_in_training + understeer_in_traning + speed_in_training + curb_handling)        
     corner_slow = [1, 3, 5, 9, 11, 15]
     corner_medium =  [2, 6, 7, 12, 13]
     corner_fast = [4, 8, 10, 14]
@@ -178,11 +195,11 @@ def training(speed, climax, cars):
     brakes = None
     stabilizators = None
     suspension = None
-    training = input("Do you want training for speed [1] or qualification [2]: ")
+    training_mode = ask_for_int("Do you want training for speed [1] or qualification [2]: ", 1, 2, 0)
+    print("Settings of the car. You have three attemps")
     for x in range(3):
-        print("Settings of the car. You have three attemps")
         print("We are setting front wing. Value 0-11. In lower speed higher number. Lowers understeer. During rain bigger number.")
-        front_wing = int(input(f"How do you want to set the front wing? Last value: {front_wing}\n"))
+        user_input = ask_for_int(f"How do you want to set the front wing? Last value: {front_wing}\n", 0, 11, front_wing)
         if speed == "quick":
             front_wing_ideal = random.randint(0, 4)
         elif speed == "medium":
@@ -191,8 +208,7 @@ def training(speed, climax, cars):
             front_wing_ideal = random.randint(6, 11)
         if climax == "transitional":
             front_wing_ideal += random.randint(3,5)
-        if front_wing_ideal > 11:
-            front_wing_ideal = 11
+        front_wing = user_input
         diff = front_wing_ideal - front_wing
         speed_in_training += diff
         if diff > 2 or diff < -2:
@@ -202,10 +218,9 @@ def training(speed, climax, cars):
         understeer_in_traning -= diff
         acceleration += diff
         grip += diff
-
-
         print("We are setting rear wing.")
-        rear_wing = int(input(f"How do you want to set the rear wing? Last value: {rear_wing}\n"))
+        user_input = ask_for_int(f"How do you want to set the rear wing? Last value: {rear_wing}\n", 0, 11, rear_wing)
+        rear_wing = user_input
         if speed == "quick":
             rear_wing_ideal = random.randint(0, 4)
         elif speed == "medium":
@@ -225,19 +240,17 @@ def training(speed, climax, cars):
         understeer_in_traning -= diff
         acceleration += diff
         grip += diff
-
-
         print("We are setting brakes.")
-        brakes = int(input(f"How do you want to set the brakes? 50 - 60. Lower number means bigger oversteer, bigger understeer Last value: {brakes} \n"))
+        user_input = ask_for_int(f"How do you want to set the brakes? 50 - 60. Lower number means bigger oversteer, bigger understeer. Last value: {brakes}\n", 50, 60, brakes)
+        brakes = user_input
         brakes__ideal = random.randint (50, 60)
-        if brakes < 40 or brakes > 70:
-            brakes = 55
         diff = brakes__ideal - brakes
+        if diff < 0: diff*=-1
         understeer_in_traning += diff * 2
         oversteer_in_training += diff *-2
+        user_input = ask_for_int(f"We are setting anti-roll bars. 1 = softer, 2 = harder. If you have harder, the car is faster, but has lower grip. Last value: {stabilizators}\n",1,2,stabilizators)
+        stabilizators = user_input
 
-        print(f"We are setting anti-roll bars. 1 = softer, 2 = harder. If you have harder, the car is faster, but has lower grip. Last value: {stabilizators}")
-        stabilizators = int(input("What anti-roll bars do you want\n"))
         if stabilizators == 1:
             grip -= 2
             curb_handling -=2
@@ -251,7 +264,7 @@ def training(speed, climax, cars):
 
 
         print("We are setting springs.")
-        suspension = int(input(f"What springs do you want? 1-hard 2-soft. Hards have better acceleration, lower grip, unstable car, bigger understeer a oversteer. Last value: {suspension}\n"))
+        user_input = ask_for_int(f"What springs do you want? 1 = hard, 2 = soft. Hards have better acceleration, lower grip, unstable car, bigger understeer and oversteer. Last value: {suspension}\n",1,2,suspension)
         if suspension == 1:
             acceleration += 2
             grip -=1
@@ -305,8 +318,11 @@ def training(speed, climax, cars):
             for car in cars:
                 if car.is_player:
                     car.safety_car_probability -= (oversteer_in_training + understeer_in_traning)*150
+        user_input = input("Do you want to end settings? If so, type EXIT").lower()
+        if user_input == "exit": 
+            break
     if speed_in_training + acceleration > 5:
         speed_bonus = True
     else:
         speed_bonus = False
-    return speed_bonus, training
+    return speed_bonus, training_mode
