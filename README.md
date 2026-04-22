@@ -1,5 +1,7 @@
 # 🏎️ F1 Manager Simulator
 
+> This documentation is heavily done with AI.
+
 > A terminal-based Formula 1 career management game written in Python. Manage a team, develop race strategy, handle pit stops, and fight for the championship across multiple seasons.
 
 ---
@@ -23,7 +25,6 @@
   - [MMR2 (Minor League)](#mmr2-minor-league)
 - [Module Reference](#module-reference)
 - [Configuration & Constants](#configuration--constants)
-- [Known Issues & Limitations](#known-issues--limitations)
 - [Planned Features (Roadmap)](#planned-features-roadmap)
 - [License](#license)
 
@@ -458,17 +459,6 @@ Set in `init.py`:
 | `TIME_S1/S2/S3` | 15 / 23 / 22 | Default sector times (overridden per track) |
 
 To add new tracks, append a `Track(...)` to the `tracks` list in `track.py`. To add new circuits to the calendar, append to the `championship` list in `init.py`.
-
----
-
-## Known Issues & Limitations
-
-- The rain pit stop logic for AI cars can sometimes leave them on dry compounds too long in heavy rain
-- Negative times can theoretically occur with extreme setup values (tracked in what_i_want.txt as "záporný čas")
-- Loop issue at lap ~1426 in very long races (tracked as "Zacyklení 1426")
-- The transfer screen for MMR2 has a logic error — the `while` loop condition uses `or` instead of `and`, making it uncheckable
-- `driver_to_trade_1.name, driver_to_trade_2.name == ...` in `main.py` is a comparison, not a swap; AI transfers do not actually execute
-- Understeer display in the sector sim uses understeer values but does not visualise throttle (planned improvement)
 
 ---
 
