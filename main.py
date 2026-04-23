@@ -79,7 +79,6 @@ while len(names_free_drivers) >= 0:
                 continue
         """
         generate_pneu_for_bots_on_start()
-
         simulation = []
         #Training
         speed_bonus, training_type = training(speed, climax, cars)
@@ -88,9 +87,7 @@ while len(names_free_drivers) >= 0:
         #Qualification
         simulation = qualification(simulation, cars, TIME_S1, TIME_S2, TIME_S3, training_type)
         ######################################################################################################################################################################
-        while lap <= LAPS:
-            if lap == LAPS:
-                print("Last lap. Push push.")
+        while lap <= LAPS:  
             #safety car
             for car in cars:
                 SAFETY_CAR, LAPS_REMAINING, car.dnf, car.time = safety_car(car, weather, lap, SAFETY_CAR, LAPS_REMAINING)
@@ -184,42 +181,8 @@ while len(names_free_drivers) >= 0:
                     player_2.name, player_2.ratings = new, rating
             best.name, best.rating = a.name, a.ratings
             a.name, a.ratings = new, rating
-    print("\n🏆 Teams at the end of championship:")
-    teams.sort(key=lambda t: t.points, reverse=True)
-    for i, t in enumerate(teams, 1):
-        if i == 1:  
-            t.rating += 1
-            img = mpimg.imread(f'img/{t.name}.png')
-            plt.imshow(img)
-            plt.axis('off')
-            plt.show()
-        print(f"{i}. {t.name} – {t.points} points")
-        if i == len(teams):
-            t.rating -=1
-    answear = input("Important question")
-    while answear == "":
-        answear = input("Important question")
-    new_pilot = input("Do you want new pilot? YES/NO\n").lower()   
-    while new_pilot not in ("yes", "no"):
-        new_pilot = input("Do you want new pilot? YES/NO\n").lower()   
-    if new_pilot == "yes":
-        player, player_2, DRIVER_1, DRIVER_2, cars = transfer(cars, teams, player, player_2, DRIVER_1, DRIVER_2)        
-    class Want:
-        def __init__(self, name):
-            self.name = name
-            self.transfer_did = False
-    want_trade = []
-    for x in teams:
-        for y in x.drivers:
-            if x.rating - y.ratings > 0.8 and y.is_player == False:
-                want_trade.append(Want(y))
-    while len(want_trade) >= 2:
-        driver_to_trade_1, driver_to_trade_2 = random.sample(want_trade, 2)
-        print(f"Breaking!!!\n {driver_to_trade_1.name.name} ({driver_to_trade_1.name.team.name}, {driver_to_trade_1.name.points} points) changes {driver_to_trade_2.name.name} ({driver_to_trade_2.name.team.name}, {driver_to_trade_2.name.points} points)\nBreaking!!!")
-        driver_to_trade_1.name, driver_to_trade_2.name = driver_to_trade_2.name, driver_to_trade_1.name
-        want_trade.remove(driver_to_trade_1)
-        want_trade.remove(driver_to_trade_2)
-
+    print_teams_end_championship(teams)
+    
     WETTINESS = 0
     for c in cars:
         c.points = 0
