@@ -37,27 +37,3 @@ def simulate_season_mmr2(drivers):
 # Create a list of drivers with random experience
 list_drivers_mmr2 = [Drivermmr2(name, random.uniform(5.95, 8.05)) for name in drivers_mmr2]
 
-def trading_at_the_of_season(teams, player, player_2, DRIVER_1, DRIVER_2, cars):
-    answear = input("Important question")
-    while answear == "":
-        answear = input("Important question")
-    new_pilot = input("Do you want new pilot? YES/NO\n").lower()   
-    while new_pilot not in ("yes", "no"):
-        new_pilot = input("Do you want new pilot? YES/NO\n").lower()   
-    if new_pilot == "yes":
-        player, player_2, DRIVER_1, DRIVER_2, cars = transfer(cars, teams, player, player_2, DRIVER_1, DRIVER_2)        
-    class Want:
-        def __init__(self, name):
-            self.name = name
-            self.transfer_did = False
-    want_trade = []
-    for x in teams:
-        for y in x.drivers:
-            if x.rating - y.ratings > 0.8 and y.is_player == False:
-                want_trade.append(Want(y))
-    while len(want_trade) >= 2:
-        driver_to_trade_1, driver_to_trade_2 = random.sample(want_trade, 2)
-        print(f"Breaking!!!\n {driver_to_trade_1.name.name} ({driver_to_trade_1.name.team.name}, {driver_to_trade_1.name.points} points) changes {driver_to_trade_2.name.name} ({driver_to_trade_2.name.team.name}, {driver_to_trade_2.name.points} points)\nBreaking!!!")
-        driver_to_trade_1.name, driver_to_trade_2.name = driver_to_trade_2.name, driver_to_trade_1.name
-        want_trade.remove(driver_to_trade_1)
-        want_trade.remove(driver_to_trade_2)
