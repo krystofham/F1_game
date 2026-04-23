@@ -1,5 +1,4 @@
 import random
-from engine import transef_mmr1, transfer
 drivers_mmr2 = [
     "Noah Blake", "Felipe Sandoval", "Luca Moretti", "Brian Chen", "Adam Kerdöl", "Pierre Gauthier",
     "Viktor Orlov", "Daisuke Tanaka", "Elias Müller", "Jordan Evans", "Diego Ramirez", "Anton Petrov",

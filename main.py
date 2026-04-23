@@ -1,6 +1,5 @@
 from init import *
 lenght = get_lenght_of_championship()
-
 championshionship_race_count = len(championship) - lenght
 if championshionship_race_count > 0:
     for _ in range(championshionship_race_count):
@@ -63,9 +62,8 @@ while len(names_free_drivers) >= 0:
             print (f"weather: 🌤️ ☁️  {weather}")
         for car in cars:
             car.pneu = random.choice(["hard", "medium"])
-        get_player_pneu(PNEU_types)
         player.pneu = get_player_pneu(PNEU_types, player.pneu)
-        player2.pneu = get_player_pneu(PNEU_types, player2.pneu)
+        player_2.pneu = get_player_pneu(PNEU_types, player_2.pneu)
         """
         player.pneu = input("Pick pneu for driver 1: [hard / medium / soft / wet / inter]\n[> ")
         while player.pneu not in PNEU_types:
@@ -75,10 +73,10 @@ while len(names_free_drivers) >= 0:
         player_2.pneu = input("Pick pneu for driver 2: [hard / medium / soft / wet / inter]\n[> ")
         while player_2.pneu not in PNEU_types:
             player_2.pneu = input("Invalid choice. Pick pneu for driver 2: [hard / medium / soft / wet / inter]\n[> ")
-            if player2.pneu == "exit":
+            if player_2.pneu == "exit":
                 continue
         """
-        generate_pneu_for_bots_on_start()
+        cars = generate_pneu_for_bots_on_start(cars, weather_1)
         simulation = []
         #Training
         speed_bonus, training_type = training(speed, climax, cars)

@@ -170,7 +170,7 @@ def generate_pneu_for_bots_on_start (cars:list, weather_1:str) -> str:
                 car.pneu = random.choice(["wet", "inter"])
             if weather_1 == "transitional":
                 car.pneu = random.choice(["soft", "inter"])
-    return car.pneu
+    return cars
 
 def trading_at_the_of_season(teams, player, player_2, DRIVER_1, DRIVER_2, cars):
     answear = input("Important question")
