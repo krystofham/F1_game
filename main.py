@@ -1,35 +1,6 @@
 from init import *
-random.seed()
-cars = []
-for driver in drivers:
-    cars.append(Car(driver,random.uniform(5, 6)))
-player = Car(DRIVER_1, random.uniform(5, 6), is_player=True)
-cars.append(player)
-player_2 = Car(DRIVER_2, random.uniform(5, 6), is_player=True)
-cars.append(player_2)
+lenght = get_lenght_of_championship()
 
-create_team(TEAM_PLAYER,                                player, player_2, teams,    random.uniform(5,   6))
-create_team("Scuderia Python",                          cars[0], cars[1], teams,    random.uniform(4,   6.9))
-create_team("Racing 404",                               cars[2],cars[3], teams,     random.uniform(4.5, 6))
-create_team("Formula 1.0 racing team",                  cars[4],cars[5], teams,     random.uniform(4,   6))
-create_team("Microsoft PitStop Protocol racing team",   cars[6],cars[7], teams,     random.uniform(4,   6))
-create_team("Intel QWERTY GP",                          cars[8],cars[9], teams,     random.uniform(4.5, 6))
-create_team("Underbyte Nvidia GP",                      cars[10],cars[11], teams,   random.uniform(4,   6.85))
-create_team("JavaScript Racing team",                   cars[12],cars[13], teams,   random.uniform(4,   6.85))
-create_team("Java motors",                              cars[14],cars[15], teams,   random.uniform(4,   6))
-create_team("Jawa Surenate Linux racing team",          cars[16],cars[17], teams,   random.uniform(4,   6))
-create_team("AMD Assemblyte GP",                        cars[18],cars[19], teams,   random.uniform(4,   6))
-create_team("VS racing 22",                             cars[20],cars[21], teams,   random.uniform(4,   6))
-create_team("PyCharm motors",                           cars[22],cars[23], teams,   random.uniform(4,   6))
-create_team("Pixel motors",                             cars[24],cars[25], teams,   random.uniform(4,   6))
-
-lenght = 0
-while lenght <= 0:
-    lenght = input("What is the lenght of the championship: ")
-    try:
-        lenght = int(lenght)
-    except:
-        lenght = 0
 championshionship_race_count = len(championship) - lenght
 if championshionship_race_count > 0:
     for _ in range(championshionship_race_count):
@@ -92,6 +63,10 @@ while len(names_free_drivers) >= 0:
             print (f"weather: 🌤️ ☁️  {weather}")
         for car in cars:
             car.pneu = random.choice(["hard", "medium"])
+        get_player_pneu(PNEU_types)
+        player.pneu = get_player_pneu(PNEU_types, player.pneu)
+        player2.pneu = get_player_pneu(PNEU_types, player2.pneu)
+        """
         player.pneu = input("Pick pneu for driver 1: [hard / medium / soft / wet / inter]\n[> ")
         while player.pneu not in PNEU_types:
             player.pneu = input("Invalid choice. Pick pneu for driver 1: [hard / medium / soft / wet / inter]\n[> ")
@@ -100,14 +75,11 @@ while len(names_free_drivers) >= 0:
         player_2.pneu = input("Pick pneu for driver 2: [hard / medium / soft / wet / inter]\n[> ")
         while player_2.pneu not in PNEU_types:
             player_2.pneu = input("Invalid choice. Pick pneu for driver 2: [hard / medium / soft / wet / inter]\n[> ")
-            if player.pneu == "exit":
+            if player2.pneu == "exit":
                 continue
-        for car in cars:
-            if car.is_player is False:
-                if weather_1 in ('rain', 'heavy rain'):
-                    car.pneu = random.choice(["wet", "inter"])
-                if weather_1 == "transitional":
-                    car.pneu = random.choice(["soft", "inter"])
+        """
+        generate_pneu_for_bots_on_start()
+
         simulation = []
         #Training
         speed_bonus, training_type = training(speed, climax, cars)
