@@ -182,9 +182,5 @@ while len(names_free_drivers) >= 0:
             best.name, best.rating = a.name, a.ratings
             a.name, a.ratings = new, rating
     print_teams_end_championship(teams)
-    trading_at_the_of_season(teams, player, player_2, DRIVER_1, DRIVER_2, cars)
-    WETTINESS = 0
-    for c in cars:
-        c.points = 0
-    for t in teams:
-        t.points = 0
+    teams, player, player_2, DRIVER_1, DRIVER_2, cars = trading_at_the_of_season(teams, player, player_2, DRIVER_1, DRIVER_2, cars)
+    WETTINESS, cars, teams =  reset_championship()
