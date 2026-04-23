@@ -146,6 +146,8 @@ def safety_car(car, weather, lap, SAFETY_CAR, LAPS_REMAINING):
             "Radio: Watch the debris – SC deployed!"
         ]))
     else:
+        if car.safety_car_probability < 1:
+            car.safety_car_probability = 200
         if random.randint(1,int((car.safety_car_probability/5))) == 1:
             if lap >= 3:
                 car.dnf = True
