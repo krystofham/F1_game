@@ -1,8 +1,9 @@
 from fastapi import FastAPI
-from main import *
+import json
 
 app = FastAPI()
 
+data = 
 @app.get("/")
 def index():
     return {"Hello": "World"}
