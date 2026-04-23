@@ -1,0 +1,89 @@
+{
+  "player_team": {
+    "name": "MySql AWS Maxim racing team",
+    "driver_1": "driver_1",
+    "driver_2": "driver_2",
+    "performance_min": 5.0,
+    "performance_max": 6.0
+  },
+  "teams": [
+    {
+      "name": "Scuderia Python",
+      "car_indices": [0, 1],
+      "performance_min": 4.0,
+      "performance_max": 6.9
+    },
+    {
+      "name": "Racing 404",
+      "car_indices": [2, 3],
+      "performance_min": 4.5,
+      "performance_max": 6.0
+    },
+    {
+      "name": "Formula 1.0 racing team",
+      "car_indices": [4, 5],
+      "performance_min": 4.0,
+      "performance_max": 6.0
+    },
+    {
+      "name": "Microsoft PitStop Protocol racing team",
+      "car_indices": [6, 7],
+      "performance_min": 4.0,
+      "performance_max": 6.0
+    },
+    {
+      "name": "Intel QWERTY GP",
+      "car_indices": [8, 9],
+      "performance_min": 4.5,
+      "performance_max": 6.0
+    },
+    {
+      "name": "Underbyte Nvidia GP",
+      "car_indices": [10, 11],
+      "performance_min": 4.0,
+      "performance_max": 6.85
+    },
+    {
+      "name": "JavaScript Racing team",
+      "car_indices": [12, 13],
+      "performance_min": 4.0,
+      "performance_max": 6.85
+    },
+    {
+      "name": "Java motors",
+      "car_indices": [14, 15],
+      "performance_min": 4.0,
+      "performance_max": 6.0
+    },
+    {
+      "name": "Jawa Surenate Linux racing team",
+      "car_indices": [16, 17],
+      "performance_min": 4.0,
+      "performance_max": 6.0
+    },
+    {
+      "name": "AMD Assemblyte GP",
+      "car_indices": [18, 19],
+      "performance_min": 4.0,
+      "performance_max": 6.0
+    },
+    {
+      "name": "VS racing 22",
+      "car_indices": [20, 21],
+      "performance_min": 4.0,
+      "performance_max": 6.0
+    },
+    {
+      "name": "PyCharm motors",
+      "car_indices": [22, 23],
+      "performance_min": 4.0,
+      "performance_max": 6.0
+    },
+    {
+      "name": "Pixel motors",
+      "car_indices": [24, 25],
+      "performance_min": 4.0,
+      "performance_max": 6.0
+    }
+  ]
+}
