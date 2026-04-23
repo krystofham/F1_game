@@ -485,7 +485,7 @@ From `what_i_want.txt` and the developer notes:
 - [ ] Scickit learn for AI decisions
 
 **Technical**
-- [ ] JSON/YAML config files for circuits, teams, drivers
+- [X] JSON/YAML config files for circuits, teams, drivers
 - [ ] Save / load season state
 - [ ] Season history & CSV export
 - [X] Modular architecture refactor
