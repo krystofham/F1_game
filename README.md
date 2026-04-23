@@ -1,4 +1,4 @@
-# 🏎️ F1 Manager Simulator
+# F1 Manager Simulator
 
 > This documentation is heavily done with AI.
 
@@ -47,18 +47,18 @@ The simulation runs entirely in the terminal with matplotlib graphs displayed af
 
 ## Features
 
-- ✅ Full race simulation with lap-by-lap output
-- ✅ Two player-controlled drivers on the same team
-- ✅ Dynamic weather system (sunny → transitional → rain → heavy rain)
-- ✅ Tyre wear simulation with 5 compounds (hard, medium, soft, inter, wet)
-- ✅ Safety car events and crash DNFs
-- ✅ DRS activation within 1 second of the car ahead
-- ✅ AI pit strategy logic that reacts to weather and wear
-- ✅ Driver & constructor championship standings
-- ✅ Car setup system affecting cornering, grip, and speed
-- ✅ Driver transfers between MMR1 and MMR2
-- ✅ Multi-season career mode
-- ✅ Post-race graphs: race results, position-over-laps chart
+- Full race simulation with lap-by-lap output
+- Two player-controlled drivers on the same team
+- Dynamic weather system (sunny → transitional → rain → heavy rain)
+- Tyre wear simulation with 5 compounds (hard, medium, soft, inter, wet)
+- Safety car events and crash DNFs
+- DRS activation within 1 second of the car ahead
+- AI pit strategy logic that reacts to weather and wear
+- Driver & constructor championship standings
+- Car setup system affecting cornering, grip, and speed
+- Driver transfers between MMR1 and MMR2
+- Multi-season career mode
+- Post-race graphs: race results, position-over-laps chart
 
 ---
 
@@ -482,6 +482,7 @@ From `what_i_want.txt` and the developer notes:
 
 **Analytics**
 - [ ] Web dashboard for standings and lap data
+- [ ] Scickit learn for AI decisions
 
 **Technical**
 - [ ] JSON/YAML config files for circuits, teams, drivers
