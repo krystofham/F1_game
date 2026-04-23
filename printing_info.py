@@ -1,6 +1,8 @@
 import random
 from strategy import strategy
 from weather import generate_weather
+import matplotlib.pyplot as plt
+import matplotlib.image as mpimg
 def pit_player(player, player_2, LAPS, lap, TIME_S1, TIME_S2, TIME_S3, pneu, speed, PNEU_types, SAFETY_CAR, climax):
     pick = 1
     pick_2 = 1
@@ -121,3 +123,17 @@ def post_race_info(time_laps, player, player_2, cars, teams, COUNT_CARS):
     for team in teams:
         team.vypocitej_points(RANK,COUNT_CARS)
     return teams, cars, time_laps
+def print_teams_end_championship(teams:list) -> list:
+    print("\n🏆 Teams at the end of championship:")
+    teams.sort(key=lambda t: t.points, reverse=True)
+    for i, t in enumerate(teams, 1):
+        if i == 1:  
+            t.rating += 1
+            img = mpimg.imread(f'img/{t.name}.png')
+            plt.imshow(img)
+            plt.axis('off')
+            plt.show()
+        print(f"{i}. {t.name} – {t.points} points")
+        if i == len(teams):
+            t.rating -=1
+    return teams
