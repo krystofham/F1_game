@@ -196,4 +196,11 @@ def trading_at_the_of_season(teams, player, player_2, DRIVER_1, DRIVER_2, cars):
         driver_to_trade_1.name, driver_to_trade_2.name = driver_to_trade_2.name, driver_to_trade_1.name
         want_trade.remove(driver_to_trade_1)
         want_trade.remove(driver_to_trade_2)
-    
+    return teams, player, player_2, DRIVER_1, DRIVER_2, cars
+
+def reset_championship():
+    for c in cars:
+        c.points = 0
+    for t in teams:
+        t.points = 0
+    return 0, cars, teams
