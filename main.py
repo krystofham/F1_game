@@ -148,16 +148,16 @@ while len(names_free_drivers) >= 0:
             forecast.append(generate_weather(weather_3, climax))
             weather_4 = forecast[3]
             lap += 1
-            save_state_end_of_lap()
+            save_state_end_of_lap(cars, teams, season_count, race, lap)
         #post race
         RANK = [a for a in cars if not a.dnf]
-        save_state_end_of_race()
+        save_state_end_of_race(cars, teams, season_count, race)
         teams, cars, time_laps = post_race_info(time_laps, player, player_2, cars, teams, COUNT_CARS)
         points, cars, teams, players = plot_graph(RANK, DRIVER_1, DRIVER_2, teams, cars, player, player_2, climax)
         lap, time_laps, SAFETY_CAR, LAPS_REMAINING, weather, forecast, cars, WETTINESS = reset_race(climax, cars)
         b+=1
     #post chamiponship
-    save_state_end_of_season()
+    save_state_end_of_season(cars, teams, season_count)
     print("\n🏁 Drivers at the end of championship:")
     best, worst = simulate_season_mmr2(list_drivers_mmr2)
     season_count +=1
