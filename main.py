@@ -184,4 +184,4 @@ while len(names_free_drivers) >= 0:
             a.name, a.ratings = new, rating
     print_teams_end_championship(teams)
     teams, player, player_2, DRIVER_1, DRIVER_2, cars = trading_at_the_of_season(teams, player, player_2, DRIVER_1, DRIVER_2, cars)
-    WETTINESS, cars, teams =  reset_championship()
+    WETTINESS, cars, teams =  reset_championship(cars, teams)
