@@ -490,7 +490,7 @@ From `what_i_want.txt` and the developer notes:
 - [ ] Season history & CSV export
 - [X] Modular architecture refactor
 - [ ] Replay system
-
+- [ ] pit, dnf_count for cars
 ---
 
 ## License
