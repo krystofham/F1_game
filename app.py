@@ -9,7 +9,7 @@ app = FastAPI()
 # React
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"], # Povolí přístup z tvého React vývojového serveru
+    allow_origins=["*"], # development
     allow_methods=["*"],
     allow_headers=["*"],
 )
@@ -48,8 +48,6 @@ class Team(BaseModel):
 class Teams(BaseModel):
     player_team: Player_team
     teams: list[Team]
-
-
 
 
 @app.get("/api/get_teams")
