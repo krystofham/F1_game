@@ -8,26 +8,26 @@ data in
     teams.json
     state.json
 """
-with open(os.path.join(_CONFIG, "drivers.json"), encoding="utf-8") as f:
+with open(os.path.join(_CONFIG, "config/drivers.json"), encoding="utf-8") as f:
     drivers = json.load(f)
 
-with open(os.path.join(_CONFIG, "teams.json"), encoding="utf-8") as f:
+with open(os.path.join(_CONFIG, "config/teams.json"), encoding="utf-8") as f:
     teams = json.load(f)
 
-with open(os.path.join(_CONFIG, "state.json"), encoding="utf-8") as f:
+with open(os.path.join(_CONFIG, "engine/state.json"), encoding="utf-8") as f:
     state = json.load(f)
 
 
 @app.get("/api/get_teams")
 def read_teams():
-    return {}
+    return teams
 
 @app.get("/api/get_team/{team_id}")
 def get_team(team_id):
-    if team_id < 12:
-        return 403
+    if team_id > 12:
+        return 404
     else:
-        return {}
+        return teams[team_id]
 @app.get("/api/get_players")
 def get_players():
     return {}
