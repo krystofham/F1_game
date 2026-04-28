@@ -79,9 +79,9 @@ while len(names_free_drivers) >= 0:
         cars = generate_pneu_for_bots_on_start(cars, weather_1)
         simulation = []
         #Training
-        speed_bonus, training_type = training(speed, climax, cars)
-        #training_type = "1"
-        #speed_bonus = True
+        # speed_bonus, training_type = training(speed, climax, cars)
+        training_type = "1"
+        speed_bonus = True
         #Qualification
         simulation = qualification(simulation, cars, TIME_S1, TIME_S2, TIME_S3, training_type)
         ######################################################################################################################################################################
