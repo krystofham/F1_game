@@ -1,9 +1,14 @@
 import random
-from strategy import strategy
-from weather import generate_weather
 import matplotlib.pyplot as plt
 import matplotlib.image as mpimg
-from load_data_json import *
+try:
+    from load_data_json import *
+    from strategy import strategy
+    from weather import generate_weather
+except:
+    from engine.load_data_json import *
+    from engine.strategy import strategy
+    from engine.weather import generate_weather
 def pit_player(player, player_2, LAPS, lap, TIME_S1, TIME_S2, TIME_S3, pneu, speed, PNEU_types, SAFETY_CAR, climax):
     data = load_data("lap_user_data")
 

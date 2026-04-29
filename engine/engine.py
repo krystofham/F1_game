@@ -1,7 +1,12 @@
 import random
-from weather import generate_weather
-from mmr2 import simulate_season_mmr2, list_drivers_mmr2
-from load_data_json import *
+try:
+    from weather import generate_weather
+    from mmr2 import simulate_season_mmr2, list_drivers_mmr2
+    from load_data_json import *
+except:
+    from engine.weather import generate_weather
+    from engine.mmr2 import simulate_season_mmr2, list_drivers_mmr2
+    from engine.load_data_json import *
 def qualification(simulation, cars, TIME_S1, TIME_S2, TIME_S3, training):
     for car in cars:
             sim_time = TIME_S1 * random.uniform(0.9, 1.1) + TIME_S2 * random.uniform(0.9, 1.1) + TIME_S3 * random.uniform(0.9, 1.1)

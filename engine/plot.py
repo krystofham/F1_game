@@ -1,7 +1,10 @@
 import matplotlib.pyplot as plt
 import matplotlib.image as mpimg
 import random
-from engine import reset_race
+try:
+    from engine import reset_race
+except:
+    from engine.engine import reset_race
 def colours_graphs(cars, colours):
     for c in cars:
         if c.dnf:
