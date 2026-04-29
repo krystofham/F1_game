@@ -1,19 +1,11 @@
+from load_data_json import *
 def get_lenght_of_championship() -> int:
-    try:
-        lenght = int(input("What is the lenght of the championship: "))
-    except:
-        lenght = 0
-    while lenght <= 0:
-        lenght = input("What is the lenght of the championship: ")
-        try:
-            lenght =  int(lenght)
-        except:
-            lenght = 0
-    return lenght
-def get_player_pneu(PNEU_types:dict, player_pneu:str) -> str:
-    pneu = input("Pick pneu for driver: [hard / medium / soft / wet / inter]\n[> ")
-    while pneu not in PNEU_types:
-        pneu = input("Invalid choice. Pick pneu for driver: [hard / medium / soft / wet / inter]\n[> ")
-        if pneu == "exit":
-            return player_pneu
+    if load_data("init")["lenght"] < 0 or  load_data("init")["lenght"] > 12:
+        raise ValueError("invalid lenght") 
+    return load_data("init")["lenght"]
+
+def get_player_pneu(PNEU_types:dict, player_pneu:str, driver) -> str:
+    pneu = load_data("lap_user_data")[driver]["new_pneu"]
+    if pneu == "":
+        return player_pneu
     return pneu

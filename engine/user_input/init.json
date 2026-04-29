@@ -1,0 +1,11 @@
+{
+    "lenght": 2,
+    "pneu_driver_1": "hard",
+    "pneu_driver_2": "hard",
+    "training_mode": 1,
+    "front_wing": 5,
+    "rear_wing": 5,
+    "brakes": 55,
+    "stabilizators": 1,
+    "springs":1   
+}

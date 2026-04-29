@@ -1,13 +1,13 @@
 {
   "type": "season",
-  "season": 2,
+  "season": 1,
   "drivers": [
     {
       "position": 1,
-      "name": "Matteo Blaze",
-      "team": "Scuderia Python",
-      "points": 85,
-      "rating": 5.1893,
+      "name": "Sebastian Krell",
+      "team": "JavaScript Racing team",
+      "points": 80,
+      "rating": 5.4259,
       "is_player": false,
       "dnf": false,
       "pit_stops": 0,
@@ -16,14 +16,18 @@
       "stints": [],
       "avg_position": null,
       "best_position": null,
-      "worst_position": null
+      "worst_position": null,
+      "time": 0,
+      "drs": true,
+      "pit": false,
+      "position_history": []
     },
     {
       "position": 2,
-      "name": "Ivan Vasiliev",
-      "team": "Java motors",
-      "points": 80,
-      "rating": 5.9466,
+      "name": "Tomás Moreira",
+      "team": "VS racing 22",
+      "points": 75,
+      "rating": 5.228,
       "is_player": false,
       "dnf": false,
       "pit_stops": 0,
@@ -32,14 +36,18 @@
       "stints": [],
       "avg_position": null,
       "best_position": null,
-      "worst_position": null
+      "worst_position": null,
+      "time": 0,
+      "drs": true,
+      "pit": false,
+      "position_history": []
     },
     {
       "position": 3,
-      "name": "Felipe Marquez",
-      "team": "AMD Assemblyte GP",
-      "points": 62,
-      "rating": 5.0383,
+      "name": "Aiden Falk",
+      "team": "Formula 1.0 racing team",
+      "points": 75,
+      "rating": 5.4202,
       "is_player": false,
       "dnf": false,
       "pit_stops": 0,
@@ -48,14 +56,18 @@
       "stints": [],
       "avg_position": null,
       "best_position": null,
-      "worst_position": null
+      "worst_position": null,
+      "time": 0,
+      "drs": true,
+      "pit": false,
+      "position_history": []
     },
     {
       "position": 4,
-      "name": "Renzo Morandi",
-      "team": "Pixel motors",
-      "points": 58,
-      "rating": 5.4374,
+      "name": "Enzo DaCosta",
+      "team": "JavaScript Racing team",
+      "points": 65,
+      "rating": 5.1348,
       "is_player": false,
       "dnf": false,
       "pit_stops": 0,
@@ -64,14 +76,18 @@
       "stints": [],
       "avg_position": null,
       "best_position": null,
-      "worst_position": null
+      "worst_position": null,
+      "time": 0,
+      "drs": true,
+      "pit": false,
+      "position_history": []
     },
     {
       "position": 5,
-      "name": "Alex Storme",
-      "team": "Scuderia Python",
-      "points": 55,
-      "rating": 5.8959,
+      "name": "Lukas Rennhardt",
+      "team": "Racing 404",
+      "points": 63,
+      "rating": 5.0434,
       "is_player": false,
       "dnf": false,
       "pit_stops": 0,
@@ -80,14 +96,18 @@
       "stints": [],
       "avg_position": null,
       "best_position": null,
-      "worst_position": null
+      "worst_position": null,
+      "time": 0,
+      "drs": true,
+      "pit": false,
+      "position_history": []
     },
     {
       "position": 6,
-      "name": "Elias Northgate",
-      "team": "AMD Assemblyte GP",
-      "points": 52,
-      "rating": 5.9208,
+      "name": "Hiro Tanaka",
+      "team": "Racing 404",
+      "points": 50,
+      "rating": 5.5896,
       "is_player": false,
       "dnf": false,
       "pit_stops": 0,
@@ -96,14 +116,18 @@
       "stints": [],
       "avg_position": null,
       "best_position": null,
-      "worst_position": null
+      "worst_position": null,
+      "time": 0,
+      "drs": true,
+      "pit": false,
+      "position_history": []
     },
     {
       "position": 7,
-      "name": "Marco Falcone",
-      "team": "Java motors",
-      "points": 40,
-      "rating": 5.4861,
+      "name": "Jae-Min Han",
+      "team": "Jawa Surenate Linux racing team",
+      "points": 41,
+      "rating": 4.9961,
       "is_player": false,
       "dnf": false,
       "pit_stops": 0,
@@ -112,14 +136,18 @@
       "stints": [],
       "avg_position": null,
       "best_position": null,
-      "worst_position": null
+      "worst_position": null,
+      "time": 0,
+      "drs": true,
+      "pit": false,
+      "position_history": []
     },
     {
       "position": 8,
-      "name": "Mikhail Antonov",
-      "team": "PyCharm motors",
+      "name": "Ivan Vasiliev",
+      "team": "Java motors",
       "points": 37,
-      "rating": 5.5415,
+      "rating": 5.2222,
       "is_player": false,
       "dnf": false,
       "pit_stops": 0,
@@ -128,14 +156,18 @@
       "stints": [],
       "avg_position": null,
       "best_position": null,
-      "worst_position": null
+      "worst_position": null,
+      "time": 0,
+      "drs": true,
+      "pit": false,
+      "position_history": []
     },
     {
       "position": 9,
       "name": "Leo Krüger",
       "team": "PyCharm motors",
-      "points": 31,
-      "rating": 5.3095,
+      "points": 33,
+      "rating": 5.6065,
       "is_player": false,
       "dnf": false,
       "pit_stops": 0,
@@ -144,14 +176,18 @@
       "stints": [],
       "avg_position": null,
       "best_position": null,
-      "worst_position": null
+      "worst_position": null,
+      "time": 0,
+      "drs": true,
+      "pit": false,
+      "position_history": []
     },
     {
       "position": 10,
-      "name": "Sebastian Krell",
-      "team": "JavaScript Racing team",
-      "points": 31,
-      "rating": 5.4685,
+      "name": "Diego Ventura",
+      "team": "Formula 1.0 racing team",
+      "points": 32,
+      "rating": 5.264,
       "is_player": false,
       "dnf": false,
       "pit_stops": 0,
@@ -160,14 +196,18 @@
       "stints": [],
       "avg_position": null,
       "best_position": null,
-      "worst_position": null
+      "worst_position": null,
+      "time": 0,
+      "drs": true,
+      "pit": false,
+      "position_history": []
     },
     {
       "position": 11,
-      "name": "Julian Stroud",
-      "team": "Pixel motors",
-      "points": 28,
-      "rating": 5.4514,
+      "name": "Elias Northgate",
+      "team": "AMD Assemblyte GP",
+      "points": 31,
+      "rating": 5.2686,
       "is_player": false,
       "dnf": false,
       "pit_stops": 0,
@@ -176,14 +216,18 @@
       "stints": [],
       "avg_position": null,
       "best_position": null,
-      "worst_position": null
+      "worst_position": null,
+      "time": 0,
+      "drs": true,
+      "pit": false,
+      "position_history": []
     },
     {
       "position": 12,
-      "name": "Arjun Desai",
-      "team": "VS racing 22",
-      "points": 27,
-      "rating": 5.223,
+      "name": "Mikhail Antonov",
+      "team": "PyCharm motors",
+      "points": 26,
+      "rating": 5.1318,
       "is_player": false,
       "dnf": false,
       "pit_stops": 0,
@@ -192,14 +236,18 @@
       "stints": [],
       "avg_position": null,
       "best_position": null,
-      "worst_position": null
+      "worst_position": null,
+      "time": 0,
+      "drs": true,
+      "pit": false,
+      "position_history": []
     },
     {
       "position": 13,
       "name": "Riku Yamashita",
       "team": "Intel QWERTY GP",
       "points": 22,
-      "rating": 5.7242,
+      "rating": 5.3613,
       "is_player": false,
       "dnf": false,
       "pit_stops": 0,
@@ -208,14 +256,18 @@
       "stints": [],
       "avg_position": null,
       "best_position": null,
-      "worst_position": null
+      "worst_position": null,
+      "time": 0,
+      "drs": true,
+      "pit": false,
+      "position_history": []
     },
     {
       "position": 14,
-      "name": "Nilapsai Vetrovski",
-      "team": "Microsoft PitStop Protocol racing team",
-      "points": 21,
-      "rating": 5.4991,
+      "name": "Arjun Desai",
+      "team": "VS racing 22",
+      "points": 16,
+      "rating": 5.9191,
       "is_player": false,
       "dnf": false,
       "pit_stops": 0,
@@ -224,14 +276,18 @@
       "stints": [],
       "avg_position": null,
       "best_position": null,
-      "worst_position": null
+      "worst_position": null,
+      "time": 0,
+      "drs": true,
+      "pit": false,
+      "position_history": []
     },
     {
       "position": 15,
-      "name": "Lukas Rennhardt",
-      "team": "Racing 404",
-      "points": 21,
-      "rating": 5.3127,
+      "name": "Matteo Blaze",
+      "team": "Scuderia Python",
+      "points": 15,
+      "rating": 5.841,
       "is_player": false,
       "dnf": false,
       "pit_stops": 0,
@@ -240,14 +296,18 @@
       "stints": [],
       "avg_position": null,
       "best_position": null,
-      "worst_position": null
+      "worst_position": null,
+      "time": 0,
+      "drs": true,
+      "pit": false,
+      "position_history": []
     },
     {
       "position": 16,
-      "name": "Diego Ventura",
-      "team": "Formula 1.0 racing team",
-      "points": 16,
-      "rating": 5.9062,
+      "name": "Alex Storme",
+      "team": "Scuderia Python",
+      "points": 13,
+      "rating": 5.6954,
       "is_player": false,
       "dnf": false,
       "pit_stops": 0,
@@ -256,14 +316,18 @@
       "stints": [],
       "avg_position": null,
       "best_position": null,
-      "worst_position": null
+      "worst_position": null,
+      "time": 0,
+      "drs": true,
+      "pit": false,
+      "position_history": []
     },
     {
       "position": 17,
-      "name": "Aiden Falk",
-      "team": "Formula 1.0 racing team",
-      "points": 14,
-      "rating": 5.6947,
+      "name": "Renzo Morandi",
+      "team": "Pixel motors",
+      "points": 12,
+      "rating": 5.6626,
       "is_player": false,
       "dnf": false,
       "pit_stops": 0,
@@ -272,14 +336,18 @@
       "stints": [],
       "avg_position": null,
       "best_position": null,
-      "worst_position": null
+      "worst_position": null,
+      "time": 0,
+      "drs": true,
+      "pit": false,
+      "position_history": []
     },
     {
       "position": 18,
-      "name": "Pierre Lucien",
-      "team": "Microsoft PitStop Protocol racing team",
-      "points": 9,
-      "rating": 5.476,
+      "name": "Julian Stroud",
+      "team": "Pixel motors",
+      "points": 12,
+      "rating": 5.1662,
       "is_player": false,
       "dnf": false,
       "pit_stops": 0,
@@ -288,14 +356,18 @@
       "stints": [],
       "avg_position": null,
       "best_position": null,
-      "worst_position": null
+      "worst_position": null,
+      "time": 0,
+      "drs": true,
+      "pit": false,
+      "position_history": []
     },
     {
       "position": 19,
-      "name": "Theo Hartman",
-      "team": "Underbyte Nvidia GP",
-      "points": 9,
-      "rating": 5.7006,
+      "name": "Nilapsai Vetrovski",
+      "team": "Microsoft PitStop Protocol racing team",
+      "points": 10,
+      "rating": 5.3658,
       "is_player": false,
       "dnf": false,
       "pit_stops": 0,
@@ -304,15 +376,19 @@
       "stints": [],
       "avg_position": null,
       "best_position": null,
-      "worst_position": null
+      "worst_position": null,
+      "time": 0,
+      "drs": true,
+      "pit": false,
+      "position_history": []
     },
     {
       "position": 20,
-      "name": "Kim Nguyen",
-      "team": "MySql AWS Maxim racing team",
-      "points": 8,
-      "rating": 5.3162,
-      "is_player": true,
+      "name": "Carlos Navarro",
+      "team": "Intel QWERTY GP",
+      "points": 10,
+      "rating": 5.3971,
+      "is_player": false,
       "dnf": false,
       "pit_stops": 0,
       "pneu": "hard",
@@ -320,46 +396,18 @@
       "stints": [],
       "avg_position": null,
       "best_position": null,
-      "worst_position": null
+      "worst_position": null,
+      "time": 0,
+      "drs": true,
+      "pit": false,
+      "position_history": []
     },
     {
       "position": 21,
-      "name": "Jae-Min Han",
-      "team": "Jawa Surenate Linux racing team",
-      "points": 8,
-      "rating": 5.6376,
-      "is_player": false,
-      "dnf": false,
-      "pit_stops": 0,
-      "pneu": "hard",
-      "wear": 0,
-      "stints": [],
-      "avg_position": null,
-      "best_position": null,
-      "worst_position": null
-    },
-    {
-      "position": 22,
-      "name": "Tomás Moreira",
-      "team": "VS racing 22",
-      "points": 6,
-      "rating": 5.0533,
-      "is_player": false,
-      "dnf": false,
-      "pit_stops": 0,
-      "pneu": "hard",
-      "wear": 0,
-      "stints": [],
-      "avg_position": null,
-      "best_position": null,
-      "worst_position": null
-    },
-    {
-      "position": 23,
-      "name": "Max Vershaeren",
+      "name": "Kim Nguyen",
       "team": "MySql AWS Maxim racing team",
-      "points": 5,
-      "rating": 5.0582,
+      "points": 7,
+      "rating": 5.0934,
       "is_player": true,
       "dnf": false,
       "pit_stops": 0,
@@ -368,14 +416,58 @@
       "stints": [],
       "avg_position": null,
       "best_position": null,
-      "worst_position": null
+      "worst_position": null,
+      "time": 0,
+      "drs": true,
+      "pit": false,
+      "position_history": []
+    },
+    {
+      "position": 22,
+      "name": "Theo Hartman",
+      "team": "Underbyte Nvidia GP",
+      "points": 6,
+      "rating": 4.9809,
+      "is_player": false,
+      "dnf": false,
+      "pit_stops": 0,
+      "pneu": "hard",
+      "wear": 0,
+      "stints": [],
+      "avg_position": null,
+      "best_position": null,
+      "worst_position": null,
+      "time": 0,
+      "drs": true,
+      "pit": false,
+      "position_history": []
+    },
+    {
+      "position": 23,
+      "name": "Felipe Marquez",
+      "team": "AMD Assemblyte GP",
+      "points": 4,
+      "rating": 5.7031,
+      "is_player": false,
+      "dnf": false,
+      "pit_stops": 0,
+      "pneu": "hard",
+      "wear": 0,
+      "stints": [],
+      "avg_position": null,
+      "best_position": null,
+      "worst_position": null,
+      "time": 0,
+      "drs": true,
+      "pit": false,
+      "position_history": []
     },
     {
       "position": 24,
-      "name": "Tyler Quinn",
-      "team": "Jawa Surenate Linux racing team",
-      "points": 5,
-      "rating": 5.3286,
+      "name": "Pierre Lucien",
+      "team": "Microsoft PitStop Protocol racing team",
+      "points": 1,
+      "rating": 5.6952,
       "is_player": false,
       "dnf": false,
       "pit_stops": 0,
@@ -384,14 +476,18 @@
       "stints": [],
       "avg_position": null,
       "best_position": null,
-      "worst_position": null
+      "worst_position": null,
+      "time": 0,
+      "drs": true,
+      "pit": false,
+      "position_history": []
     },
     {
       "position": 25,
-      "name": "Hiro Tanaka",
-      "team": "Racing 404",
-      "points": 3,
-      "rating": 5.8472,
+      "name": "Marco Falcone",
+      "team": "Java motors",
+      "points": 1,
+      "rating": 5.6223,
       "is_player": false,
       "dnf": false,
       "pit_stops": 0,
@@ -400,14 +496,18 @@
       "stints": [],
       "avg_position": null,
       "best_position": null,
-      "worst_position": null
+      "worst_position": null,
+      "time": 0,
+      "drs": true,
+      "pit": false,
+      "position_history": []
     },
     {
       "position": 26,
-      "name": "Enzo DaCosta",
-      "team": "JavaScript Racing team",
-      "points": 3,
-      "rating": 5.5889,
+      "name": "Johan Reißer",
+      "team": "Underbyte Nvidia GP",
+      "points": 1,
+      "rating": 5.7528,
       "is_player": false,
       "dnf": false,
       "pit_stops": 0,
@@ -416,14 +516,18 @@
       "stints": [],
       "avg_position": null,
       "best_position": null,
-      "worst_position": null
+      "worst_position": null,
+      "time": 0,
+      "drs": true,
+      "pit": false,
+      "position_history": []
     },
     {
       "position": 27,
-      "name": "Anton Petrov",
-      "team": "Underbyte Nvidia GP",
-      "points": 2,
-      "rating": 5.7144,
+      "name": "Tyler Quinn",
+      "team": "Jawa Surenate Linux racing team",
+      "points": 0,
+      "rating": 5.8605,
       "is_player": false,
       "dnf": false,
       "pit_stops": 0,
@@ -432,71 +536,79 @@
       "stints": [],
       "avg_position": null,
       "best_position": null,
-      "worst_position": null
+      "worst_position": null,
+      "time": 0,
+      "drs": true,
+      "pit": false,
+      "position_history": []
     },
     {
       "position": 28,
-      "name": "Carlos Navarro",
-      "team": "Intel QWERTY GP",
+      "name": "Max Vershaeren",
+      "team": "MySql AWS Maxim racing team",
       "points": 0,
-      "rating": 5.634,
-      "is_player": false,
+      "rating": 5.5557,
+      "is_player": true,
       "dnf": false,
       "pit_stops": 0,
-      "pneu": "hard",
+      "pneu": "medium",
       "wear": 0,
       "stints": [],
       "avg_position": null,
       "best_position": null,
-      "worst_position": null
+      "worst_position": null,
+      "time": 0,
+      "drs": true,
+      "pit": false,
+      "position_history": []
     }
   ],
   "teams": [
     {
       "position": 1,
-      "name": "Scuderia Python",
-      "points": 142,
-      "rating": 4.2651,
+      "name": "JavaScript Racing team",
+      "points": 147,
+      "rating": 4.1471,
       "drivers": [
-        "Alex Storme",
-        "Matteo Blaze"
+        "Enzo DaCosta",
+        "Sebastian Krell"
       ]
     },
     {
       "position": 2,
-      "name": "Java motors",
-      "points": 122,
-      "rating": 4.0573,
+      "name": "Racing 404",
+      "points": 113,
+      "rating": 4.577,
       "drivers": [
-        "Marco Falcone",
-        "Ivan Vasiliev"
+        "Hiro Tanaka",
+        "Lukas Rennhardt"
       ]
     },
     {
       "position": 3,
-      "name": "AMD Assemblyte GP",
-      "points": 114,
-      "rating": 4.383,
+      "name": "Formula 1.0 racing team",
+      "points": 107,
+      "rating": 4.3023,
       "drivers": [
-        "Felipe Marquez",
-        "Elias Northgate"
+        "Diego Ventura",
+        "Aiden Falk"
       ]
     },
     {
       "position": 4,
-      "name": "Pixel motors",
-      "points": 86,
-      "rating": 4.8841,
+      "name": "VS racing 22",
+      "points": 91,
+      "rating": 4.3044,
       "drivers": [
-        "Julian Stroud",
-        "Renzo Morandi"
+        "Arjun Desai",
+        "Tomás Moreira"
       ]
     },
     {
       "position": 5,
       "name": "PyCharm motors",
-      "points": 68,
-      "rating": 4.9162,
+      "points": 61,
+      "rating": 4.9489,
       "drivers": [
         "Leo Krüger",
         "Mikhail Antonov"
@@ -504,92 +616,92 @@
     },
     {
       "position": 6,
-      "name": "JavaScript Racing team",
-      "points": 34,
-      "rating": 5.804,
-      "drivers": [
-        "Enzo DaCosta",
-        "Sebastian Krell"
-      ]
-    },
-    {
-      "position": 7,
-      "name": "VS racing 22",
-      "points": 33,
-      "rating": 5.6253,
-      "drivers": [
-        "Arjun Desai",
-        "Tomás Moreira"
-      ]
-    },
-    {
-      "position": 8,
-      "name": "Formula 1.0 racing team",
-      "points": 30,
-      "rating": 4.8699,
-      "drivers": [
-        "Diego Ventura",
-        "Aiden Falk"
-      ]
-    },
-    {
-      "position": 9,
-      "name": "Microsoft PitStop Protocol racing team",
-      "points": 30,
-      "rating": 5.3127,
-      "drivers": [
-        "Pierre Lucien",
-        "Nilapsai Vetrovski"
-      ]
-    },
-    {
-      "position": 10,
-      "name": "Racing 404",
-      "points": 24,
-      "rating": 5.3147,
-      "drivers": [
-        "Hiro Tanaka",
-        "Lukas Rennhardt"
-      ]
-    },
-    {
-      "position": 11,
-      "name": "Intel QWERTY GP",
-      "points": 22,
-      "rating": 5.9711,
-      "drivers": [
-        "Riku Yamashita",
-        "Carlos Navarro"
-      ]
-    },
-    {
-      "position": 12,
       "name": "Jawa Surenate Linux racing team",
-      "points": 13,
-      "rating": 5.6382,
+      "points": 41,
+      "rating": 5.9334,
       "drivers": [
         "Tyler Quinn",
         "Jae-Min Han"
       ]
     },
     {
-      "position": 13,
-      "name": "MySql AWS Maxim racing team",
-      "points": 13,
-      "rating": 5.4102,
+      "position": 7,
+      "name": "Java motors",
+      "points": 38,
+      "rating": 5.7218,
       "drivers": [
-        "Max Vershaeren",
-        "Kim Nguyen"
+        "Marco Falcone",
+        "Ivan Vasiliev"
+      ]
+    },
+    {
+      "position": 8,
+      "name": "AMD Assemblyte GP",
+      "points": 35,
+      "rating": 5.8257,
+      "drivers": [
+        "Felipe Marquez",
+        "Elias Northgate"
+      ]
+    },
+    {
+      "position": 9,
+      "name": "Intel QWERTY GP",
+      "points": 32,
+      "rating": 5.4518,
+      "drivers": [
+        "Riku Yamashita",
+        "Carlos Navarro"
+      ]
+    },
+    {
+      "position": 10,
+      "name": "Scuderia Python",
+      "points": 28,
+      "rating": 5.4206,
+      "drivers": [
+        "Alex Storme",
+        "Matteo Blaze"
+      ]
+    },
+    {
+      "position": 11,
+      "name": "Pixel motors",
+      "points": 24,
+      "rating": 5.7703,
+      "drivers": [
+        "Julian Stroud",
+        "Renzo Morandi"
+      ]
+    },
+    {
+      "position": 12,
+      "name": "Microsoft PitStop Protocol racing team",
+      "points": 11,
+      "rating": 5.5355,
+      "drivers": [
+        "Pierre Lucien",
+        "Nilapsai Vetrovski"
+      ]
+    },
+    {
+      "position": 13,
+      "name": "Underbyte Nvidia GP",
+      "points": 7,
+      "rating": 5.9318,
+      "drivers": [
+        "Johan Reißer",
+        "Theo Hartman"
       ]
     },
     {
       "position": 14,
-      "name": "Underbyte Nvidia GP",
-      "points": 11,
-      "rating": 6.7819,
+      "name": "MySql AWS Maxim racing team",
+      "points": 7,
+      "rating": 5.6721,
       "drivers": [
-        "Anton Petrov",
-        "Theo Hartman"
+        "Max Vershaeren",
+        "Kim Nguyen"
       ]
     }
   ]
