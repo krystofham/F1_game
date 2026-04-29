@@ -3,19 +3,32 @@ import json
 import os
 import matplotlib.pyplot as plt
 import matplotlib.image as mpimg
-from printing_info import *
-from simulating_sectors import *
-from strategy import *
-from mmr2 import *
-from track import *
-from team import *
-from saving import *
-from car import *
-from weather import *
-from engine import *
-from plot import *
-from get_data import *
-
+try:
+    from printing_info import *
+    from simulating_sectors import *
+    from strategy import *
+    from mmr2 import *
+    from track import *
+    from team import *
+    from saving import *
+    from car import *
+    from weather import *
+    from engine import *
+    from plot import *
+    from get_data import *
+except:
+    from engine.printing_info import *
+    from engine.simulating_sectors import *
+    from engine.strategy import *
+    from engine.mmr2 import *
+    from engine.track import *
+    from engine.team import *
+    from engine.saving import *
+    from engine.car import *
+    from engine.weather import *
+    from engine.engine import *
+    from engine.plot import *
+    from engine.get_data import *
 _BASE_DIR = os.path.dirname(__file__)
 _CONFIG_DIR = os.path.abspath(os.path.join(_BASE_DIR, "..", "config"))
 with open(os.path.join(_CONFIG_DIR, "drivers.json"), encoding="utf-8") as f:

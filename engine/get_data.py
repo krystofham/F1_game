@@ -1,4 +1,5 @@
-from load_data_json import *
+try: from load_data_json import *
+except: from engine.load_data_json import *
 def get_lenght_of_championship() -> int:
     if load_data("init")["lenght"] < 0 or  load_data("init")["lenght"] > 12:
         raise ValueError("invalid lenght") 
