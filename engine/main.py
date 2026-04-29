@@ -77,10 +77,22 @@ for race in championship:
     #Qualification
     simulation = qualification(simulation, cars, TIME_S1, TIME_S2, TIME_S3, training_type)
     ######################################################################################################################################################################
-    while lap <= LAPS:  
-        lap, cars, teams = sim_the_lap(cars, teams, player, player_2, lap, SAFETY_CAR, LAPS_REMAINING, WETTINESS, forecast, weather, LAPS, climax, DRIVER_1, DRIVER_2, pneu, speed, PNEU_types, weather_1, weather_2, weather_3, weather_4, training_type, k_wear, speed_bonus, season_count, race, time_laps)
-        #safety car
-        
+    race_ctx = build_race_ctx(
+    weather=weather, climax=climax, wettiness=WETTINESS,
+    safety_car=SAFETY_CAR, safety_car_laps_remaining=LAPS_REMAINING,
+    forecast=forecast, training_type=training_type, speed_bonus=speed_bonus,
+    pneu_type=pneu, speed_type=speed,
+    k_wear=k_wear, k_speed=k_speed, total_laps=LAPS
+    )
+    save_state_end_of_lap(cars, teams, season_count, race, lap, race_ctx)
+
+    while lap <= LAPS:
+        lap, cars, teams = sim_the_lap(
+            cars, teams, player, player_2, lap, SAFETY_CAR, LAPS_REMAINING,
+            WETTINESS, forecast, weather, LAPS, climax, DRIVER_1, DRIVER_2,
+            pneu, speed, PNEU_types, weather_1, weather_2, weather_3, weather_4,
+            training_type, k_wear, speed_bonus, season_count, race, time_laps
+        )
     #post race
     RANK = [a for a in cars if not a.dnf]
     save_state_end_of_race(cars, teams, season_count, race)

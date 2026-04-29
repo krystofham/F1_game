@@ -1,70 +1,97 @@
 from init import *
 
 def sim_the_lap(cars, teams, player, player_2, lap, SAFETY_CAR, LAPS_REMAINING, WETTINESS, forecast, weather, LAPS, climax, DRIVER_1, DRIVER_2, pneu, speed, PNEU_types, weather_1, weather_2, weather_3, weather_4, training_type, k_wear, speed_bonus, season_count, race, time_laps):
+
+    # Načti aktuální stav
+    state = load_state()
+    race_ctx = state.get("race_state", {})
+
+    # Přepiš proměnné ze state pokud existují
+    if race_ctx:
+        SAFETY_CAR      = race_ctx.get("safety_car", SAFETY_CAR)
+        LAPS_REMAINING  = race_ctx.get("safety_car_laps_remaining", LAPS_REMAINING)
+        WETTINESS       = race_ctx.get("wettiness", WETTINESS)
+        forecast        = race_ctx.get("forecast", forecast)
+        weather         = race_ctx.get("weather", weather)
+
     # Safety car
     for car in cars:
         SAFETY_CAR, LAPS_REMAINING, car.dnf, car.time = safety_car(car, weather, lap, SAFETY_CAR, LAPS_REMAINING)
-    if SAFETY_CAR is True:
-        LAPS_REMAINING -=1
+    if SAFETY_CAR:
+        LAPS_REMAINING -= 1
     if LAPS_REMAINING == 0:
         SAFETY_CAR = False
+
     cars.sort(key=lambda x: (x.dnf, x.time))
-    #print info
     info(WETTINESS, forecast, lap, weather, LAPS, climax)
-    #print info
+
     for car in cars:
         if car.is_player:
-            car.player_info(cars, DRIVER_1, COUNT_CARS, player, DRIVER_2,player_2, SAFETY_CAR)
+            car.player_info(cars, DRIVER_1, COUNT_CARS, player, DRIVER_2, player_2, SAFETY_CAR)
+
     cars.sort(key=lambda x: (x.dnf, x.time))
-    #drs check
+
     for i, car in enumerate(cars, 1):
-        if i!=1:
-            car.drs = car.drss(cars[i-1])
-    #check pitting
+        if i != 1:
+            car.drs = car.drss(cars[i - 1])
+
     player, player_2 = pit_player(player, player_2, LAPS, lap, TIME_S1, TIME_S2, TIME_S3, pneu, speed, PNEU_types, SAFETY_CAR, climax)
     cars.sort(key=lambda x: (x.dnf, x.time))
-    RANK = [a.name for a in cars if not a.dnf] 
-    position = RANK.index(DRIVER_1) + 1 if DRIVER_1 in RANK else COUNT_CARS
+
+    RANK = [a.name for a in cars if not a.dnf]
+    position   = RANK.index(DRIVER_1) + 1 if DRIVER_1 in RANK else COUNT_CARS
     position_2 = RANK.index(DRIVER_2) + 1 if DRIVER_2 in RANK else COUNT_CARS
-    #Wettiness
+
     WETTINESS = wet_track(weather_1, WETTINESS)
     print(f"\n📊 Leaderboard {DRIVER_1}: {position}. position from {len(RANK)}")
     print(f"\n📊 Leaderboard {DRIVER_2}: {position_2}. position from {len(RANK)}")
-    # Print drivers table
     drivers_table(cars, COUNT_CARS)
+
     for car in cars:
-        SAFETY_CAR, LAPS_REMAINING = car.simuluj_ai(training_type, WETTINESS, lap, LAPS, forecast, weather, laps=lap, max_laps=LAPS, k_wear=k_wear, wettiness=WETTINESS, TIME_S1=TIME_S1, TIME_S2=TIME_S2, TIME_S3=TIME_S3, speed_bonus= speed_bonus, time_laps=time_laps, PNEU_types=PNEU_types, SAFETY_CAR=SAFETY_CAR, LAPS_REMAINING = LAPS_REMAINING)
+        SAFETY_CAR, LAPS_REMAINING = car.simuluj_ai(
+            training_type, WETTINESS, lap, LAPS, forecast, weather,
+            laps=lap, max_laps=LAPS, k_wear=k_wear, wettiness=WETTINESS,
+            TIME_S1=TIME_S1, TIME_S2=TIME_S2, TIME_S3=TIME_S3,
+            speed_bonus=speed_bonus, time_laps=time_laps,
+            PNEU_types=PNEU_types, SAFETY_CAR=SAFETY_CAR, LAPS_REMAINING=LAPS_REMAINING
+        )
+
     boxy_po_teamu = {}
     for a in cars:
-        if not a.is_player and a.pit: 
-            team = a.team
-            if team not in boxy_po_teamu:
-                boxy_po_teamu[team] = 0
-            boxy_po_teamu[team] += 1
-
+        if not a.is_player and a.pit:
+            boxy_po_teamu[a.team] = boxy_po_teamu.get(a.team, 0) + 1
     for team, count in boxy_po_teamu.items():
         if count >= 2:
             print(f"{team.name} is going to double stack.")
-    boxy_po_teamu.clear()
-    cars.sort(key=lambda x: (x.dnf, x.time))
-    RANK = [a for a in cars if not a.dnf]  
-    for a in cars:
-        if a in RANK:  
-            position = RANK.index(a) + 1  
-        else:
-            position = COUNT_CARS  
-        a.position.append(position)  # Add position
 
-    # move weather
+    cars.sort(key=lambda x: (x.dnf, x.time))
+    RANK_OBJ = [a for a in cars if not a.dnf]
+    for a in cars:
+        position = RANK_OBJ.index(a) + 1 if a in RANK_OBJ else COUNT_CARS
+        a.position.append(position)
+
+    # Posuň počasí
     weather = forecast.pop(0)
     weather_1 = forecast[0]
     weather_2 = forecast[1]
     weather_3 = forecast[2]
     forecast.append(generate_weather(weather_3, climax))
-    weather_4 = forecast[3]
+
     lap += 1
-    save_state_end_of_lap(cars, teams, season_count, race, lap)
+
+    # Ulož stav s aktuálním race_ctx
+    race_ctx = build_race_ctx(
+        weather=weather, climax=climax, wettiness=WETTINESS,
+        safety_car=SAFETY_CAR, safety_car_laps_remaining=LAPS_REMAINING,
+        forecast=forecast, training_type=training_type, speed_bonus=speed_bonus,
+        pneu_type=pneu, speed_type=speed,
+        k_wear=k_wear, k_speed=[],  # k_speed předej pokud ho máš v scope
+        total_laps=LAPS
+    )
+    save_state_end_of_lap(cars, teams, season_count, race, lap, race_ctx)
+
     return lap, cars, teams
+
 def sim_the_race(cars, teams, player, player_2, pneu):
     climax = random.choice(["transitional","sunny","sunny","sunny"])
     lap = 0

@@ -175,7 +175,7 @@ def generate_pneu_for_bots_on_start (cars:list, weather_1:str) -> str:
     return cars
 
 def trading_at_the_of_season(teams, player, player_2, DRIVER_1, DRIVER_2, cars):
-    new_pilot = load_data(deal)["want"]   
+    new_pilot = load_data("deal")["want"]   
     while new_pilot not in ("yes", "no"):
         raise ValueError("bad typo")
     if new_pilot == "yes":
