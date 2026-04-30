@@ -68,7 +68,7 @@ def build_race_ctx(
     safety_car, safety_car_laps_remaining,
     forecast, training_type, speed_bonus,
     pneu_type, speed_type,
-    k_wear, k_speed, total_laps
+    k_wear, k_speed, total_laps, time_laps=None
 ) -> dict:
     """
     Postav race_ctx slovník ze všech proměnných závodní smyčky.
@@ -103,7 +103,8 @@ def build_race_ctx(
         "k_wear":                    list(k_wear),
         "k_speed":                  list(k_speed),
         "total_laps":                total_laps,
-    }
+        "time_laps":                [list(t) for t in time_laps] if time_laps else [],    
+}
 
 
 # ---------------------------------------------------------------------------
@@ -121,6 +122,7 @@ def save_state_end_of_lap(cars, teams, season, race, lap, race_ctx: dict = None)
         "season": season,
         "race":   race,
         "lap":    lap,
+        "time_laps": race_ctx.pop("time_laps", []) if race_ctx else [],
         **_build_standings(cars, teams),
     }
     if race_ctx is not None:

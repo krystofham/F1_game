@@ -89,7 +89,7 @@ class Car:
             s2 = s2+wettiness/2
             s3 = s3+wettiness/2
         lap_time = s1 + s2 + s3
-        time_laps.append((lap_time, self.name, self.team, s1, s2, s3))
+        time_laps.append((lap_time, self.name, self.team.name, s1, s2, s3))
         self.time = self.time + self.wear/8 + lap_time
         self.wear += PNEU_types[self.pneu]["wear"]
         prirustek = PNEU_types[self.pneu]["wear"] * random.uniform(0, 0.4)
