@@ -148,15 +148,13 @@ async def api_post_race():
 
     cars, teams, player, player_2, championship, tracks, \
     DRIVER_1, DRIVER_2, COUNT_CARS, SAFETY_CAR, LAPS_REMAINING, b, season_count = load_game_objects()
-
     time_laps = state.get("time_laps", [])
     race = state["race"]
     climax = race_ctx.get("climax", "sunny")
-
     RANK = [a for a in cars if not a.dnf]
     save_state_end_of_race(cars, teams, season_count, race)
     teams, cars, time_laps = post_race_info(time_laps, player, player_2, cars, teams, COUNT_CARS)
-    points, cars, teams, players = plot_graph(RANK, DRIVER_1, DRIVER_2, teams, cars, player, player_2, climax)
+    # points, cars, teams, players = plot_graph(RANK, DRIVER_1, DRIVER_2, teams, cars, player, player_2, climax)
     lap, time_laps, SAFETY_CAR, LAPS_REMAINING, weather, forecast, cars, WETTINESS = reset_race(climax, cars)
 
     return {"status": "race_done", "race": race}
