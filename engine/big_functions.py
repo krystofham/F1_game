@@ -87,7 +87,7 @@ def sim_the_lap(cars, teams, player, player_2, lap, SAFETY_CAR, LAPS_REMAINING, 
         forecast=forecast, training_type=training_type, speed_bonus=speed_bonus,
         pneu_type=pneu, speed_type=speed,
         k_wear=k_wear, k_speed=k_speed,  # k_speed předej pokud ho máš v scope
-        total_laps=LAPS, 
+        total_laps=LAPS, time_laps=time_laps
     )
     save_state_end_of_lap(cars, teams, season_count, race, lap, race_ctx)
 
@@ -164,7 +164,7 @@ def init_race(tracks, race, cars, teams, championship, player, player_2, b, seas
     safety_car=SAFETY_CAR, safety_car_laps_remaining=LAPS_REMAINING,
     forecast=forecast, training_type=training_type, speed_bonus=speed_bonus,
     pneu_type=pneu, speed_type=speed,
-    k_wear=k_wear, k_speed=k_speed, total_laps=LAPS
+    k_wear=k_wear, k_speed=k_speed, total_laps=LAPS, time_laps=time_laps
     )
     save_state_end_of_lap(cars, teams, season_count, race, lap, race_ctx)
     return speed_bonus, season_count, time_laps,  k_speed, k_wear,training_type, WETTINESS, lap, forecast, weather, climax, pneu, speed, PNEU_types, weather_1, weather_2, weather_3, weather_4, weather

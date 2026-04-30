@@ -149,7 +149,7 @@ def drivers_table(cars, COUNT_CARS):
 def post_race_info(time_laps, player, player_2, cars, teams, COUNT_CARS):
     print("\n🏁 END race!!")
     time_laps.sort()
-    print(f"{time_laps[0][1]} ({time_laps[0][2].name}) has fastest lap: {round(time_laps[0][0], 3)}")
+    print(f"{time_laps[0][1]} ({time_laps[0][2]}) has fastest lap: {round(time_laps[0][0], 3)}")
     sector_1 = min(time_laps, key=lambda x: x[3])
     sector_2 = min(time_laps, key=lambda x: x[4])
     sector_3 = min(time_laps, key=lambda x: x[5])
