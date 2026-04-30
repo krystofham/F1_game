@@ -2,8 +2,7 @@ try:
     from init import *
 except:
     from engine.init import *
-def sim_the_lap(cars, teams, player, player_2, lap, SAFETY_CAR, LAPS_REMAINING, WETTINESS, forecast, weather, LAPS, climax, DRIVER_1, DRIVER_2, pneu, speed, PNEU_types, weather_1, weather_2, weather_3, weather_4, training_type, k_wear, speed_bonus, season_count, race, time_laps):
-
+def sim_the_lap(cars, teams, player, player_2, lap, SAFETY_CAR, LAPS_REMAINING, WETTINESS, forecast, weather, LAPS, climax, DRIVER_1, DRIVER_2, pneu, speed, PNEU_types, weather_1, weather_2, weather_3, weather_4, training_type, k_wear, k_speed,speed_bonus, season_count, race, time_laps):
     # Načti aktuální stav
     state = load_state()
     race_ctx = state.get("race_state", {})
@@ -87,8 +86,8 @@ def sim_the_lap(cars, teams, player, player_2, lap, SAFETY_CAR, LAPS_REMAINING, 
         safety_car=SAFETY_CAR, safety_car_laps_remaining=LAPS_REMAINING,
         forecast=forecast, training_type=training_type, speed_bonus=speed_bonus,
         pneu_type=pneu, speed_type=speed,
-        k_wear=k_wear, k_speed=[],  # k_speed předej pokud ho máš v scope
-        total_laps=LAPS
+        k_wear=k_wear, k_speed=k_speed,  # k_speed předej pokud ho máš v scope
+        total_laps=LAPS, 
     )
     save_state_end_of_lap(cars, teams, season_count, race, lap, race_ctx)
 
@@ -171,7 +170,7 @@ def init_race(tracks, race, cars, teams, championship, player, player_2, b, seas
     return speed_bonus, season_count, time_laps,  k_speed, k_wear,training_type, WETTINESS, lap, forecast, weather, climax, pneu, speed, PNEU_types, weather_1, weather_2, weather_3, weather_4, weather
 
 
-def sim_the_race(cars, teams, player, player_2, pneu):
+def sim_the_race(cars, teams, player, player_2, lap, SAFETY_CAR, LAPS_REMAINING, WETTINESS, forecast, weather, LAPS, climax, DRIVER_1, DRIVER_2, pneu, speed, PNEU_types, weather_1, weather_2, weather_3, weather_4, training_type, k_wear, speed_bonus, season_count, race, time_laps):
     climax = random.choice(["transitional","sunny","sunny","sunny"])
     lap = 0
     for track in tracks:

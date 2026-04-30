@@ -1,7 +1,8 @@
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 import os, json, random
-from engine.big_functions import *
+from big_functions import *
+from load_data_json import *
 
 app = FastAPI()
 app.add_middleware(CORSMiddleware, allow_origins=["*"], allow_methods=["*"], allow_headers=["*"])
@@ -12,7 +13,7 @@ _CONFIG = os.path.dirname(os.path.abspath(__file__))
 # Helpers
 # ---------------------------------------------------------------------------
 def load_game_objects():
-    from engine.init import (
+    from init import (
         cars, teams, player, player_2, championship, tracks,
         DRIVER_1, DRIVER_2, COUNT_CARS, SAFETY_CAR, LAPS_REMAINING
     )
@@ -27,7 +28,7 @@ def _load_json(path):
 
 def _state():
     try:
-        with open(f"engine/state.json", "r") as input_file:
+        with open(f"state.json", "r") as input_file:
             data = json.load(input_file)
         return data  # engine/state.json
     except:
@@ -123,7 +124,8 @@ async def api_sim_lap():
         race_ctx["forecast"][0] if len(race_ctx["forecast"]) > 0 else race_ctx["weather"],
         race_ctx["forecast"][1] if len(race_ctx["forecast"]) > 1 else race_ctx["weather"],
         race_ctx["forecast"][2] if len(race_ctx["forecast"]) > 2 else race_ctx["weather"],
-        race_ctx["training_type"], race_ctx["k_wear"],
+        race_ctx["forecast"][3] if len(race_ctx["forecast"]) > 3 else race_ctx["weather"],
+        race_ctx["training_type"], race_ctx["k_wear"],race_ctx["k_speed"],
         race_ctx["speed_bonus"], season_count, race, time_laps
     )
 
