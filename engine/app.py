@@ -148,9 +148,9 @@ async def api_post_race():
 
     cars, teams, player, player_2, championship, tracks, \
     DRIVER_1, DRIVER_2, COUNT_CARS, SAFETY_CAR, LAPS_REMAINING, b, season_count = load_game_objects()
-    time_laps = race_ctx.get("time_laps", [])
-    print(f"DEBUG time_laps length: {len(time_laps)}")
-    print(f"DEBUG race_ctx keys: {list(race_ctx.keys())}")
+    time_laps = state.get("time_laps") or race_ctx.get("time_laps", [])
+    print(f"DEBUG full state keys: {list(state.keys())}")
+    print(f"DEBUG state type: {state.get('type')}")
     race = state["race"]
     climax = race_ctx.get("climax", "sunny")
     RANK = [a for a in cars if not a.dnf]
