@@ -105,9 +105,9 @@ def transef_mmr1(cars, teams, player, player_2, DRIVER_1, DRIVER_2):
                 if (x.rating - y.ratings) >=0:
                     tymy_ridic_2_trade.append(x)
     if DRIVER_1 == swap:
-        make_a_deal(DRIVER_1, average_rating, player, teams, tymy_ridic_1_trade, tymy_ridic_2_trade, possible_transfer)
+        DRIVER_1, player = make_a_deal(DRIVER_1, average_rating, player, teams, tymy_ridic_1_trade, tymy_ridic_2_trade, possible_transfer)
     if DRIVER_2 == swap:
-        make_a_deal(DRIVER_2, average_rating, player_2, teams, tymy_ridic_1_trade, tymy_ridic_2_trade, possible_transfer) 
+        DRIVER_2, player_2 = make_a_deal(DRIVER_2, average_rating, player_2, teams, tymy_ridic_1_trade, tymy_ridic_2_trade, possible_transfer) 
 def transfer(cars, teams, player, player_2, DRIVER_1, DRIVER_2):
     data = load_data("deal")
     new_pilot = data["where"]
