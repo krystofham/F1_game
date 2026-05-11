@@ -198,26 +198,53 @@ def generate_pneu_for_bots_on_start (cars:list, weather_1:str) -> str:
     return cars
 
 def trading_at_the_of_season(teams, player, player_2, DRIVER_1, DRIVER_2, cars):
-    new_pilot = load_data("deal")["want"]   
-    while new_pilot not in ("yes", "no"):
+    new_pilot = load_data("deal")["want"]
+ 
+    if new_pilot not in ("yes", "no"):
         raise ValueError("bad typo")
+ 
     if new_pilot == "yes":
-        player, player_2, DRIVER_1, DRIVER_2, cars = transfer(cars, teams, player, player_2, DRIVER_1, DRIVER_2)        
+        player, player_2, DRIVER_1, DRIVER_2, cars = transfer(
+            cars, teams, player, player_2, DRIVER_1, DRIVER_2
+        )
+ 
     class Want:
         def __init__(self, name):
-            self.name = name
+            self.name = name          
             self.transfer_did = False
+ 
     want_trade = []
     for x in teams:
         for y in x.drivers:
             if x.rating - y.ratings > 0.8 and y.is_player == False:
                 want_trade.append(Want(y))
+ 
     while len(want_trade) >= 2:
         driver_to_trade_1, driver_to_trade_2 = random.sample(want_trade, 2)
-        print(f"Breaking!!!\n {driver_to_trade_1.name.name} ({driver_to_trade_1.name.team.name}, {driver_to_trade_1.name.points} points) changes {driver_to_trade_2.name.name} ({driver_to_trade_2.name.team.name}, {driver_to_trade_2.name.points} points)\nBreaking!!!")
-        driver_to_trade_1.name, driver_to_trade_2.name = driver_to_trade_2.name, driver_to_trade_1.name
+ 
+        drv_1 = driver_to_trade_1.name  
+        drv_2 = driver_to_trade_2.name 
+ 
+        team_1 = drv_1.team
+        team_2 = drv_2.team
+ 
+        print(
+            f"Breaking!!!\n {drv_1.name} ({team_1.name}, {drv_1.points} points) "
+            f"changes {drv_2.name} ({team_2.name}, {drv_2.points} points)\nBreaking!!!"
+        )
+ 
+        idx_1 = team_1.drivers.index(drv_1)
+        idx_2 = team_2.drivers.index(drv_2)
+ 
+        team_1.drivers[idx_1] = drv_2
+        team_2.drivers[idx_2] = drv_1
+ 
+        drv_1.team = team_2
+        drv_2.team = team_1
+ 
         want_trade.remove(driver_to_trade_1)
         want_trade.remove(driver_to_trade_2)
+ 
     return teams, player, player_2, DRIVER_1, DRIVER_2, cars
 
 def reset_championship(cars, teams):
