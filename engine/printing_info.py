@@ -134,7 +134,7 @@ def drivers_table(cars, COUNT_CARS):
         status = round(a.time, 3)
         if i == 1:
             status_1 = round(status/60, 3)
-            print(f"{i}. {a.name} – {status} min")
+            print(f"{i}. {a.name} – {status} sek")
             heloo = round(a.wear) * random.uniform(0.9, 1.1)
             heloo = round(heloo, 1)
             print(f"Number of pit stops: {a.box}| Wear: {heloo}%")
