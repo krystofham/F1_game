@@ -129,25 +129,46 @@ def transef_mmr1(cars, teams, player, player_2, DRIVER_1, DRIVER_2):
 def transfer(cars, teams, player, player_2, DRIVER_1, DRIVER_2):
     data = load_data("deal")
     new_pilot = data["where"]
-    while new_pilot not in ("MMR1", "MMR2"):
-        raise ValueError ("bad league")
+ 
+    if new_pilot not in ("MMR1", "MMR2"):
+        raise ValueError("bad league")
+ 
     if new_pilot == "MMR1":
-        transef_mmr1(cars, teams, player, player_2, DRIVER_1, DRIVER_2)    
+        cars, teams, player, player_2, DRIVER_1, DRIVER_2 = transef_mmr1(
+            cars, teams, player, player_2, DRIVER_1, DRIVER_2
+        )
+ 
     elif new_pilot == "MMR2":
         best, worst = simulate_season_mmr2(list_drivers_mmr2)
         change = data["pilot_to_change"]
-        while change != DRIVER_1 or change != DRIVER_2:
+ 
+        if change not in (DRIVER_1, DRIVER_2):
             raise ValueError("bad driver")
-        new = best.name
-        rating = best.rating
+ 
         if change == DRIVER_1:
-            DRIVER_1 = new
-            player.name, new = new, player.name 
-            player.ratings, rating = rating, player.ratings
-        elif change == DRIVER_2:
-            DRIVER_2 = new
-            player_2.name, new = new, player_2.name 
-            player_2.ratings, rating = rating, player_2.ratings
+            target_player = player
+        else:
+            target_player = player_2
+ 
+        old_team = target_player.team
+        new_team = best.team
+ 
+        idx_target = old_team.drivers.index(target_player)
+        idx_best   = new_team.drivers.index(best)
+ 
+        old_team.drivers[idx_target] = best
+        new_team.drivers[idx_best]   = target_player
+ 
+        best.team         = old_team
+        target_player.team = new_team
+ 
+        if change == DRIVER_1:
+            DRIVER_1 = best.name
+            player   = best
+        else:
+            DRIVER_2 = best.name
+            player_2 = best
+ 
     return player, player_2, DRIVER_1, DRIVER_2, cars
 def safety_car(car, weather, lap, SAFETY_CAR, LAPS_REMAINING):
     if weather == "sunny":
