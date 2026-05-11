@@ -57,29 +57,38 @@ def make_a_deal(DRIVER_1, average_rating, player, teams, tymy_ridic_1_trade, tym
                 print(f"Option {number} {x.name} ({x.points} points) {nahodny_ridic.name}")
                 possible_transfer.append(nahodny_ridic)
                 number += 1
-
-    for x in tymy_ridic_1_trade:
-        print(f"Option {number} {x.name} ({x.points} points) offers {x.drivers[0].name}")
-        possible_transfer.append(x.drivers[0])
-        number += 1
-
-    for x in tymy_ridic_2_trade:
-        print(f"Option {number} {x.name} ({x.points} points) offers {x.drivers[1].name}")
-        possible_transfer.append(x.drivers[1])
-        number += 1
-
+        for x in tymy_ridic_1_trade:
+            print(f"Option {number} {x.name} ({x.points} points) offers {x.drivers[0].name}")
+            possible_transfer.append(x.drivers[0])
+            number += 1
+        for x in tymy_ridic_2_trade:
+            print(f"Option {number} {x.name} ({x.points} points) offers {x.drivers[1].name}")
+            possible_transfer.append(x.drivers[1])
+            number += 1
+ 
     data = load_data("transfer")
     new_pilot = data["chosen_pilot"].strip()
-
     found = any(x.name == new_pilot for x in possible_transfer)
     if not found:
         raise ValueError(f"Pilot '{new_pilot}' not in offer list")
-
-    for x in possible_transfer:
-        if x.name == new_pilot:
-            DRIVER_1 = x.name
-            player.name, x.name = x.name, player.name
-            player.ratings, x.ratings = x.ratings, player.ratings
+ 
+    for new_car in possible_transfer:
+        if new_car.name == new_pilot:
+            # BUG 1 OPRAVENO: místo záměny jmen/ratingů měníme objekty přímo v team.drivers
+            old_team = player.team
+            new_team = new_car.team
+ 
+            idx_player = old_team.drivers.index(player)
+            idx_new    = new_team.drivers.index(new_car)
+ 
+            old_team.drivers[idx_player] = new_car
+            new_team.drivers[idx_new]    = player
+ 
+            new_car.team = old_team
+            player.team  = new_team
+ 
+            DRIVER_1 = new_car.name 
+ 
             print("Successful swap")
             break
 
