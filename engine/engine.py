@@ -98,25 +98,34 @@ def transef_mmr1(cars, teams, player, player_2, DRIVER_1, DRIVER_2):
     average_rating = 0
     for x in cars:
         average_rating += x.ratings
-    average_rating = average_rating/(len(cars) +1)
+    average_rating = average_rating / (len(cars) + 1)
+ 
     swap = data["pilot_to_change"]
-    while swap != DRIVER_1 and swap != DRIVER_2:
+ 
+    if swap != DRIVER_1 and swap != DRIVER_2:
         raise ValueError("invalid drivers")
     tymy_ridic_1_trade = []
     tymy_ridic_2_trade = []
-    possible_transfer = []
+    possible_transfer  = []
+ 
     for x in teams:
-        for y in cars:
-            if x.drivers[0] == y:
-                if (x.rating - y.ratings) >=0:
-                    tymy_ridic_1_trade.append(x)
-            if x.drivers[1] == y:
-                if (x.rating - y.ratings) >=0:
-                    tymy_ridic_2_trade.append(x)
+        if len(x.drivers) >= 1 and (x.rating - x.drivers[0].ratings) >= 0:
+            tymy_ridic_1_trade.append(x)
+        if len(x.drivers) >= 2 and (x.rating - x.drivers[1].ratings) >= 0:
+            tymy_ridic_2_trade.append(x)
+ 
     if DRIVER_1 == swap:
-        DRIVER_1, player = make_a_deal(DRIVER_1, average_rating, player, teams, tymy_ridic_1_trade, tymy_ridic_2_trade, possible_transfer)
+        DRIVER_1, player = make_a_deal(
+            DRIVER_1, average_rating, player, teams,
+            tymy_ridic_1_trade, tymy_ridic_2_trade, possible_transfer
+        )
     if DRIVER_2 == swap:
-        DRIVER_2, player_2 = make_a_deal(DRIVER_2, average_rating, player_2, teams, tymy_ridic_1_trade, tymy_ridic_2_trade, possible_transfer) 
+        DRIVER_2, player_2 = make_a_deal(
+            DRIVER_2, average_rating, player_2, teams,
+            tymy_ridic_1_trade, tymy_ridic_2_trade, possible_transfer
+        )
+ 
+    return cars, teams, player, player_2, DRIVER_1, DRIVER_2
 def transfer(cars, teams, player, player_2, DRIVER_1, DRIVER_2):
     data = load_data("deal")
     new_pilot = data["where"]
