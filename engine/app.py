@@ -168,39 +168,47 @@ async def api_post_race():
 @app.post("/api/post_championship")
 async def api_post_championship():
     state = _state()
-
     cars, teams, player, player_2, championship, tracks, \
-    DRIVER_1, DRIVER_2, COUNT_CARS, SAFETY_CAR, LAPS_REMAINING, b, season_count = load_game_objects()
-
+        DRIVER_1, DRIVER_2, COUNT_CARS, SAFETY_CAR, LAPS_REMAINING, b, season_count = load_game_objects()
+ 
     save_state_end_of_season(cars, teams, season_count)
-
+ 
     best, worst = simulate_season_mmr2(list_drivers_mmr2)
     season_count += 1
-
+ 
     for mmr2_driver in list_drivers_mmr2:
         mmr2_driver.rating -= 1 / (season_count * 2)
-
-    worst.name = random.choice(names_free_drivers)
+ 
+    worst.name   = random.choice(names_free_drivers)
     worst.rating = random.uniform(0.95, 1.05)
-
+ 
     cars.sort(key=lambda x: x.points, reverse=True)
     last_car = cars[-1]
-
+ 
     if last_car.is_player:
+        old_best_name   = best.name
+        old_best_rating = best.rating
+ 
         if DRIVER_1 == last_car.name:
-            DRIVER_1 = best.name
-            player.name, player.ratings = best.name, best.rating
+            DRIVER_1       = old_best_name
+            player.name    = old_best_name
+            player.ratings = old_best_rating
         elif DRIVER_2 == last_car.name:
-            DRIVER_2 = best.name
-            player_2.name, player_2.ratings = best.name, best.rating
-
-    best.name, best.rating = last_car.name, last_car.ratings
-    last_car.name, last_car.ratings = best.name, best.rating
-
+            DRIVER_2         = old_best_name
+            player_2.name    = old_best_name
+            player_2.ratings = old_best_rating
+ 
+        # Teď teprve přepíšeme best a last_car
+        best.name    = last_car.name
+        best.rating  = last_car.ratings
+        last_car.name    = old_best_name
+        last_car.ratings = old_best_rating
+ 
     teams, player, player_2, DRIVER_1, DRIVER_2, cars = trading_at_the_of_season(
         teams, player, player_2, DRIVER_1, DRIVER_2, cars
     )
+ 
     WETTINESS, cars, teams = reset_championship(cars, teams)
-
     save_state_end_of_season(cars, teams, season_count)
+ 
     return {"status": "championship_done", "season": season_count}
