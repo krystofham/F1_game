@@ -1,7 +1,9 @@
 import { useState, useEffect } from 'react'
 import { BrowserRouter, Routes, Route, Link } from 'react-router-dom'
 import './index.css'
-
+import { simLap, initRace, postRace, postChampionship } from './api_endpoints';
+import { Team, Player, Teams, Players } from './players_teams'
+const isMobile = window.matchMedia("(max-width: 768px)").matches;
 async function getFullState() {
   try {
     const response = await fetch("http://127.0.0.1:8000/api/get_state");
@@ -12,71 +14,37 @@ async function getFullState() {
   }
 }
 
-function Team({ data }) {
-  return (
-    <div className="team-card">
-      <h2>{data.name}</h2>
-      <p><b>Position: {data.position}</b></p>
-      <ul>
-        {data.drivers.map((d, i) => <li key={i}>{d}</li>)}
-      </ul>
-      <p>Points: {data.points}</p>
-    </div>
-  )
-}
 
-function Player({ data }) {
-  return (
-    <div className='player-card'>
-      <h2>{data.name}</h2>
-      <p><b>Position: {data.position}</b></p>
-      <p>
-        Points: {data.points} <br />
-        Team: {data.team || "Neznámý"}
-      </p>
-    </div>
-  )
-}
 
-export function Teams() {
-  const [data, setData] = useState(null);
-  useEffect(() => {
-    getFullState().then(res => setData(res));
-  }, []);
-  if (!data) return <div>Loading teams</div>;
+
+export function Herosection() {
+  if (!isMobile){
   return (
     <>
-      <h1>Teams</h1>
-      {data.teams.map((teamData, index) => (
-        <Team key={index} data={teamData} />
-      ))}
+      <HeroSectionDesktop />
     </>
-  );
-}
-
-export function Players() {
-  const [data, setData] = useState(null);
-  useEffect(() => {
-    getFullState().then(res => setData(res));
-  }, []);
-  if (!data) return <div>Loading drivers</div>;
-  return (
+  );}
+  else {
+    return (
     <>
-      <h1>Drivers</h1>
-      {data.drivers.map((driversData, index) => (
-        <Player key={index} data={driversData} />
-      ))}
+      <HeroSectionMobile />
     </>
-  );
+    );
+  }
 }
 
 export default function App() {
   return (
     <BrowserRouter>
-      <nav style={{ padding: "20px", background: "#eee", marginBottom: "10px" }}>
+      <nav>
         <Link to="/">Teams</Link> | <Link to="/players">Drivers</Link>
       </nav>
-      <div style={{ padding: "20px" }}>
+      <main>
+        <div className='Herosection'>
+          <Herosection />
+        </div>
+      </main>
+      <div>
         <Routes>
           <Route path="/" element={<Teams />} />
           <Route path="/players" element={<Players />} />
