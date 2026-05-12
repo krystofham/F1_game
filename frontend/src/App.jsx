@@ -3,7 +3,11 @@ import { BrowserRouter, Routes, Route, Link } from 'react-router-dom'
 import './index.css'
 import { simLap, initRace, postRace, postChampionship } from './api_endpoints';
 import { Team, Player, Teams, Players } from './players_teams'
+import { Navbar, Herosection } from './ui_elements'
+
 const isMobile = window.matchMedia("(max-width: 768px)").matches;
+
+
 async function getFullState() {
   try {
     const response = await fetch("http://127.0.0.1:8000/api/get_state");
@@ -16,32 +20,13 @@ async function getFullState() {
 
 
 
-
-export function Herosection() {
-  if (!isMobile){
-  return (
-    <>
-      <HeroSectionDesktop />
-    </>
-  );}
-  else {
-    return (
-    <>
-      <HeroSectionMobile />
-    </>
-    );
-  }
-}
-
 export default function App() {
   return (
     <BrowserRouter>
-      <nav>
-        <Link to="/">Teams</Link> | <Link to="/players">Drivers</Link>
-      </nav>
+      <Navbar />
       <main>
         <div className='Herosection'>
-          <Herosection />
+          <Herosection isMobile={isMobile}/>
         </div>
       </main>
       <div>
