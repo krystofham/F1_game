@@ -1,4 +1,4 @@
-const simLap = async () => {
+export const simLap = async () => {
   try {
     const response = await fetch("http://127.0.0.1:8000/api/sim_lap", {
       method: "POST",
@@ -14,7 +14,7 @@ const simLap = async () => {
   }
 };
 
-const initRace = async () => {
+export const initRace = async () => {
   try {
     const response = await fetch("http://127.0.0.1:8000/api/init_race", {
       method: "POST",
@@ -30,7 +30,7 @@ const initRace = async () => {
   }
 };
 
-const postRace = async () => {
+export const postRace = async () => {
   try {
     const response = await fetch("http://127.0.0.1:8000/api/post_race", {
       method: "POST",
@@ -46,7 +46,7 @@ const postRace = async () => {
   }
 };
 
-const postChampionship = async () => {
+export const postChampionship = async () => {
   try {
     const response = await fetch("http://127.0.0.1:8000/api/post_championship", {
       method: "POST",
