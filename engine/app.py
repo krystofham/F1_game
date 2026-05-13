@@ -57,9 +57,6 @@ async def get_team(team_id: int):
         raise HTTPException(status_code=404, detail="Team index out of range")
     return teams["teams"][team_id]
 
-# ---------------------------------------------------------------------------
-# POST /api/init_race  — zavolej jednou před závodem
-# ---------------------------------------------------------------------------
 
 @app.post("/api/init_race")
 async def api_init_race():
@@ -82,9 +79,6 @@ async def api_init_race():
 
     return {"status": "ok", "race": race, "lap": lap, "total_laps": state.get("race_state", {}).get("total_laps")}
 
-# ---------------------------------------------------------------------------
-# POST /api/sim_lap  — zavolej každé kolo
-# ---------------------------------------------------------------------------
 
 @app.post("/api/sim_lap")
 async def api_sim_lap():
@@ -198,17 +192,17 @@ async def api_post_championship():
             player_2.name    = old_best_name
             player_2.ratings = old_best_rating
  
-        team_best     = best.team
-        team_last_car = last_car.team
+#        team_best     = best.team
+#        team_last_car = last_car.team
 
-        idx_best     = team_best.drivers.index(best)
-        idx_last_car = team_last_car.drivers.index(last_car)
+#        idx_best     = team_best.drivers.index(best)
+ #       idx_last_car = team_last_car.drivers.index(last_car)
 
-        team_best.drivers[idx_best]         = last_car
-        team_last_car.drivers[idx_last_car] = best
+  #      team_best.drivers[idx_best]         = last_car
+   #     team_last_car.drivers[idx_last_car] = best
 
-        best.team     = team_last_car
-        last_car.team = team_best
+#        best.team     = team_last_car
+    #    last_car.team = team_best
  
     teams, player, player_2, DRIVER_1, DRIVER_2, cars = trading_at_the_of_season(
         teams, player, player_2, DRIVER_1, DRIVER_2, cars
