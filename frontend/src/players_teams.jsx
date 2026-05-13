@@ -1,4 +1,6 @@
-function Team({ data }) {
+import { useState, useEffect } from 'react';
+import { getFullState } from './App';
+export function Team({ data }) {
   return (
     <div className="team-card">
       <h2>{data.name}</h2>
@@ -11,7 +13,7 @@ function Team({ data }) {
   )
 }
 
-function Player({ data }) {
+export function Player({ data }) {
   return (
     <div className='player-card'>
       <h2>{data.name}</h2>
@@ -26,14 +28,17 @@ function Player({ data }) {
 
 export function Teams() {
   const [data, setData] = useState(null);
+  
   useEffect(() => {
     getFullState().then(res => setData(res));
   }, []);
+
   if (!data) return <div>Loading teams</div>;
+
   return (
     <>
       <h1>Teams</h1>
-      {data.teams.map((teamData, index) => (
+      {data.teams?.map((teamData, index) => (
         <Team key={index} data={teamData} />
       ))}
     </>
