@@ -1,55 +1,71 @@
-import { useState, useEffect } from 'react'
-import { 
-  createBrowserRouter, 
-  RouterProvider, 
-  Outlet 
-} from 'react-router-dom' // Změna importů
-import './index.css'
-import { simLap, initRace, postRace, postChampionship } from './api_endpoints';
-import { Team, Player, Teams, Players } from './players_teams'
-import { Navbar, HeroSection } from './ui_elements'
+import { BrowserRouter, Routes, Route, NavLink, useLocation } from "react-router-dom";
+import TeamsPage from "./pages/TeamsPage";
+import DriversPage from "./pages/DriversPage";
+import RacePage from "./pages/RacePage";
+import TrackPage from "./pages/TrackPage";
+import StandingsPage from "./pages/StandingsPage";
+import GraphsPage from "./pages/GraphsPage";
+import "./styles.css";
 
-const isMobile = window.matchMedia("(max-width: 768px)").matches;
+const NAV_ITEMS = [
+  { to: "/", label: "STANDINGS", icon: "▲" },
+  { to: "/race", label: "RACE CONTROL", icon: "◉" },
+  { to: "/teams", label: "TEAMS", icon: "◈" },
+  { to: "/drivers", label: "DRIVERS", icon: "◆" },
+  { to: "/track", label: "TRACK", icon: "◎" },
+  { to: "/graphs", label: "TELEMETRY", icon: "∿" },
+];
 
-export async function getFullState() {
-  try {
-    const response = await fetch("http://127.0.0.1:8000/api/get_state");
-    return await response.json();
-  } catch (err) {
-    console.error("Server spí:", err);
-    return null;
-  }
+function Sidebar() {
+  return (
+    <nav className="sidebar">
+      <div className="sidebar-header">
+        <div className="logo-mark">F1</div>
+        <div className="logo-text">
+          <span className="logo-title">APEX</span>
+          <span className="logo-sub">MANAGER</span>
+        </div>
+      </div>
+      <div className="nav-items">
+        {NAV_ITEMS.map((item) => (
+          <NavLink
+            key={item.to}
+            to={item.to}
+            end={item.to === "/"}
+            className={({ isActive }) => `nav-item ${isActive ? "active" : ""}`}
+          >
+            <span className="nav-icon">{item.icon}</span>
+            <span className="nav-label">{item.label}</span>
+            <span className="nav-indicator" />
+          </NavLink>
+        ))}
+      </div>
+      <div className="sidebar-footer">
+        <div className="api-status">
+          <span className="status-dot" />
+          ENGINE LIVE
+        </div>
+      </div>
+    </nav>
+  );
 }
 
-const RootLayout = () => (
-  <>
-    <Navbar />
-    <div>
-      <Outlet /> 
-    </div>
-  </>
-);
-
-const router = createBrowserRouter([
-  {
-    path: "/",
-    element: <RootLayout />,
-    children: [
-      {
-        index: true, 
-        element: <HeroSection isMobile={isMobile} />
-      },
-      {
-        path: "teams",
-        element: <Teams />
-      },
-      {
-        path: "players",
-        element: <Players />
-      }
-    ]
-  }
-]);
 export default function App() {
-  return <RouterProvider router={router} />;
+  return (
+    <BrowserRouter>
+      <div className="app-shell">
+        <Sidebar />
+        <main className="main-content">
+          <Routes>
+            <Route path="/" element={<StandingsPage />} />
+            <Route path="/race" element={<RacePage />} />
+            <Route path="/teams" element={<TeamsPage />} />
+            <Route path="/drivers" element={<DriversPage />} />
+            <Route path="/track" element={<TrackPage />} />
+            <Route path="/graphs" element={<GraphsPage />} />
+          </Routes>
+        </main>
+      </div>
+    </BrowserRouter>
+  );
 }

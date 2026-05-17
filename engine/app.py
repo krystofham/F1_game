@@ -115,7 +115,7 @@ async def api_sim_lap():
         {
             "hard":   {"wear": race_ctx["k_wear"][0], "speed": race_ctx.get("k_speed", [1,1,1,1,1])[0]},
             "medium": {"wear": race_ctx["k_wear"][1], "speed": race_ctx.get("k_speed", [1,1,1,1,1])[1]},
-            "soft":   {"wear": race_ctx["k_wear"][2], "speed": race_ctx.get("k_speed", [1,1,1,1,1])[2]},
+            "sof. t":   {"wear": race_ctx["k_wear"][2], "speed": race_ctx.get("k_speed", [1,1,1,1,1])[2]},
             "wet":    {"wear": race_ctx["k_wear"][3], "speed": race_ctx.get("k_speed", [1,1,1,1,1])[3]},
             "inter":  {"wear": race_ctx["k_wear"][4], "speed": race_ctx.get("k_speed", [1,1,1,1,1])[4]},
         },
