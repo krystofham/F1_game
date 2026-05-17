@@ -16,7 +16,7 @@ export function useApi(fetcher, deps = []) {
     } finally {
       setLoading(false);
     }
-  }, deps);
+  }, []); // ← prázdné deps, fetcher se nesmí být v deps
 
   useEffect(() => { run(); }, [run]);
 

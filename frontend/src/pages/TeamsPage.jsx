@@ -55,7 +55,7 @@ function TeamCard({ team, rank }) {
         {team.name}
       </div>
       <div className="team-pts">
-        RATING {team.rating?.toFixed(4)} · {team.points || 0} PTS
+        {team.points || 0} PTS
       </div>
 
       <div className="team-drivers">
@@ -81,8 +81,8 @@ function TeamCard({ team, rank }) {
 
 export default function TeamsPage() {
   const { data, loading, error } = useApi(api.getTeams);
-  const teams = data?.teams
-    ? [...data.teams].sort((a, b) => (b.points || 0) - (a.points || 0))
+  const teams = data
+    ? [...data].sort((a, b) => (b.points || 0) - (a.points || 0))
     : [];
 
   return (
