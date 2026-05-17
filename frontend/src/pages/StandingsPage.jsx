@@ -9,7 +9,6 @@ function PosBadge({ pos }) {
 export default function StandingsPage() {
   const { data: teams, loading: tLoad, error: tErr } = useApi(api.getTeams);
   const { data: drivers, loading: dLoad, error: dErr } = useApi(api.getDrivers);
-
   return (
     <div>
       <div className="page-header">
@@ -62,18 +61,17 @@ export default function StandingsPage() {
           <div className="section-title" style={{ marginTop: 0 }}>Constructors</div>
           {tLoad && <div className="loading">LOADING</div>}
           {tErr && <div className="empty">⚠ {tErr}</div>}
-          {teams?.teams && (
+          {(teams || Array.isArray(teams)) && (
             <table className="data-table">
               <thead>
                 <tr>
                   <th>POS</th>
                   <th>TEAM</th>
-                  <th>RATING</th>
                   <th>PTS</th>
                 </tr>
               </thead>
               <tbody>
-                {[...teams.teams]
+                {[...teams]
                   .sort((a, b) => (b.points || 0) - (a.points || 0))
                   .map((t, i) => (
                     <tr key={t.name}>
@@ -84,7 +82,6 @@ export default function StandingsPage() {
                           {(t.drivers || []).join(" · ")}
                         </div>
                       </td>
-                      <td className="text-mono">{t.rating?.toFixed(4) ?? "—"}</td>
                       <td><span className="points-pill">{t.points || 0}</span></td>
                     </tr>
                   ))}
