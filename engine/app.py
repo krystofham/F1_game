@@ -44,18 +44,22 @@ async def get_state():
 
 @app.get("/api/get_drivers")
 async def get_drivers():
-    return _load_json(os.path.join(_CONFIG, "config/drivers.json"))
+    state = _state()
+    return state["drivers"]
 
 @app.get("/api/get_teams")
 async def get_teams():
-    return _load_json(os.path.join(_CONFIG, "config/teams.json"))
+    state = _state()
+    return state["teams"]
 
-@app.get("/api/get_teams/{team_id}")
-async def get_team(team_id: int):
-    teams = _load_json(os.path.join(_CONFIG, "config/teams.json"))
-    if team_id >= len(teams["teams"]):
-        raise HTTPException(status_code=404, detail="Team index out of range")
-    return teams["teams"][team_id]
+@app.get("/api/get_teams/{team_name}")
+async def get_team(team_name: str):
+    state = _state()
+    teams = state["teams"]
+    for team in teams:
+        if team["name"].lower() == team_name.lower():
+            return team
+    raise HTTPException(status_code=404, detail=f"Team '{team_name}' not found")
 
 
 @app.post("/api/init_race")
@@ -148,6 +152,7 @@ async def api_post_race():
     race = state["race"]
     climax = race_ctx.get("climax", "sunny")
     RANK = [a for a in cars if not a.dnf]
+    print(time_laps)
     teams, cars, time_laps = post_race_info(time_laps, player, player_2, cars, teams, COUNT_CARS)
     save_state_end_of_race(cars, teams, season_count, race)
     # points, cars, teams, players = plot_graph(RANK, DRIVER_1, DRIVER_2, teams, cars, player, player_2, climax)
