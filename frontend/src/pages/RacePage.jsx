@@ -211,8 +211,10 @@ export default function RacePage() {
   const [drivers, setDrivers] = useState([]);
   const [simUntil, setSimUntil] = useState("");
   const logRef = useRef(null);
-
   const { data: state, refetch: refetchState } = useApi(api.getState);
+  const isLastRace = state?.b != null && state?.championship_length != null
+  ? state.b >= state.championship_length
+  : false;
 
   useEffect(() => {
     if (state?.race_state) {
@@ -297,6 +299,10 @@ export default function RacePage() {
       addLog(`Post-race done: ${res.race}`, "good");
       setPostDone(true);
       await refetchState();
+      const fresh = await api.getState();
+      const last = fresh?.b >= fresh?.championship_length;
+      setIsLastRace(last);
+      addLog(`DEBUG b=${fresh?.b} len=${fresh?.championship_length} isLast=${last}`, "highlight");
     } catch (e) {
       addLog(`Post-race error: ${e.message}`, "danger");
     }
@@ -317,11 +323,6 @@ export default function RacePage() {
   };
 
   const progress = totalLaps ? Math.min(100, (lap / totalLaps) * 100) : 0;
-
-  // Determine if championship is also over (last race)
-  const isLastRace = state?.b != null && state?.championship
-    ? state.b >= (state.championship?.length ?? 99)
-    : false;
 
   return (
     <div>
@@ -401,12 +402,15 @@ export default function RacePage() {
                 </button>
               )}
 
-              {finished && postDone && (
-                <button
-                  className={`btn ${isLastRace ? "btn-danger" : "btn-primary"}`}
-                  onClick={isLastRace ? handlePostChampionship : handleInit.bind(null, {})}
-                >
-                  {isLastRace ? "END SEASON" : "NEXT RACE"}
+              { (
+                <button className="btn btn-primary" onClick={() => setRaceState(null)}>
+                  NEXT RACE
+                </button>
+              )}
+
+              {(
+                <button className="btn btn-danger" onClick={handlePostChampionship}>
+                  END SEASON
                 </button>
               )}
 
