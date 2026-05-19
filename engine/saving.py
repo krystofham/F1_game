@@ -13,8 +13,15 @@ POINTS_TABLE = {
     21: 1, 22: 1, 23: 1
 }
 
-def _car_to_dict(car, position):
+def _car_to_dict(car, position, time_laps=None):
     positions = [p for p in car.position if p > 0]
+    # Extrahuj per-driver lap times z globálního time_laps listu
+    # time_laps je list of lists: [[name, lap_time], ...] nebo [[name, lap, time], ...]
+    driver_lap_times = []
+    if time_laps:
+        for entry in time_laps:
+            if entry and entry[0] == car.name:
+                driver_lap_times.append(float(entry[-1]))
     return {
         "position":         position,
         "name":             car.name,
@@ -30,11 +37,12 @@ def _car_to_dict(car, position):
         "avg_position":     round(sum(positions) / len(positions), 2) if positions else None,
         "best_position":    min(positions) if positions else None,
         "worst_position":   max(positions) if positions else None,
-        # nové — potřebné pro obnovu simulace
+        # potřebné pro obnovu simulace
         "time":             round(getattr(car, "time", 0.0), 4),
         "drs":              getattr(car, "drs", False),
         "pit":              getattr(car, "pit", False),
         "position_history": list(car.position),
+        "lap_times":        driver_lap_times,
     }
 
 def _team_to_dict(team, position):
@@ -46,11 +54,11 @@ def _team_to_dict(team, position):
         "drivers":  [d.name for d in team.drivers],
     }
 
-def _build_standings(cars, teams):
+def _build_standings(cars, teams, time_laps=None):
     sorted_cars  = sorted(cars,  key=lambda x: x.points, reverse=True)
     sorted_teams = sorted(teams, key=lambda x: x.points, reverse=True)
     return {
-        "drivers": [_car_to_dict(c, i + 1)  for i, c in enumerate(sorted_cars)],
+        "drivers": [_car_to_dict(c, i + 1, time_laps)  for i, c in enumerate(sorted_cars)],
         "teams":   [_team_to_dict(t, i + 1) for i, t in enumerate(sorted_teams)],
     }
 
@@ -70,25 +78,6 @@ def build_race_ctx(
     pneu_type, speed_type,
     k_wear, k_speed, total_laps, time_laps=None
 ) -> dict:
-    """
-    Postav race_ctx slovník ze všech proměnných závodní smyčky.
-    Ulož ho před závodem a aktualizuj jen měnící se hodnoty v každém kole.
-
-    Příklad použití v main.py:
-        race_ctx = build_race_ctx(
-            weather=weather, climax=climax, wettiness=WETTINESS,
-            safety_car=SAFETY_CAR, safety_car_laps_remaining=LAPS_REMAINING,
-            forecast=forecast, training_type=training_type, speed_bonus=speed_bonus,
-            pneu_type=pneu, speed_type=speed,
-            k_wear=k_wear, k_speed=k_speed, total_laps=LAPS
-        )
-        # pak v každém kole:
-        race_ctx["weather"] = weather
-        race_ctx["wettiness"] = WETTINESS
-        race_ctx["safety_car"] = SAFETY_CAR
-        race_ctx["safety_car_laps_remaining"] = LAPS_REMAINING
-        race_ctx["forecast"] = list(forecast)
-    """
     return {
         "weather":                   weather,
         "climax":                    climax,
@@ -101,40 +90,48 @@ def build_race_ctx(
         "pneu_type":                 pneu_type,
         "speed_type":                speed_type,
         "k_wear":                    list(k_wear),
-        "k_speed":                  list(k_speed),
+        "k_speed":                   list(k_speed),
         "total_laps":                total_laps,
-        "time_laps":                [list(t) for t in time_laps] if time_laps else [],    
-}
+        # time_laps NENÍ součástí race_ctx — ukládá se zvlášť na root úrovni
+    }
 
 
 # ---------------------------------------------------------------------------
-# Veřejné funkce — stejné signatury jako dřív, jen save_state_end_of_lap
-# dostane navíc race_ctx
+# Veřejné funkce
 # ---------------------------------------------------------------------------
 
-def save_state_end_of_lap(cars, teams, season, race, lap, race_ctx: dict = None):
+def save_state_end_of_lap(cars, teams, season, race, lap, race_ctx: dict = None, time_laps=None):
     """
     race_ctx je volitelný — pokud ho nepředáš, uloží se jen standings (zpětná kompatibilita).
-    Doporučeno: vždy předávej race_ctx pro plný stav.
+    time_laps se ukládá na root úrovni state.json (ne uvnitř race_ctx) aby přežil každé kolo.
     """
+    # time_laps z race_ctx (zpětná kompatibilita) nebo z parametru
+    tl = time_laps
+    if tl is None and race_ctx is not None:
+        # Bezpečně vyjmout bez mutace — race_ctx zůstane neporušený
+        tl = race_ctx.get("time_laps", [])
+
     data = {
-        "type":   "lap",
-        "season": season,
-        "race":   race,
-        "lap":    lap,
-        "time_laps": race_ctx.pop("time_laps", []) if race_ctx else [],
-        **_build_standings(cars, teams),
+        "type":      "lap",
+        "season":    season,
+        "race":      race,
+        "lap":       lap,
+        "time_laps": tl or [],
+        **_build_standings(cars, teams, tl),
     }
     if race_ctx is not None:
-        data["race_state"] = race_ctx
+        # Uložit race_ctx BEZ time_laps (time_laps patří na root)
+        ctx_to_save = {k: v for k, v in race_ctx.items() if k != "time_laps"}
+        data["race_state"] = ctx_to_save
     _save(data)
 
-def save_state_end_of_race(cars, teams, season, race):
+def save_state_end_of_race(cars, teams, season, race, time_laps=None):
     _save({
-        "type":   "race",
-        "season": season,
-        "race":   race,
-        **_build_standings(cars, teams),
+        "type":      "race",
+        "season":    season,
+        "race":      race,
+        "time_laps": time_laps or [],
+        **_build_standings(cars, teams, time_laps),
     })
 
 def save_state_end_of_season(cars, teams, season):
