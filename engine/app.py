@@ -1,6 +1,7 @@
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 import os, json, random
+from fastapi.staticfiles import StaticFiles  
 from big_functions import *
 from load_data_json import *
 
@@ -8,6 +9,8 @@ app = FastAPI()
 app.add_middleware(CORSMiddleware, allow_origins=["*"], allow_methods=["*"], allow_headers=["*"])
 
 _CONFIG = os.path.dirname(os.path.abspath(__file__))
+
+app.mount("/img", StaticFiles(directory="../img"), name="img") 
 
 # ---------------------------------------------------------------------------
 # Helpers

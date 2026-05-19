@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useApi } from "../hooks/useApi";
 import { api } from "../utils/api";
+import { Link } from "react-router-dom";
 
 function TeamCard({ team, rank }) {
   const [imgErr, setImgErr] = useState(false);
@@ -12,7 +13,8 @@ function TeamCard({ team, rank }) {
     .replace(/_+/g, "_");
 
   return (
-    <div className="team-card">
+  <Link to={`/team/${team.name}`} style={{textDecoration: "none", color: "white"}}>
+   <div className="team-card">
       <div
         style={{
           position: "absolute",
@@ -28,10 +30,23 @@ function TeamCard({ team, rank }) {
       >
         {rank}
       </div>
-
+          <div
+            style={{
+              fontFamily: "var(--font-display)",
+              fontSize: 28,
+              fontWeight: 900,
+              color: "var(--border-light)",
+              letterSpacing: 2,
+            }}
+          >
+            {team.name.slice(0, 3).toUpperCase()}
+          </div>
       <div className="team-img-wrap">
         {!imgErr ? (
           <img
+            style={{
+              borderRadius: "50%",
+            }}
             src={`http://localhost:8000/img/${imgName}.png`}
             alt={team.name}
             onError={() => setImgErr(true)}
@@ -76,6 +91,7 @@ function TeamCard({ team, rank }) {
         ))}
       </div>
     </div>
+  </Link>
   );
 }
 
