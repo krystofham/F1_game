@@ -378,7 +378,7 @@ export default function RacePage() {
                 </>
               )}
 
-              {finished && !postDone && (
+              { (
                 <button className="btn btn-success" onClick={handlePostRace}>
                   POST RACE
                 </button>
