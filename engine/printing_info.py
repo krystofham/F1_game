@@ -189,7 +189,8 @@ def post_race_info(time_laps, player, player_2, cars, teams, COUNT_CARS):
     for team in teams:
         team.vypocitej_points(RANK, COUNT_CARS)
         
-    return teams, cars, time_lapsdef print_teams_end_championship(teams:list) -> list:
+    return teams, cars, time_laps
+def print_teams_end_championship(teams:list) -> list:
     print("\n🏆 Teams at the end of championship:")
     teams.sort(key=lambda t: t.points, reverse=True)
     for i, t in enumerate(teams, 1):
