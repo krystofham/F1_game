@@ -13,7 +13,7 @@ const getPointsForPosition = (position) => {
   return pointsMap[position] || 0;
 };
 
-function TeamCard({ team, currentRank, newRank }) {
+function TeamCard({ team, currentRank, newRank, isLive }) {
   const [imgErr, setImgErr] = useState(false);
 
   const imgName = team.name
@@ -33,6 +33,10 @@ function TeamCard({ team, currentRank, newRank }) {
     indicatorColor = "var(--accent-err, #dc3545)";
   }
 
+  // Rozhodnutí o tom, co zobrazit na základě režimu
+  const displayedRank = isLive ? newRank : currentRank;
+  const displayedPoints = isLive ? team.newTotalPoints : (team.points || 0);
+
   return (
     <Link to={`/team/${team.name}`} style={{ textDecoration: "none", color: "white" }}>
       <div className="team-card" style={{ position: "relative" }}>
@@ -48,11 +52,14 @@ function TeamCard({ team, currentRank, newRank }) {
           }}
         >
           <div style={{ fontSize: 32, fontWeight: 900, color: "var(--text)" }}>
-            #{String(newRank).padStart(2, "0")}
+            #{String(displayedRank).padStart(2, "0")}
           </div>
-          <div style={{ fontSize: 10, fontFamily: "var(--font-mono)", color: indicatorColor, fontWeight: 700 }}>
-            {rankIndicator}
-          </div>
+          {/* Šipku ukazujeme jen v Live režimu */}
+          {isLive && (
+            <div style={{ fontSize: 10, fontFamily: "var(--font-mono)", color: indicatorColor, fontWeight: 700 }}>
+              {rankIndicator}
+            </div>
+          )}
         </div>
 
         <div
@@ -90,14 +97,17 @@ function TeamCard({ team, currentRank, newRank }) {
           )}
         </div>
 
-        <div className="team-name" style={{ fontSize: 13, marginBottom: 2, pr: 60 }}>
+        <div className="team-name" style={{ fontSize: 13, marginBottom: 2, paddingRight: 60 }}>
           {team.name}
         </div>
         <div className="team-pts">
-          {team.points || 0} PTS 
-          <span style={{ fontSize: 11, color: "var(--text-3)", marginLeft: 6 }}>
-            (+{team.simulatedRacePoints || 0} fresh)
-          </span>
+          {displayedPoints} PTS 
+          {/* Nasimulované body ukazujeme jen v Live režimu */}
+          {isLive && (
+            <span style={{ fontSize: 11, color: "var(--text-3)", marginLeft: 6 }}>
+              (+{team.simulatedRacePoints || 0} fresh)
+            </span>
+          )}
         </div>
 
         <div className="team-drivers">
@@ -117,39 +127,35 @@ function TeamCard({ team, currentRank, newRank }) {
 
 export default function TeamsPage() {
   const { data: teamsData, loading: teamsLoading, error: teamsError } = useApi(api.getTeams);
-  const { data: stateData } = useApi(api.getState); // Potřebujeme pro získání position_history řidičů
+  const { data: stateData } = useApi(api.getState);
+  
+  // Stav pro přepínání mezi normálním zobrazením a live timingem
+  const [isLive, setIsLive] = useState(true);
 
   let teams = [];
 
   if (teamsData) {
-    // 1. Nejprve seřadíme týmy podle aktuálních bodů, abychom znali jejich STÁRE/AKTUÁLNÍ pořadí (Rank)
     const currentSortedTeams = [...teamsData].sort((a, b) => (b.points || 0) - (a.points || 0));
     
-    // Vytvoříme mapu původního pořadí podle jména týmu
     const currentRankMap = {};
     currentSortedTeams.forEach((t, index) => {
       currentRankMap[t.name] = index + 1;
     });
 
-    // 2. Extrahujeme aktuální pozice jezdců ze state.json z posledního kola závodu
     const driverRacePositions = {};
     if (stateData && stateData.drivers) {
       stateData.drivers.forEach((d) => {
         if (d.position_history && d.position_history.length > 0) {
-          // Vezmeme poslední prvek z pole historie = pozice v cíli / aktuálním kole
           driverRacePositions[d.name] = d.position_history[d.position_history.length - 1];
         } else {
-          // Fallback, pokud závod ještě vůbec neodstartoval
           driverRacePositions[d.name] = d.position || 99;
         }
       });
     }
 
-    // 3. Nasimulujeme přičtení bodů jednotlivým týmům v JS
     const simulatedTeams = teamsData.map((team) => {
       let racePointsForTeam = 0;
 
-      // Projdeme oba jezdce daného týmu
       (team.drivers || []).forEach((driverName) => {
         const finalPosition = driverRacePositions[driverName];
         if (finalPosition) {
@@ -160,25 +166,23 @@ export default function TeamsPage() {
       return {
         ...team,
         currentRank: currentRankMap[team.name] || 99,
-        // Nové celkové body = staré body + nově získané body ze simulace
         newTotalPoints: (team.points || 0) + racePointsForTeam,
-        simulatedRacePoints: racePointsForTeam // abychom mohli v UI ukázat, kolik bodů získali v závodě
+        simulatedRacePoints: racePointsForTeam 
       };
     });
 
-    // 4. Seřadíme týmy znovu podle NOVÝCH nasimulovaných celkových bodů
     const newSortedTeams = [...simulatedTeams].sort((a, b) => b.newTotalPoints - a.newTotalPoints);
 
-    // Přiřadíme do objektů jejich finální nové pořadí (New Rank)
     teams = newSortedTeams.map((team, index) => ({
       ...team,
       newRank: index + 1
     }));
   }
 
-  // Chceme stránku primárně zobrazovat seřazenou podle NOVÉHO pořadí po tomto závodě
-  // Pokud chceš zachovat staré řazení, změň na: .sort((a, b) => a.currentRank - b.currentRank)
-  const displayedTeams = [...teams].sort((a, b) => a.newRank - b.newRank);
+  // Řazení na základě vybraného režimu
+  const displayedTeams = [...teams].sort((a, b) => {
+    return isLive ? a.newRank - b.newRank : a.currentRank - b.currentRank;
+  });
 
   return (
     <div>
@@ -187,6 +191,40 @@ export default function TeamsPage() {
         <div className="page-title">
           TEAM <span>OVERVIEW</span>
         </div>
+      </div>
+
+      {/* Navigační přepínač režimů */}
+      <div style={{ display: 'flex', gap: '10px', marginBottom: '24px' }}>
+        <button 
+          onClick={() => setIsLive(false)}
+          style={{
+            padding: '8px 16px',
+            cursor: 'pointer',
+            backgroundColor: !isLive ? 'var(--accent, #007bff)' : 'transparent',
+            color: !isLive ? '#fff' : 'var(--text-3, #ccc)',
+            border: '1px solid var(--accent, #007bff)',
+            borderRadius: '4px',
+            fontFamily: 'var(--font-display)',
+            fontWeight: 700
+          }}
+        >
+          NORMAL
+        </button>
+        <button 
+          onClick={() => setIsLive(true)}
+          style={{
+            padding: '8px 16px',
+            cursor: 'pointer',
+            backgroundColor: isLive ? 'var(--accent, #007bff)' : 'transparent',
+            color: isLive ? '#fff' : 'var(--text-3, #ccc)',
+            border: '1px solid var(--accent, #007bff)',
+            borderRadius: '4px',
+            fontFamily: 'var(--font-display)',
+            fontWeight: 700
+          }}
+        >
+          LIVE TIMING
+        </button>
       </div>
 
       {teamsLoading && <div className="loading">FETCHING TEAMS</div>}
@@ -205,7 +243,8 @@ export default function TeamsPage() {
               key={t.name} 
               team={t} 
               currentRank={t.currentRank} 
-              newRank={t.newRank} 
+              newRank={t.newRank}
+              isLive={isLive}
             />
           ))}
         </div>
