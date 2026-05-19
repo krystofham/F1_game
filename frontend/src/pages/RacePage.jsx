@@ -133,9 +133,21 @@ function InitForm({ onInit }) {
 
 // ── Race live table ─────────────────────────────────────────────────────────
 function RaceTable({ drivers }) {
-  const sorted = [...(drivers || [])].sort(
-    (a, b) => (a.position || 99) - (b.position || 99)
-  );
+  
+  // Pomocná funkce pro získání aktuální pozice v závodě
+  const getCurrentRacePos = (driver) => {
+    if (driver.position_history && driver.position_history.length > 0) {
+      // Vrátí poslední zapsanou pozici z historie závodu
+      return driver.position_history[driver.position_history.length - 1];
+    }
+    // Pokud závod ještě nezačal a historie je prázdná, použijeme jako fallback pozici z kvalifikace/šampionátu
+    return driver.position || 99;
+  };
+
+  // Seřadíme pole jezdců podle aktuálního pořadí v tomto závodě
+  const sorted = [...(drivers || [])].sort((a, b) => {
+    return getCurrentRacePos(a) - getCurrentRacePos(b);
+  });
 
   return (
     <table className="data-table">
@@ -151,32 +163,37 @@ function RaceTable({ drivers }) {
         </tr>
       </thead>
       <tbody>
-        {sorted.map((d) => (
-          <tr key={d.name} className={d.dnf ? "dnf" : ""}>
-            <td>
-              <span style={{ fontFamily: "var(--font-display)", fontWeight: 700, fontSize: 16 }}>
-                P{d.position || "—"}
-              </span>
-            </td>
-            <td>
-              <span style={{ fontFamily: "var(--font-display)", fontWeight: 700, color: d.is_player ? "var(--text)" : "var(--text-2)" }}>
-                {d.name}
-              </span>
-              {d.is_player && <span className="badge badge-ok" style={{ marginLeft: 6, fontSize: 7 }}>YOU</span>}
-            </td>
-            <td><TyreBadge type={d.pneu} /></td>
-            <td style={{ minWidth: 120 }}><WearBar wear={d.wear || 0} /></td>
-            <td className="text-mono">{d.gap != null ? `+${d.gap.toFixed(3)}` : "—"}</td>
-            <td className="text-mono">{d.pit_stops?.length ?? 0}</td>
-            <td>
-              {d.dnf ? (
-                <span className="badge badge-err">DNF</span>
-              ) : (
-                <span className="badge badge-ok">RACING</span>
-              )}
-            </td>
-          </tr>
-        ))}
+        {sorted.map((d) => {
+          // Zjistíme přesné číslo pozice pro zobrazení v tabulce
+          const currentPos = getCurrentRacePos(d);
+
+          return (
+            <tr key={d.name} className={d.dnf ? "dnf" : ""}>
+              <td>
+                <span style={{ fontFamily: "var(--font-display)", fontWeight: 700, fontSize: 16 }}>
+                  P{currentPos}
+                </span>
+              </td>
+              <td>
+                <span style={{ fontFamily: "var(--font-display)", fontWeight: 700, color: d.is_player ? "var(--text)" : "var(--text-2)" }}>
+                  {d.name}
+                </span>
+                {d.is_player && <span className="badge badge-ok" style={{ marginLeft: 6, fontSize: 7 }}>YOU</span>}
+              </td>
+              <td><TyreBadge type={d.pneu} /></td>
+              <td style={{ minWidth: 120 }}><WearBar wear={d.wear || 0} /></td>
+              <td className="text-mono">{d.gap != null ? `+${d.gap.toFixed(3)}` : "—"}</td>
+              <td className="text-mono">{d.pit_stops?.length ?? 0}</td>
+              <td>
+                {d.dnf ? (
+                  <span className="badge badge-err">DNF</span>
+                ) : (
+                  <span className="badge badge-ok">RACING</span>
+                )}
+              </td>
+            </tr>
+          );
+        })}
       </tbody>
     </table>
   );
