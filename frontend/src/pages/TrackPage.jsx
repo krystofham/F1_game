@@ -43,10 +43,7 @@ export default function TrackPage() {
   if (error) return <div className="empty">⚠ {error}</div>;
 
   const flag = guessFlag(currentTrack.name || race || "");
-  const dnfProb = currentTrack.dnf_probability
-    ? (100 * (currentTrack.count_cars ?? 20) * (currentTrack.laps ?? 60)) / currentTrack.dnf_probability
-    : null;
-
+  const dnfProb = 100 * 22 * (state?.race_state?.total_laps) / 5000
   return (
     <div>
       <div className="page-header">

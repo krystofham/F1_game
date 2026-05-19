@@ -6,6 +6,7 @@ import TrackPage from "./pages/TrackPage";
 import StandingsPage from "./pages/StandingsPage";
 import GraphsPage from "./pages/GraphsPage";
 import "./styles.css";
+import TeamPage from "./pages/TeamPage";  // ← toto přidej
 
 const NAV_ITEMS = [
   { to: "/", label: "STANDINGS", icon: "▲" },
@@ -63,6 +64,7 @@ export default function App() {
             <Route path="/drivers" element={<DriversPage />} />
             <Route path="/track" element={<TrackPage />} />
             <Route path="/graphs" element={<GraphsPage />} />
+            <Route path="/team/:teamId" element={<TeamPage />} />
           </Routes>
         </main>
       </div>
