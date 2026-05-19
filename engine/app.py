@@ -25,7 +25,6 @@ def load_game_objects():
     season_count = state.get("season_count", 1)
     return cars, teams, player, player_2, championship, tracks, \
            DRIVER_1, DRIVER_2, COUNT_CARS, SAFETY_CAR, LAPS_REMAINING, b, season_count
-
 def _load_json(path):
     with open(path, encoding="utf-8") as f:
         return json.load(f)
@@ -193,24 +192,30 @@ async def api_post_race():
     cars, teams, player, player_2, championship, tracks, \
     DRIVER_1, DRIVER_2, COUNT_CARS, SAFETY_CAR, LAPS_REMAINING, b, season_count = load_game_objects()
 
-    # time_laps je na root úrovni state.json
     time_laps = state.get("time_laps", [])
-
-    print(f"DEBUG full state keys: {list(state.keys())}")
-    print(f"DEBUG state type: {state.get('type')}")
-    print(f"DEBUG time_laps entries: {len(time_laps)}")
-
     race = state["race"]
     climax = race_ctx.get("climax", "sunny")
-    RANK = [a for a in cars if not a.dnf]
 
     teams, cars, time_laps = post_race_info(time_laps, player, player_2, cars, teams, COUNT_CARS)
-    # Předáme time_laps do save — lap_times se tak uloží i v end-of-race stavu
     save_state_end_of_race(cars, teams, season_count, race, time_laps)
     lap, time_laps, SAFETY_CAR, LAPS_REMAINING, weather, forecast, cars, WETTINESS = reset_race(climax, cars)
 
-    return {"status": "race_done", "race": race}
+    new_b = b + 1
+    championship_length = len(championship)
 
+    # Zapiš nové b do state
+    updated_state = _state()
+    updated_state["b"] = new_b
+    updated_state["season_count"] = season_count
+    updated_state["championship_length"] = championship_length
+    with open("state.json", "w", encoding="utf-8") as f:
+        json.dump(updated_state, f, indent=4, ensure_ascii=False)
+
+    # Konec šampionátu?
+    if new_b > championship_length:
+        return {"status": "race_done", "race": race, "championship_finished": True}
+
+    return {"status": "race_done", "race": race, "championship_finished": False}
 # ---------------------------------------------------------------------------
 # POST /api/post_championship  — po posledním závodě sezóny
 # ---------------------------------------------------------------------------
