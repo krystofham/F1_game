@@ -66,15 +66,11 @@ async def get_team(team_name: str):
 
 
 @app.post("/api/init_race")
+@app.post("/api/init_race")
 async def api_init_race():
-    """
-    Inicializuje závod: načte objekty z engine, zavolá init_race(),
-    vyčistí historii z minulého závodu a uloží nový čistý stav na disk.
-    """
     cars, teams, player, player_2, championship, tracks, \
     DRIVER_1, DRIVER_2, COUNT_CARS, SAFETY_CAR, LAPS_REMAINING, b, season_count = load_game_objects()
 
-    # 1. Zavoláme tvou inicializační funkci z enginu
     speed_bonus, season_count, time_laps, k_speed, k_wear, training_type, \
     WETTINESS, lap, forecast, weather, climax, pneu, speed, PNEU_types, \
     weather_1, weather_2, weather_3, weather_4, weather_actual = init_race(
@@ -83,22 +79,15 @@ async def api_init_race():
     )
 
     race = championship[b - 1]
-    
-    # 2. Zjistíme počet kol pro tuto konkrétní trať z tvého objektu tratě
-    # (Předpokládám, že objekt 'race' nebo trať má atribut s celkovým počtem kol, např. race.laps)
-    # Pokud ho bereš odjinud, uprav si to, zde dávám bezpečný fallback na 51 kol, pokud neexistuje.
-    total_laps = getattr(race, "laps", 51) 
+    total_laps = getattr(race, "laps", 51)
 
-    # 3. Načteme aktuální strukturu stavu, abychom nepřišli o globální věci (týmy, jezdce)
     state = _state()
-
-    # 4. === TADY JE KLÍČOVÝ RESET HISTORIE ===
-    # Vyčistíme starou historii kol a nastavíme startovní hodnoty nového závodu
-    state["lap"] = 0  # Nastavíme start na kolo 0
-    state["time_laps"] = []  # ÚPLNĚ vymažeme starou historii nejrychlejších kol!
-    state["race"] = getattr(race, "name", str(race))  # Uložíme název aktuálního závodu
-    
-    # Kompletně přepíšeme kontext závodu novými vygenerovanými hodnotami
+    state["lap"] = 0
+    state["time_laps"] = []
+    state["race"] = getattr(race, "name", str(race))
+    state["b"] = b                          # ← zachovej b
+    state["season_count"] = season_count    # ← zachovej season_count
+    state["championship_length"] = len(championship)  # ← zachovej délku
     state["race_state"] = {
         "total_laps": total_laps,
         "climax": climax,
@@ -113,18 +102,15 @@ async def api_init_race():
         "k_speed": k_speed
     }
 
-    # 5. Uložíme tento čistý, nový stav na disk do state.json
     with open("state.json", "w", encoding="utf-8") as out_file:
         json.dump(state, out_file, indent=4, ensure_ascii=False)
 
-    # 6. Vrátíme čistá data frontendu
     return {
-        "status": "ok", 
-        "race": state["race"], 
-        "lap": state["lap"], 
+        "status": "ok",
+        "race": state["race"],
+        "lap": state["lap"],
         "total_laps": total_laps
     }
-
 
 @app.post("/api/sim_lap")
 async def api_sim_lap():
@@ -202,7 +188,6 @@ async def api_post_race():
 
     new_b = b + 1
     championship_length = len(championship)
-
     # Zapiš nové b do state
     updated_state = _state()
     updated_state["b"] = new_b
@@ -225,25 +210,24 @@ async def api_post_championship():
     state = _state()
     cars, teams, player, player_2, championship, tracks, \
         DRIVER_1, DRIVER_2, COUNT_CARS, SAFETY_CAR, LAPS_REMAINING, b, season_count = load_game_objects()
- 
+
     save_state_end_of_season(cars, teams, season_count)
- 
+
     best, worst = simulate_season_mmr2(list_drivers_mmr2)
     season_count += 1
- 
+
     for mmr2_driver in list_drivers_mmr2:
         mmr2_driver.rating -= 1 / (season_count * 2)
- 
+
     worst.name   = random.choice(names_free_drivers)
     worst.rating = random.uniform(0.95, 1.05)
- 
+
     cars.sort(key=lambda x: x.points, reverse=True)
     last_car = cars[-1]
- 
+
     if last_car.is_player:
         old_best_name   = best.name
         old_best_rating = best.rating
- 
         if DRIVER_1 == last_car.name:
             DRIVER_1       = old_best_name
             player.name    = old_best_name
@@ -252,12 +236,20 @@ async def api_post_championship():
             DRIVER_2         = old_best_name
             player_2.name    = old_best_name
             player_2.ratings = old_best_rating
- 
+
     teams, player, player_2, DRIVER_1, DRIVER_2, cars = trading_at_the_of_season(
         teams, player, player_2, DRIVER_1, DRIVER_2, cars
     )
- 
+
     WETTINESS, cars, teams = reset_championship(cars, teams)
+
+    updated_state = _state()
+    updated_state["b"] = 1
+    updated_state["season_count"] = season_count
+    updated_state["championship_length"] = len(championship)
+    with open("state.json", "w", encoding="utf-8") as f:
+        json.dump(updated_state, f, indent=4, ensure_ascii=False)
+
     save_state_end_of_season(cars, teams, season_count)
- 
+
     return {"status": "championship_done", "season": season_count}
