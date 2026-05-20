@@ -106,6 +106,7 @@ def init_race(tracks, race, cars, teams, championship, player, player_2, b, seas
             TIME_S3 = track.TIME_S3
             LAPS = track.laps
             dnf_probability = track.dnf_probability
+            print(f"závod {race} má {LAPS}")
     for x in cars:
         x.safety_car_probability = dnf_probability
     print(f"Actual race {race} {b}/{len(championship)}")
@@ -236,7 +237,7 @@ def sim_the_race(cars, teams, player, player_2, lap, SAFETY_CAR, LAPS_REMAINING,
     simulation = qualification(simulation, cars, TIME_S1, TIME_S2, TIME_S3, training_type)
     ######################################################################################################################################################################
     while lap <= LAPS:  
-        lap, cars, teams = sim_the_lap(cars, teams, player, player_2)
+        lap, cars, teams = sim_the_lap(cars, teams, player, player_2, lap, SAFETY_CAR, LAPS_REMAINING, WETTINESS, forecast, weather, LAPS, climax, DRIVER_1, DRIVER_2, pneu, speed, PNEU_types, weather_1, weather_2, weather_3, weather_4, training_type, k_wear, k_speed,speed_bonus, season_count, race, time_laps)
         #safety car
         
     #post race
