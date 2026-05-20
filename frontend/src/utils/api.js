@@ -22,4 +22,5 @@ export const api = {
   simLap: () => req("POST", "/api/sim_lap"),
   postRace: () => req("POST", "/api/post_race"),
   postChampionship: () => req("POST", "/api/post_championship"),
+  setLapUserData: (payload) => req("POST", "/api/set_lap_user_data", payload),
 };

@@ -253,3 +253,11 @@ async def api_post_championship():
     save_state_end_of_season(cars, teams, season_count)
 
     return {"status": "championship_done", "season": season_count}
+
+# LAP USER DATA ENDPOINT
+@app.post("/api/set_lap_user_data")
+async def api_set_lap_user_data(data: dict):
+    path = os.path.join(_CONFIG, "../engine/user_input/lap_user_data.json")
+    with open(path, "w", encoding="utf-8") as f:
+        json.dump(data, f, indent=2, ensure_ascii=False)
+    return {"status": "ok"}
