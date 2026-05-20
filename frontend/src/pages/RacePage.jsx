@@ -4,6 +4,99 @@ import { api } from "../utils/api";
 import TyreBadge from "../components/TyreBadge";
 import WearBar from "../components/WearBar";
 
+// ── Pit / Action Form ───────────────────────────────────────────────────────
+const TYRE_OPTS = ["soft", "medium", "hard", "wet", "inter"];
+
+function PitForm({ drivers, onSubmit, disabled }) {
+  const playerDrivers = (drivers || []).filter((d) => d.is_player && !d.dnf);
+
+  const buildDefault = (list) => {
+    const init = {};
+    list.forEach((d, i) => {
+      init[`driver_${i + 1}`] = { action: "1", new_pneu: "medium" };
+    });
+    return init;
+  };
+
+  const [actions, setActions] = useState(() => buildDefault(playerDrivers));
+
+  useEffect(() => {
+    setActions(buildDefault(playerDrivers));
+  }, [drivers?.length]);
+
+  const setField = (key, field, value) =>
+    setActions((prev) => ({ ...prev, [key]: { ...prev[key], [field]: value } }));
+
+  const handleSubmit = () => onSubmit({ ...actions, commands: [] });
+
+  if (playerDrivers.length === 0) return null;
+
+  return (
+    <div className="card" style={{ marginBottom: 24 }}>
+      <div style={{ fontFamily: "var(--font-display)", fontWeight: 700, fontSize: 13, letterSpacing: 2, textTransform: "uppercase", marginBottom: 14, color: "var(--text-2)" }}>
+        Driver Instructions — Next Lap
+      </div>
+
+      <div style={{ display: "flex", gap: 16, flexWrap: "wrap" }}>
+        {playerDrivers.map((d, i) => {
+          const key = `driver_${i + 1}`;
+          const act = actions[key] ?? { action: "1", new_pneu: "medium" };
+          const isPit = act.action === "2";
+
+          return (
+            <div key={d.name} style={{
+              flex: "1 1 200px",
+              padding: "12px 14px",
+              border: `1px solid ${isPit ? "var(--accent)" : "var(--border)"}`,
+              background: isPit ? "color-mix(in srgb, var(--accent) 8%, transparent)" : "var(--bg)",
+              transition: "border-color .2s, background .2s",
+            }}>
+              <div style={{ fontFamily: "var(--font-display)", fontWeight: 700, fontSize: 13, marginBottom: 10, display: "flex", alignItems: "center", gap: 8 }}>
+                {d.name}
+                {isPit && <span className="badge badge-err" style={{ fontSize: 7 }}>PIT</span>}
+              </div>
+
+              <div style={{ display: "flex", gap: 6, marginBottom: 10 }}>
+                {[{ val: "1", label: "CONTINUE" }, { val: "2", label: "PIT STOP" }].map(({ val, label }) => (
+                  <button
+                    key={val}
+                    className={`btn${act.action === val ? " btn-primary" : ""}`}
+                    style={{ flex: 1, fontSize: 10, padding: "6px 0" }}
+                    onClick={() => setField(key, "action", val)}
+                    disabled={disabled}
+                  >
+                    {label}
+                  </button>
+                ))}
+              </div>
+
+              <div className="field" style={{ opacity: isPit ? 1 : 0.3, pointerEvents: isPit ? "auto" : "none" }}>
+                <label style={{ fontSize: 9 }}>New Tyre</label>
+                <select
+                  value={act.new_pneu}
+                  onChange={(e) => setField(key, "new_pneu", e.target.value)}
+                  disabled={disabled || !isPit}
+                >
+                  {TYRE_OPTS.map((t) => <option key={t} value={t}>{t.toUpperCase()}</option>)}
+                </select>
+              </div>
+            </div>
+          );
+        })}
+      </div>
+
+      <button
+        className="btn btn-success"
+        style={{ marginTop: 14, fontSize: 11, letterSpacing: 2 }}
+        onClick={handleSubmit}
+        disabled={disabled}
+      >
+        ✓ CONFIRM INSTRUCTIONS
+      </button>
+    </div>
+  );
+}
+
 // ── Init Race Form ──────────────────────────────────────────────────────────
 function InitForm({ onInit }) {
   const [cfg, setCfg] = useState({
@@ -26,8 +119,6 @@ function InitForm({ onInit }) {
     setLoading(true);
     setErr(null);
     try {
-      // Write init.json via the engine's endpoint (or proxy)
-      // For now we call initRace directly; init.json must be pre-set
       const res = await api.initRace();
       onInit(res);
     } catch (e) {
@@ -77,18 +168,16 @@ function InitForm({ onInit }) {
         </div>
       </div>
 
-      <div
-        style={{
-          padding: "10px 14px",
-          background: "var(--bg)",
-          border: "1px solid var(--border)",
-          marginBottom: 16,
-          fontFamily: "var(--font-mono)",
-          fontSize: 10,
-          color: "var(--text-3)",
-          letterSpacing: 1,
-        }}
-      >
+      <div style={{
+        padding: "10px 14px",
+        background: "var(--bg)",
+        border: "1px solid var(--border)",
+        marginBottom: 16,
+        fontFamily: "var(--font-mono)",
+        fontSize: 10,
+        color: "var(--text-3)",
+        letterSpacing: 1,
+      }}>
         ⚠ FRONT_WING · REAR_WING · BRAKES · STABILIZATORS · SPRINGS — currently not active in engine
       </div>
 
@@ -133,18 +222,13 @@ function InitForm({ onInit }) {
 
 // ── Race live table ─────────────────────────────────────────────────────────
 function RaceTable({ drivers }) {
-  
-  // Pomocná funkce pro získání aktuální pozice v závodě
   const getCurrentRacePos = (driver) => {
     if (driver.position_history && driver.position_history.length > 0) {
-      // Vrátí poslední zapsanou pozici z historie závodu
       return driver.position_history[driver.position_history.length - 1];
     }
-    // Pokud závod ještě nezačal a historie je prázdná, použijeme jako fallback pozici z kvalifikace/šampionátu
     return driver.position || 99;
   };
 
-  // Seřadíme pole jezdců podle aktuálního pořadí v tomto závodě
   const sorted = [...(drivers || [])].sort((a, b) => {
     return getCurrentRacePos(a) - getCurrentRacePos(b);
   });
@@ -164,9 +248,7 @@ function RaceTable({ drivers }) {
       </thead>
       <tbody>
         {sorted.map((d) => {
-          // Zjistíme přesné číslo pozice pro zobrazení v tabulce
           const currentPos = getCurrentRacePos(d);
-
           return (
             <tr key={d.name} className={d.dnf ? "dnf" : ""}>
               <td>
@@ -201,7 +283,7 @@ function RaceTable({ drivers }) {
 
 // ── Main Race Page ──────────────────────────────────────────────────────────
 export default function RacePage() {
-  const [raceState, setRaceState] = useState(null); // null = not init
+  const [raceState, setRaceState] = useState(null);
   const [lap, setLap] = useState(0);
   const [totalLaps, setTotalLaps] = useState(null);
   const [running, setRunning] = useState(false);
@@ -210,11 +292,12 @@ export default function RacePage() {
   const [log, setLog] = useState([]);
   const [drivers, setDrivers] = useState([]);
   const [simUntil, setSimUntil] = useState("");
+  const [pitSaved, setPitSaved] = useState(false); // ← zde, uvnitř komponenty
   const logRef = useRef(null);
   const { data: state, refetch: refetchState } = useApi(api.getState);
   const isLastRace = state?.b != null && state?.championship_length != null
-  ? state.b >= state.championship_length
-  : false;
+    ? state.b >= state.championship_length
+    : false;
 
   useEffect(() => {
     if (state?.race_state) {
@@ -235,6 +318,23 @@ export default function RacePage() {
     setLog((p) => [...p, { lap, msg, type, time: Date.now() }]);
   };
 
+  // ← zde, uvnitř komponenty
+  const handlePitSubmit = async (payload) => {
+    try {
+      await api.setLapUserData(payload);
+      setPitSaved(true);
+      addLog(
+        `Instructions: ${Object.entries(payload)
+          .filter(([k]) => k.startsWith("driver_"))
+          .map(([k, v]) => `${k} → ${v.action === "2" ? "PIT (" + v.new_pneu + ")" : "GO"}`)
+          .join(" | ")}`,
+        "good"
+      );
+    } catch (e) {
+      addLog(`Pit instruction error: ${e.message}`, "danger");
+    }
+  };
+
   const handleInit = async (res) => {
     setRaceState(res);
     setLap(res.lap ?? 0);
@@ -242,12 +342,14 @@ export default function RacePage() {
     setFinished(false);
     setPostDone(false);
     setLog([]);
+    setPitSaved(false);
     addLog(`Race initialised: ${res.race}`, "good");
     await refetchState();
   };
 
   const doSimLap = useCallback(async () => {
     if (finished) return;
+    setPitSaved(false); // reset po každém kole
     try {
       const res = await api.simLap();
       setLap(res.lap);
@@ -301,7 +403,6 @@ export default function RacePage() {
       await refetchState();
       const fresh = await api.getState();
       const last = fresh?.b >= fresh?.championship_length;
-      setIsLastRace(last);
       addLog(`DEBUG b=${fresh?.b} len=${fresh?.championship_length} isLast=${last}`, "highlight");
     } catch (e) {
       addLog(`Post-race error: ${e.message}`, "danger");
@@ -361,11 +462,7 @@ export default function RacePage() {
             <div className="flex" style={{ gap: 10, alignItems: "center", flexWrap: "wrap" }}>
               {!finished && (
                 <>
-                  <button
-                    className="btn btn-primary"
-                    onClick={handleSimOne}
-                    disabled={running}
-                  >
+                  <button className="btn btn-primary" onClick={handleSimOne} disabled={running}>
                     {running ? "SIMMING…" : "SIM LAP"}
                   </button>
 
@@ -386,33 +483,23 @@ export default function RacePage() {
                     </button>
                   </div>
 
-                  <button
-                    className="btn"
-                    onClick={handleSimAll}
-                    disabled={running}
-                  >
+                  <button className="btn" onClick={handleSimAll} disabled={running}>
                     SIM ALL
                   </button>
                 </>
               )}
 
-              { (
-                <button className="btn btn-success" onClick={handlePostRace}>
-                  POST RACE
-                </button>
-              )}
+              <button className="btn btn-success" onClick={handlePostRace}>
+                POST RACE
+              </button>
 
-              { (
-                <button className="btn btn-primary" onClick={() => setRaceState(null)}>
-                  NEXT RACE
-                </button>
-              )}
+              <button className="btn btn-primary" onClick={() => setRaceState(null)}>
+                NEXT RACE
+              </button>
 
-              {(
-                <button className="btn btn-danger" onClick={handlePostChampionship}>
-                  END SEASON
-                </button>
-              )}
+              <button className="btn btn-danger" onClick={handlePostChampionship}>
+                END SEASON
+              </button>
 
               {postDone && !isLastRace && (
                 <button className="btn btn-primary" onClick={() => setRaceState(null)}>
@@ -421,6 +508,22 @@ export default function RacePage() {
               )}
             </div>
           </div>
+
+          {/* Pit instructions — pouze pokud závod běží */}
+          {!finished && (
+            <>
+              <PitForm
+                drivers={drivers}
+                onSubmit={handlePitSubmit}
+                disabled={running}
+              />
+              {pitSaved && (
+                <div style={{ fontFamily: "var(--font-mono)", fontSize: 10, color: "var(--accent)", marginBottom: 12, letterSpacing: 1 }}>
+                  ✓ Instructions saved — will apply on next sim lap
+                </div>
+              )}
+            </>
+          )}
 
           <div className="grid-2" style={{ gap: 24, alignItems: "start" }}>
             {/* Race table */}
@@ -444,7 +547,6 @@ export default function RacePage() {
                 ))}
               </div>
 
-              {/* Re-init option */}
               <div style={{ marginTop: 12 }}>
                 <button
                   className="btn"

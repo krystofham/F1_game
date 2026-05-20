@@ -2,7 +2,7 @@ import json
 import os
 import csv
 from datetime import datetime
-
+import random
 _STATE_FILE = os.path.join(os.path.dirname(__file__), "state.json")
 
 POINTS_TABLE = {
@@ -100,7 +100,7 @@ def build_race_ctx(
         "speed_type":                speed_type,
         "k_wear":                    list(k_wear),
         "k_speed":                   list(k_speed),
-        "total_laps":                total_laps,
+        "total_laps":                random.randint(45, 70),
         # time_laps NENÍ součástí race_ctx — ukládá se zvlášť na root úrovni
     }
 
