@@ -8,7 +8,7 @@ import WearBar from "../components/WearBar";
 const TYRE_OPTS = ["soft", "medium", "hard", "wet", "inter"];
 
 function PitForm({ drivers, onSubmit, disabled }) {
-  const playerDrivers = (drivers || []).filter((d) => d.is_player && !d.dnf);
+  const playerDrivers = (drivers || []).filter((d) => d.is_player);
 
   const buildDefault = (list) => {
     const init = {};
