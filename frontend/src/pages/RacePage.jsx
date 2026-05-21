@@ -247,8 +247,19 @@ function RaceTable({ drivers }) {
         </tr>
       </thead>
       <tbody>
-        {sorted.map((d) => {
+        {sorted.map((d, index) => {
           const currentPos = getCurrentRacePos(d);
+          
+          let gapDisplay = "—"; 
+          
+          if (index > 0) {
+            const previousDriver = sorted[index - 1];
+                        if (d.time != null && previousDriver.time != null) {
+              const gap = d.time - previousDriver.time;
+              gapDisplay = `+${Math.max(0, gap).toFixed(3)}`;
+            }
+          }
+
           return (
             <tr key={d.name} className={d.dnf ? "dnf" : ""}>
               <td>
@@ -264,8 +275,11 @@ function RaceTable({ drivers }) {
               </td>
               <td><TyreBadge type={d.pneu} /></td>
               <td style={{ minWidth: 120 }}><WearBar wear={d.wear || 0} /></td>
-              <td className="text-mono">{d.gap != null ? `+${d.gap.toFixed(3)}` : "—"}</td>
-              <td className="text-mono">{d.pit_stops?.length ?? 0}</td>
+              
+              {/* Vykreslení vypočítaného gapu */}
+              <td className="text-mono">{gapDisplay}</td>
+              
+              <td className="text-mono">{d.pit_stops}</td>
               <td>
                 {d.dnf ? (
                   <span className="badge badge-err">DNF</span>
@@ -280,7 +294,6 @@ function RaceTable({ drivers }) {
     </table>
   );
 }
-
 // ── Main Race Page ──────────────────────────────────────────────────────────
 export default function RacePage() {
   const [raceState, setRaceState] = useState(null);
@@ -509,7 +522,7 @@ export default function RacePage() {
             </div>
           </div>
 
-          {/* Pit instructions — pouze pokud závod běží */}
+          {/* Pit insatructions — pouze pokud závod běží */}
           {!finished && (
             <>
               <PitForm
@@ -524,7 +537,12 @@ export default function RacePage() {
               )}
             </>
           )}
-
+            <div>
+              <div className="section-title" style={{ marginTop: 0 }}>Live Positions</div>
+              <RaceTable drivers={drivers.filter((driver) => {if (driver.is_player == true){return driver} else return})} />
+                <div style={{"padding": 50}}>
+                </div>
+            </div>
           <div className="grid-2" style={{ gap: 24, alignItems: "start" }}>
             {/* Race table */}
             <div>
