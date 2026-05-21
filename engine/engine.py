@@ -209,13 +209,14 @@ def safety_car(car, weather, lap, SAFETY_CAR, LAPS_REMAINING):
         SAFETY_CAR=False
         LAPS_REMAINING = 0
     return SAFETY_CAR, LAPS_REMAINING, car.dnf, car.time
-def generate_pneu_for_bots_on_start (cars:list, weather_1:str) -> str:
+def generate_pneu_for_bots_on_start(cars: list, weather_1: str) -> list:
     for car in cars:
-        if car.is_player is False:
-            if weather_1 in ('rain', 'heavy rain'):
-                car.pneu = random.choice(["wet", "inter"])
-            if weather_1 == "transitional":
-                car.pneu = random.choice(["soft", "inter"])
+        if weather_1 in ('rain', 'heavy rain'):
+            car.pneu = random.choice(["wet", "inter"])
+        elif weather_1 == "transitional":
+            car.pneu = random.choice(["soft", "inter"])
+        else:
+            car.pneu = random.choice(["hard", "medium", "soft"])
     return cars
 
 def trading_at_the_of_season(teams, player, player_2, DRIVER_1, DRIVER_2, cars):
