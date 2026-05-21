@@ -41,57 +41,37 @@ def reset_race(climax, cars):
         a.destroy = False
     return lap, time_laps, SAFETY_CAR, LAPS_REMAINING, weather, forecast, cars, WETTINESS
 def make_a_deal(DRIVER_1, average_rating, player, teams, tymy_ridic_1_trade, tymy_ridic_2_trade, possible_transfer):
-    number = 1
-    if average_rating > player.ratings:
-        print(f"For exchange of {DRIVER_1} has interest just few teams. For example:")
-        random_number = random.choice([0, 1])
-        nahodny_ridic = teams[-1].drivers[random_number]
-        print(f"Option 1 {teams[-1].name} ({teams[-1].points} points) offers its pilot {nahodny_ridic.name}")
-        possible_transfer.append(nahodny_ridic)
-    else:
-        print("There is a big interest for a driver. For example:")
-        for x in teams:
-            if random.uniform(0, 1) > 0.7:
-                a = random.choice([0, 1])
-                nahodny_ridic = x.drivers[a]
-                print(f"Option {number} {x.name} ({x.points} points) {nahodny_ridic.name}")
-                possible_transfer.append(nahodny_ridic)
-                number += 1
-        for x in tymy_ridic_1_trade:
-            print(f"Option {number} {x.name} ({x.points} points) offers {x.drivers[0].name}")
-            possible_transfer.append(x.drivers[0])
-            number += 1
-        for x in tymy_ridic_2_trade:
-            print(f"Option {number} {x.name} ({x.points} points) offers {x.drivers[1].name}")
-            possible_transfer.append(x.drivers[1])
-            number += 1
- 
     data = load_data("transfer")
     new_pilot = data["chosen_pilot"].strip()
-    found = any(x.name == new_pilot for x in possible_transfer)
-    if not found:
-        raise ValueError(f"Pilot '{new_pilot}' not in offer list")
- 
-    for new_car in possible_transfer:
-        if new_car.name == new_pilot:
-            # BUG 1 OPRAVENO: místo záměny jmen/ratingů měníme objekty přímo v team.drivers
-            old_team = player.team
-            new_team = new_car.team
- 
-            idx_player = old_team.drivers.index(player)
-            idx_new    = new_team.drivers.index(new_car)
- 
-            old_team.drivers[idx_player] = new_car
-            new_team.drivers[idx_new]    = player
- 
-            new_car.team = old_team
-            player.team  = new_team
- 
-            DRIVER_1 = new_car.name 
- 
-            print("Successful swap")
+
+    # Hledej pilota přímo v teams, ne jen v possible_transfer
+    new_car = None
+    for team in teams:
+        for driver in team.drivers:
+            if driver.name == new_pilot:
+                new_car = driver
+                break
+        if new_car:
             break
 
+    if not new_car:
+        raise ValueError(f"Pilot '{new_pilot}' not found in any team")
+
+    old_team = player.team
+    new_team = new_car.team
+
+    idx_player = old_team.drivers.index(player)
+    idx_new    = new_team.drivers.index(new_car)
+
+    old_team.drivers[idx_player] = new_car
+    new_team.drivers[idx_new]    = player
+
+    new_car.team = old_team
+    player.team  = new_team
+
+    DRIVER_1 = new_car.name
+
+    print("Successful swap")
     return DRIVER_1, player
 def transef_mmr1(cars, teams, player, player_2, DRIVER_1, DRIVER_2):
     data = load_data("transfer")
@@ -141,33 +121,43 @@ def transfer(cars, teams, player, player_2, DRIVER_1, DRIVER_2):
     elif new_pilot == "MMR2":
         best, worst = simulate_season_mmr2(list_drivers_mmr2)
         change = data["pilot_to_change"]
- 
+
         if change not in (DRIVER_1, DRIVER_2):
             raise ValueError("bad driver")
- 
+
         if change == DRIVER_1:
             target_player = player
         else:
             target_player = player_2
- 
+
+        # Hráč odchází → už není is_player
+        target_player.is_player = False
+
+        # Příchozí jezdec se stává hráčem
+        best.is_player = True
+
+        # Fyzická výměna v týmech
         old_team = target_player.team
         new_team = best.team
- 
+
         idx_target = old_team.drivers.index(target_player)
         idx_best   = new_team.drivers.index(best)
- 
+
         old_team.drivers[idx_target] = best
         new_team.drivers[idx_best]   = target_player
- 
-        best.team         = old_team
+
+        best.team          = old_team
         target_player.team = new_team
- 
+
         if change == DRIVER_1:
             DRIVER_1 = best.name
             player   = best
         else:
             DRIVER_2 = best.name
             player_2 = best
+
+        # team.drivers zůstává beze změny – target_player je stále stejný objekt
+        # player / player_2 reference také zůstávají – jsou to stále stejné objekty
  
     return player, player_2, DRIVER_1, DRIVER_2, cars
 def safety_car(car, weather, lap, SAFETY_CAR, LAPS_REMAINING):
