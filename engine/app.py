@@ -16,20 +16,18 @@ app.mount("/img", StaticFiles(directory="../img"), name="img")
 # Helpers
 # ---------------------------------------------------------------------------
 def load_game_objects():
-    from init import (
-        cars, teams, player, player_2, championship, tracks,
-        DRIVER_1, DRIVER_2, COUNT_CARS, SAFETY_CAR, LAPS_REMAINING
-    )
+    from init import cars, teams, championship, tracks, COUNT_CARS, SAFETY_CAR, LAPS_REMAINING
     state = load_state()
     b = state.get("b", 1)
     season_count = state.get("season_count", 1)
-    
-    # Přidej toto:
-    DRIVER_1 = state.get("DRIVER_1", DRIVER_1)
-    DRIVER_2 = state.get("DRIVER_2", DRIVER_2)
-    
+
+    # Načti hráče podle is_player
+    players = [car for car in cars if car.is_player]
+    player = players[0] if len(players) > 0 else None
+    player_2 = players[1] if len(players) > 1 else None
+
     return cars, teams, player, player_2, championship, tracks, \
-           DRIVER_1, DRIVER_2, COUNT_CARS, SAFETY_CAR, LAPS_REMAINING, b, season_count
+           player.name, player_2.name, COUNT_CARS, SAFETY_CAR, LAPS_REMAINING, b, season_count
 def _load_json(path):
     with open(path, encoding="utf-8") as f:
         return json.load(f)
@@ -73,7 +71,7 @@ async def get_team(team_name: str):
 @app.post("/api/init_race")
 async def api_init_race():
     cars, teams, player, player_2, championship, tracks, \
-    DRIVER_1, DRIVER_2, COUNT_CARS, SAFETY_CAR, LAPS_REMAINING, b, season_count = load_game_objects()
+    player.name, player_2.name, COUNT_CARS, SAFETY_CAR, LAPS_REMAINING, b, season_count = load_game_objects()
 
     speed_bonus, season_count, time_laps, k_speed, k_wear, training_type, \
     WETTINESS, lap, forecast, weather, climax, pneu, speed, PNEU_types, \
@@ -92,6 +90,8 @@ async def api_init_race():
     state["race"] = getattr(race, "name", str(race))
     state["b"] = b                          # ← zachovej b
     state["season_count"] = season_count    # ← zachovej season_count
+    state["player.name"] = player.name
+    state["player_2.name"] = player_2.name
     state["championship_length"] = len(championship)  # ← zachovej délku
     state["race_state"] = {
         "total_laps": total_laps,
@@ -133,7 +133,7 @@ async def api_sim_lap():
         raise HTTPException(status_code=400, detail="Race already finished. Call /api/post_race.")
 
     cars, teams, player, player_2, championship, tracks, \
-    DRIVER_1, DRIVER_2, COUNT_CARS, SAFETY_CAR, LAPS_REMAINING, b, season_count = load_game_objects()
+    player.name, player_2.name, COUNT_CARS, SAFETY_CAR, LAPS_REMAINING, b, season_count = load_game_objects()
 
     # time_laps se čte ze root úrovně state.json (ne z race_ctx)
     time_laps = state.get("time_laps", [])
@@ -146,7 +146,6 @@ async def api_sim_lap():
         SAFETY_CAR, LAPS_REMAINING,
         race_ctx["wettiness"], race_ctx["forecast"], race_ctx["weather"],
         race_ctx["total_laps"], race_ctx["climax"],
-        DRIVER_1, DRIVER_2,
         race_ctx["pneu_type"], race_ctx["speed_type"],
         {
             "hard":   {"wear": race_ctx["k_wear"][0], "speed": k_speed[0]},
@@ -181,7 +180,7 @@ async def api_post_race():
     race_ctx = state.get("race_state", {})
 
     cars, teams, player, player_2, championship, tracks, \
-    DRIVER_1, DRIVER_2, COUNT_CARS, SAFETY_CAR, LAPS_REMAINING, b, season_count = load_game_objects()
+    player.name, player_2.name, COUNT_CARS, SAFETY_CAR, LAPS_REMAINING, b, season_count = load_game_objects()
 
     time_laps = state.get("time_laps", [])
     race = state.get("race", "Unknown Race")
@@ -214,7 +213,7 @@ async def api_post_race():
 async def api_post_championship():
     state = _state()
     cars, teams, player, player_2, championship, tracks, \
-        DRIVER_1, DRIVER_2, COUNT_CARS, SAFETY_CAR, LAPS_REMAINING, b, season_count = load_game_objects()
+        player.name, player_2.name, COUNT_CARS, SAFETY_CAR, LAPS_REMAINING, b, season_count = load_game_objects()
 
     save_state_end_of_season(cars, teams, season_count)
 
@@ -233,17 +232,17 @@ async def api_post_championship():
     if last_car.is_player:
         old_best_name   = best.name
         old_best_rating = best.rating
-        if DRIVER_1 == last_car.name:
-            DRIVER_1       = old_best_name
+        if player.name == last_car.name:
+            player.name       = old_best_name
             player.name    = old_best_name
             player.ratings = old_best_rating
-        elif DRIVER_2 == last_car.name:
-            DRIVER_2         = old_best_name
+        elif player_2.name == last_car.name:
+            player_2.name         = old_best_name
             player_2.name    = old_best_name
             player_2.ratings = old_best_rating
 
-    teams, player, player_2, DRIVER_1, DRIVER_2, cars = trading_at_the_of_season(
-        teams, player, player_2, DRIVER_1, DRIVER_2, cars
+    teams, player, player_2, player.name, player_2.name, cars = trading_at_the_of_season(
+        teams, player, player_2, cars
     )
 
     WETTINESS, cars, teams = reset_championship(cars, teams)
@@ -272,7 +271,7 @@ async def api_set_lap_user_data(data: dict):
 @app.get("/api/get_transfer_offers")
 async def api_get_transfer_offers():
     cars, teams, player, player_2, championship, tracks, \
-    DRIVER_1, DRIVER_2, COUNT_CARS, SAFETY_CAR, LAPS_REMAINING, b, season_count = load_game_objects()
+    player.name, player_2.name, COUNT_CARS, SAFETY_CAR, LAPS_REMAINING, b, season_count = load_game_objects()
 
     average_rating = sum(x.ratings for x in cars) / (len(cars) + 1)
 
@@ -306,8 +305,8 @@ async def api_get_transfer_offers():
         return unique
 
     result = {
-        "driver_1": {"name": DRIVER_1, "offers": build_offers(player)},
-        "driver_2": {"name": DRIVER_2, "offers": build_offers(player_2)},
+        "driver_1": {"name": player.name, "offers": build_offers(player)},
+        "driver_2": {"name": player_2.name, "offers": build_offers(player_2)},
         "mmr2_best": None
     }
 
@@ -337,19 +336,19 @@ async def api_do_transfer(data: dict):
         json.dump({"pilot_to_change": data.get("pilot_to_change"), "chosen_pilot": data.get("chosen_pilot", "")}, f, indent=2)
 
     cars, teams, player, player_2, championship, tracks, \
-    DRIVER_1, DRIVER_2, COUNT_CARS, SAFETY_CAR, LAPS_REMAINING, b, season_count = load_game_objects()
+    player.name, player_2.name, COUNT_CARS, SAFETY_CAR, LAPS_REMAINING, b, season_count = load_game_objects()
 
     try:
-        player, player_2, DRIVER_1, DRIVER_2, cars = transfer(
-            cars, teams, player, player_2, DRIVER_1, DRIVER_2
+        player, player_2, player.name, player_2.name, cars = transfer(
+            cars, teams, player, player_2
         )
     except ValueError as e:
         raise HTTPException(status_code=400, detail=str(e))
 
     save_state_end_of_season(cars, teams, season_count)
     updated_state = _state()
-    updated_state["DRIVER_1"] = DRIVER_1
-    updated_state["DRIVER_2"] = DRIVER_2
+    updated_state["player.name"] = player.name
+    updated_state["player_2.name"] = player_2.name
     with open("state.json", "w", encoding="utf-8") as f:
         json.dump(updated_state, f, indent=2, ensure_ascii=False)
-    return {"status": "ok", "driver_1": DRIVER_1, "driver_2": DRIVER_2}
+    return {"status": "ok", "driver_1": player.name, "driver_2": player_2.name}

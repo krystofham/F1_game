@@ -144,7 +144,7 @@ class Car:
         elif forecast[0] in ["transitional", "sunny", "rain"] and forecast[3] in ["sunny"]:
             ideal = random.choice(["soft" , "medium", "hard", "medium", "hard"])
         return ideal if self.pit else None
-    def player_info(self, cars, DRIVER_1, COUNT_CARS, player, DRIVER_2,player_2, SAFETY_CAR):
+    def player_info(self, cars, COUNT_CARS, player, player_2, SAFETY_CAR):
         if self.dnf is False:
             if SAFETY_CAR is True:
                 print(random.choice(["Still safety car", "Still spinning slowly lap by lap."]))
@@ -154,11 +154,11 @@ class Car:
             if self.drs:
                 print("DRS active")
             RANK = [a.name for a in cars if not a.dnf]     
-            if DRIVER_1 == self.name:
-                position = RANK.index(DRIVER_1) + 1 if DRIVER_1 in RANK else COUNT_CARS
+            if player.name == self.name:
+                position = RANK.index(player.name) + 1 if player.name in RANK else COUNT_CARS
                 print(f"Driver 1 - {player.name}")
             else:
-                position = RANK.index(DRIVER_2) + 1 if DRIVER_2 in RANK else  COUNT_CARS
+                position = RANK.index(player_2.name) + 1 if player_2.name in RANK else  COUNT_CARS
                 print(f"Driver 2 - {player_2.name}")
             print(f"\n📊 Position: {position}. z {len(RANK)}")
             fake_o = int((self.wear) - random.uniform(-4, 4))

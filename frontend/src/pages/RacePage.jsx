@@ -22,7 +22,7 @@ function PitForm({ drivers, onSubmit, disabled }) {
 
   useEffect(() => {
     setActions(buildDefault(playerDrivers));
-  }, [drivers?.length]);
+  }, [drivers]);
 
   const setField = (key, field, value) =>
     setActions((prev) => ({ ...prev, [key]: { ...prev[key], [field]: value } }));

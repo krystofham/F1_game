@@ -17,7 +17,7 @@ for race in championship:
     while lap <= LAPS:
         lap, cars, teams = sim_the_lap(
             cars, teams, player, player_2, lap, SAFETY_CAR, LAPS_REMAINING,
-            WETTINESS, forecast, weather, LAPS, climax, DRIVER_1, DRIVER_2,
+            WETTINESS, forecast, weather, LAPS, climax,
             pneu, speed, PNEU_types, weather_1, weather_2, weather_3, weather_4,
             training_type, k_wear, speed_bonus, season_count, race, time_laps
         )
@@ -25,7 +25,7 @@ for race in championship:
     RANK = [a for a in cars if not a.dnf]
     save_state_end_of_race(cars, teams, season_count, race)
     teams, cars, time_laps = post_race_info(time_laps, player, player_2, cars, teams, COUNT_CARS)
-    points, cars, teams, players = plot_graph(RANK, DRIVER_1, DRIVER_2, teams, cars, player, player_2, climax)
+    points, cars, teams, players = plot_graph(RANK, teams, cars, player, player_2, climax)
     lap, time_laps, SAFETY_CAR, LAPS_REMAINING, weather, forecast, cars, WETTINESS = reset_race(climax, cars)
     b+=1
 #post chamiponship
@@ -46,14 +46,14 @@ for i, a in enumerate(cars, 1):
         rating = best.rating
         print(f"Breaking!!!\n{new} changes {a.name} ({a.team.name})\nBreaking!!!")
         if a.is_player:
-            if DRIVER_1 == a.name:
-                DRIVER_1 = new
+            if player.name == a.name:
+                player.name = new
                 player.name, player.ratings = new, rating
-            if DRIVER_2 == a.name:
-                DRIVER_2 = new
+            if player_2.name == a.name:
+                player_2.name = new
                 player_2.name, player_2.ratings = new, rating
         best.name, best.rating = a.name, a.ratings
         a.name, a.ratings = new, rating
 print_teams_end_championship(teams)
-teams, player, player_2, DRIVER_1, DRIVER_2, cars = trading_at_the_of_season(teams, player, player_2, DRIVER_1, DRIVER_2, cars)
+teams, player, player_2, player.name, player_2.name, cars = trading_at_the_of_season(teams, player, player_2, cars)
 WETTINESS, cars, teams =  reset_championship(cars, teams)
