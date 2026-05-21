@@ -1,8 +1,5 @@
-try:
-    from init import *
-except:
-    from engine.init import *
-def sim_the_lap(cars, teams, player, player_2, lap, SAFETY_CAR, LAPS_REMAINING, WETTINESS, forecast, weather, LAPS, climax, DRIVER_1, DRIVER_2, pneu, speed, PNEU_types, weather_1, weather_2, weather_3, weather_4, training_type, k_wear, k_speed,speed_bonus, season_count, race, time_laps):
+from init import *
+def sim_the_lap(cars, teams, player, player_2, lap, SAFETY_CAR, LAPS_REMAINING, WETTINESS, forecast, weather, LAPS, climax, pneu, speed, PNEU_types, weather_1, weather_2, weather_3, weather_4, training_type, k_wear, k_speed,speed_bonus, season_count, race, time_laps):
     # Načti aktuální stav
     state = load_state()
     race_ctx = state.get("race_state", {})
@@ -28,7 +25,7 @@ def sim_the_lap(cars, teams, player, player_2, lap, SAFETY_CAR, LAPS_REMAINING, 
 
     for car in cars:
         if car.is_player:
-            car.player_info(cars, DRIVER_1, COUNT_CARS, player, DRIVER_2, player_2, SAFETY_CAR)
+            car.player_info(cars, COUNT_CARS, player, player_2, SAFETY_CAR)
 
     cars.sort(key=lambda x: (x.dnf, x.time))
 
@@ -40,12 +37,12 @@ def sim_the_lap(cars, teams, player, player_2, lap, SAFETY_CAR, LAPS_REMAINING, 
     cars.sort(key=lambda x: (x.dnf, x.time))
 
     RANK = [a.name for a in cars if not a.dnf]
-    position   = RANK.index(DRIVER_1) + 1 if DRIVER_1 in RANK else COUNT_CARS
-    position_2 = RANK.index(DRIVER_2) + 1 if DRIVER_2 in RANK else COUNT_CARS
+    position   = RANK.index(player.name) + 1 if player.name in RANK else COUNT_CARS
+    position_2 = RANK.index(player_2.name) + 1 if player_2.name in RANK else COUNT_CARS
 
     WETTINESS = wet_track(weather_1, WETTINESS)
-    print(f"\n📊 Leaderboard {DRIVER_1}: {position}. position from {len(RANK)}")
-    print(f"\n📊 Leaderboard {DRIVER_2}: {position_2}. position from {len(RANK)}")
+    print(f"\n📊 Leaderboard {player.name}: {position}. position from {len(RANK)}")
+    print(f"\n📊 Leaderboard {player_2.name}: {position_2}. position from {len(RANK)}")
     drivers_table(cars, COUNT_CARS)
 
     for car in cars:
@@ -171,7 +168,7 @@ def init_race(tracks, race, cars, teams, championship, player, player_2, b, seas
     return speed_bonus, season_count, time_laps,  k_speed, k_wear,training_type, WETTINESS, lap, forecast, weather, climax, pneu, speed, PNEU_types, weather_1, weather_2, weather_3, weather_4, weather
 
 
-def sim_the_race(cars, teams, player, player_2, lap, SAFETY_CAR, LAPS_REMAINING, WETTINESS, forecast, weather, LAPS, climax, DRIVER_1, DRIVER_2, pneu, speed, PNEU_types, weather_1, weather_2, weather_3, weather_4, training_type, k_wear, speed_bonus, season_count, race, time_laps):
+def sim_the_race(cars, teams, player, player_2, lap, SAFETY_CAR, LAPS_REMAINING, WETTINESS, forecast, weather, LAPS, climax, pneu, speed, PNEU_types, weather_1, weather_2, weather_3, weather_4, training_type, k_wear, speed_bonus, season_count, race, time_laps):
     climax = random.choice(["transitional","sunny","sunny","sunny"])
     lap = 0
     for track in tracks:
@@ -237,14 +234,14 @@ def sim_the_race(cars, teams, player, player_2, lap, SAFETY_CAR, LAPS_REMAINING,
     simulation = qualification(simulation, cars, TIME_S1, TIME_S2, TIME_S3, training_type)
     ######################################################################################################################################################################
     while lap <= LAPS:  
-        lap, cars, teams = sim_the_lap(cars, teams, player, player_2, lap, SAFETY_CAR, LAPS_REMAINING, WETTINESS, forecast, weather, LAPS, climax, DRIVER_1, DRIVER_2, pneu, speed, PNEU_types, weather_1, weather_2, weather_3, weather_4, training_type, k_wear, k_speed,speed_bonus, season_count, race, time_laps)
+        lap, cars, teams = sim_the_lap(cars, teams, player, player_2, lap, SAFETY_CAR, LAPS_REMAINING, WETTINESS, forecast, weather, LAPS, climax, player.name, player_2.name, pneu, speed, PNEU_types, weather_1, weather_2, weather_3, weather_4, training_type, k_wear, k_speed,speed_bonus, season_count, race, time_laps)
         #safety car
         
     #post race
     RANK = [a for a in cars if not a.dnf]
     save_state_end_of_race(cars, teams, season_count, race)
     teams, cars, time_laps = post_race_info(time_laps, player, player_2, cars, teams, COUNT_CARS)
-    points, cars, teams, players = plot_graph(RANK, DRIVER_1, DRIVER_2, teams, cars, player, player_2, climax)
+    points, cars, teams, players = plot_graph(RANK, teams, cars, player, player_2, climax)
     lap, time_laps, SAFETY_CAR, LAPS_REMAINING, weather, forecast, cars, WETTINESS = reset_race(climax, cars)
     b+=1
     return cars, teams
