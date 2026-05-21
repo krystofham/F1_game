@@ -69,6 +69,9 @@ def make_a_deal(DRIVER_1, average_rating, player, teams, tymy_ridic_1_trade, tym
     new_car.team = old_team
     player.team  = new_team
 
+    new_car.is_player = True
+    player.is_player = False
+
     DRIVER_1 = new_car.name
 
     print("Successful swap")
