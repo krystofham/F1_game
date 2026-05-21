@@ -1,12 +1,13 @@
-import { BrowserRouter, Routes, Route, NavLink, useLocation } from "react-router-dom";
+import { BrowserRouter, Routes, Route, NavLink } from "react-router-dom";
 import TeamsPage from "./pages/TeamsPage";
 import DriversPage from "./pages/DriversPage";
 import RacePage from "./pages/RacePage";
 import TrackPage from "./pages/TrackPage";
 import StandingsPage from "./pages/StandingsPage";
 import GraphsPage from "./pages/GraphsPage";
+import TeamPage from "./pages/TeamPage";
+import TransferMarket from "./pages/TransfersPage";
 import "./styles.css";
-import TeamPage from "./pages/TeamPage";  // ← toto přidej
 
 const NAV_ITEMS = [
   { to: "/", label: "STANDINGS", icon: "▲" },
@@ -15,6 +16,7 @@ const NAV_ITEMS = [
   { to: "/drivers", label: "DRIVERS", icon: "◆" },
   { to: "/track", label: "TRACK", icon: "◎" },
   { to: "/graphs", label: "TELEMETRY", icon: "∿" },
+  { to: "/transfer", label: "TRANSFERS", icon: "⇄" },
 ];
 
 function Sidebar() {
@@ -65,6 +67,7 @@ export default function App() {
             <Route path="/track" element={<TrackPage />} />
             <Route path="/graphs" element={<GraphsPage />} />
             <Route path="/team/:teamId" element={<TeamPage />} />
+            <Route path="/transfer" element={<TransferMarket />} />
           </Routes>
         </main>
       </div>

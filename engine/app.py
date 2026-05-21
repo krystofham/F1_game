@@ -23,6 +23,11 @@ def load_game_objects():
     state = load_state()
     b = state.get("b", 1)
     season_count = state.get("season_count", 1)
+    
+    # Přidej toto:
+    DRIVER_1 = state.get("DRIVER_1", DRIVER_1)
+    DRIVER_2 = state.get("DRIVER_2", DRIVER_2)
+    
     return cars, teams, player, player_2, championship, tracks, \
            DRIVER_1, DRIVER_2, COUNT_CARS, SAFETY_CAR, LAPS_REMAINING, b, season_count
 def _load_json(path):
@@ -132,7 +137,7 @@ async def api_sim_lap():
 
     # time_laps se čte ze root úrovně state.json (ne z race_ctx)
     time_laps = state.get("time_laps", [])
-    race = state["race"]
+    race = state.get("race", "Unknown Race")
 
     k_speed = race_ctx.get("k_speed", [1, 1.04, 1.08, 0.6, 0.65])
 
@@ -179,7 +184,7 @@ async def api_post_race():
     DRIVER_1, DRIVER_2, COUNT_CARS, SAFETY_CAR, LAPS_REMAINING, b, season_count = load_game_objects()
 
     time_laps = state.get("time_laps", [])
-    race = state["race"]
+    race = state.get("race", "Unknown Race")
     climax = race_ctx.get("climax", "sunny")
 
     teams, cars, time_laps = post_race_info(time_laps, player, player_2, cars, teams, COUNT_CARS)
@@ -261,3 +266,90 @@ async def api_set_lap_user_data(data: dict):
     with open(path, "w", encoding="utf-8") as f:
         json.dump(data, f, indent=2, ensure_ascii=False)
     return {"status": "ok"}
+
+
+# Tranfers
+@app.get("/api/get_transfer_offers")
+async def api_get_transfer_offers():
+    cars, teams, player, player_2, championship, tracks, \
+    DRIVER_1, DRIVER_2, COUNT_CARS, SAFETY_CAR, LAPS_REMAINING, b, season_count = load_game_objects()
+
+    average_rating = sum(x.ratings for x in cars) / (len(cars) + 1)
+
+    def build_offers(player_obj):
+        offers = []
+        if average_rating > player_obj.ratings:
+            # slabý hráč — jen 1 nabídka
+            t = teams[-1]
+            d = t.drivers[random.choice([0, 1])]
+            offers.append({"name": d.name, "team": t.name, "points": t.points, "rating": round(d.ratings, 4)})
+        else:
+            for t in teams:
+                if random.uniform(0, 1) > 0.7:
+                    d = t.drivers[random.choice([0, 1])]
+                    if not d.is_player:
+                        offers.append({"name": d.name, "team": t.name, "points": t.points, "rating": round(d.ratings, 4)})
+            for t in teams:
+                if len(t.drivers) >= 1 and not t.drivers[0].is_player and (t.rating - t.drivers[0].ratings) >= 0:
+                    d = t.drivers[0]
+                    offers.append({"name": d.name, "team": t.name, "points": t.points, "rating": round(d.ratings, 4)})
+                if len(t.drivers) >= 2 and not t.drivers[1].is_player and (t.rating - t.drivers[1].ratings) >= 0:
+                    d = t.drivers[1]
+                    offers.append({"name": d.name, "team": t.name, "points": t.points, "rating": round(d.ratings, 4)})
+        # deduplikace
+        seen = set()
+        unique = []
+        for o in offers:
+            if o["name"] not in seen:
+                seen.add(o["name"])
+                unique.append(o)
+        return unique
+
+    result = {
+        "driver_1": {"name": DRIVER_1, "offers": build_offers(player)},
+        "driver_2": {"name": DRIVER_2, "offers": build_offers(player_2)},
+        "mmr2_best": None
+    }
+
+    # MMR2 nabídka
+    try:
+        best, _ = simulate_season_mmr2(list_drivers_mmr2)
+        result["mmr2_best"] = {"name": best.name, "rating": round(best.rating, 4)}
+    except:
+        pass
+
+    path = os.path.join(_CONFIG, "../engine/user_input/transfer_offers.json")
+    with open(path, "w", encoding="utf-8") as f:
+        json.dump(result, f, indent=2, ensure_ascii=False)
+
+    return result
+
+
+@app.post("/api/do_transfer")
+async def api_do_transfer(data: dict):
+    # data: {"want": "yes"/"no", "where": "MMR1"/"MMR2", "pilot_to_change": "...", "chosen_pilot": "..."}
+    path_deal = os.path.join(_CONFIG, "../engine/user_input/deal.json")
+    path_transfer = os.path.join(_CONFIG, "../engine/user_input/transfer.json")
+
+    with open(path_deal, "w", encoding="utf-8") as f:
+        json.dump({"want": data.get("want", "yes"), "where": data.get("where"), "pilot_to_change": data.get("pilot_to_change"), "chosen_pilot": data.get("chosen_pilot", "")}, f, indent=2)
+    with open(path_transfer, "w", encoding="utf-8") as f:
+        json.dump({"pilot_to_change": data.get("pilot_to_change"), "chosen_pilot": data.get("chosen_pilot", "")}, f, indent=2)
+
+    cars, teams, player, player_2, championship, tracks, \
+    DRIVER_1, DRIVER_2, COUNT_CARS, SAFETY_CAR, LAPS_REMAINING, b, season_count = load_game_objects()
+
+    try:
+        player, player_2, DRIVER_1, DRIVER_2, cars = transfer(
+            cars, teams, player, player_2, DRIVER_1, DRIVER_2
+        )
+    except ValueError as e:
+        raise HTTPException(status_code=400, detail=str(e))
+
+    save_state_end_of_season(cars, teams, season_count)
+    updated_state = _state()
+    updated_state["DRIVER_1"] = DRIVER_1
+    updated_state["DRIVER_2"] = DRIVER_2
+    with open("state.json", "w", encoding="utf-8") as f:
+        json.dump(updated_state, f, indent=2, ensure_ascii=False)
+    return {"status": "ok", "driver_1": DRIVER_1, "driver_2": DRIVER_2}
