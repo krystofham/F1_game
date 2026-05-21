@@ -66,7 +66,6 @@ async def get_team(team_name: str):
 
 
 @app.post("/api/init_race")
-@app.post("/api/init_race")
 async def api_init_race():
     cars, teams, player, player_2, championship, tracks, \
     DRIVER_1, DRIVER_2, COUNT_CARS, SAFETY_CAR, LAPS_REMAINING, b, season_count = load_game_objects()
@@ -79,7 +78,8 @@ async def api_init_race():
     )
 
     race = championship[b - 1]
-    total_laps = getattr(race, "laps", 51)
+    track = next((t for t in tracks if t.name == race), None)
+    total_laps = track.laps if track else 67
 
     state = _state()
     state["lap"] = 0
