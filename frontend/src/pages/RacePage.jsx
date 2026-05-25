@@ -501,19 +501,21 @@ export default function RacePage() {
                   </button>
                 </>
               )}
+              {finished &&(
+              <>
+                <button className="btn btn-success" onClick={handlePostRace}>
+                  POST RACE
+                </button>
+                
+                <button className="btn btn-primary" onClick={() => setRaceState(null)}>
+                  NEXT RACE
+                </button>
 
-              <button className="btn btn-success" onClick={handlePostRace}>
-                POST RACE
-              </button>
-
-              <button className="btn btn-primary" onClick={() => setRaceState(null)}>
-                NEXT RACE
-              </button>
-
-              <button className="btn btn-danger" onClick={handlePostChampionship}>
-                END SEASON
-              </button>
-
+                <button className="btn btn-danger" onClick={handlePostChampionship}>
+                  END SEASON
+                </button>
+              </>
+              )}
               {postDone && !isLastRace && (
                 <button className="btn btn-primary" onClick={() => setRaceState(null)}>
                   RECONFIGURE
