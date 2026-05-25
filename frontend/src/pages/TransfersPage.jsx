@@ -235,9 +235,7 @@ export default function TransferMarket() {
                               <div
                                 className="flex items-center justify-between mb-2"
                               >
-                                <span className="text-mono">{o.team}</span>
-                                <span className="text-mono">★ {o.rating}</span>
-                              </div>
+                                <span className="text-mono">{o.team}</span></div>
                               <div
                                 style={{
                                   fontFamily: "var(--font-mono)",
