@@ -3,8 +3,7 @@ import { useApi } from "../hooks/useApi";
 import { api } from "../utils/api";
 import {
   LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip,
-  Legend, ResponsiveContainer, BarChart, Bar, ScatterChart,
-  Scatter, ZAxis,
+  Legend, ResponsiveContainer, BarChart, Bar,
 } from "recharts";
 
 const COLORS = [
@@ -29,45 +28,6 @@ const CustomTooltip = ({ active, payload, label }) => {
     </div>
   );
 };
-
-function LapTimesChart({ drivers }) {
-  if (!drivers?.length) return <div className="empty">No lap time data yet</div>;
-
-  const maxLaps = Math.max(...drivers.map((d) => (d.history || d.lap_times || []).length));
-  if (!maxLaps) return <div className="empty">No lap time data yet</div>;
-
-  const data = Array.from({ length: maxLaps }, (_, i) => {
-    const row = { lap: i + 1 };
-    drivers.forEach((d) => {
-      const times = d.history || d.lap_times || [];
-      if (times[i] != null) row[d.name] = +times[i].toFixed(3);
-    });
-    return row;
-  });
-
-  return (
-    <ResponsiveContainer width="100%" height={300}>
-      <LineChart data={data} margin={{ top: 5, right: 20, left: 0, bottom: 5 }}>
-        <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" />
-        <XAxis dataKey="lap" stroke="var(--text-3)" tick={{ fontSize: 10, fontFamily: "var(--font-mono)" }} label={{ value: "LAP", position: "insideBottomRight", offset: -10, fontSize: 9, fill: "var(--text-3)" }} />
-        <YAxis stroke="var(--text-3)" tick={{ fontSize: 10, fontFamily: "var(--font-mono)" }} domain={["auto", "auto"]} />
-        <Tooltip content={<CustomTooltip />} />
-        <Legend wrapperStyle={{ fontFamily: "var(--font-mono)", fontSize: 10 }} />
-        {drivers.map((d, i) => (
-          <Line
-            key={d.name}
-            type="monotone"
-            dataKey={d.name}
-            stroke={COLORS[i % COLORS.length]}
-            dot={false}
-            strokeWidth={d.is_player ? 2 : 1}
-            opacity={d.dnf ? 0.4 : 1}
-          />
-        ))}
-      </LineChart>
-    </ResponsiveContainer>
-  );
-}
 
 function PositionChart({ drivers }) {
   if (!drivers?.length) return <div className="empty">No position data yet</div>;
@@ -107,36 +67,6 @@ function PositionChart({ drivers }) {
   );
 }
 
-function SectorChart({ drivers }) {
-  const hasSectors = drivers?.some((d) => d.sector_times || d.sectors);
-  if (!hasSectors) return <div className="empty">No sector data available</div>;
-
-  const data = drivers.map((d) => {
-    const s = d.sector_times || d.sectors || {};
-    return {
-      name: d.name.split(" ").pop(),
-      S1: s.s1 ?? s[0] ?? 0,
-      S2: s.s2 ?? s[1] ?? 0,
-      S3: s.s3 ?? s[2] ?? 0,
-    };
-  });
-
-  return (
-    <ResponsiveContainer width="100%" height={260}>
-      <BarChart data={data} margin={{ top: 5, right: 20, left: 0, bottom: 5 }}>
-        <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" />
-        <XAxis dataKey="name" stroke="var(--text-3)" tick={{ fontSize: 10, fontFamily: "var(--font-mono)" }} />
-        <YAxis stroke="var(--text-3)" tick={{ fontSize: 10, fontFamily: "var(--font-mono)" }} />
-        <Tooltip content={<CustomTooltip />} />
-        <Legend wrapperStyle={{ fontFamily: "var(--font-mono)", fontSize: 10 }} />
-        <Bar dataKey="S1" fill="var(--accent-2)" />
-        <Bar dataKey="S2" fill="var(--blue)" />
-        <Bar dataKey="S3" fill="var(--green)" />
-      </BarChart>
-    </ResponsiveContainer>
-  );
-}
-
 function PointsChart({ drivers }) {
   if (!drivers?.length) return <div className="empty">No points data</div>;
   const sorted = [...drivers].sort((a, b) => (b.points || 0) - (a.points || 0)).slice(0, 10);
@@ -155,7 +85,7 @@ function PointsChart({ drivers }) {
   );
 }
 
-const TABS = ["LAP TIMES", "POSITIONS", "SECTORS", "CHAMPIONSHIP"];
+const TABS = ["POSITIONS", "CHAMPIONSHIP"];
 
 export default function GraphsPage() {
   const [tab, setTab] = useState(0);
@@ -175,7 +105,6 @@ export default function GraphsPage() {
         </div>
       </div>
 
-      {/* Tab bar */}
       <div
         style={{
           display: "flex",
@@ -211,23 +140,11 @@ export default function GraphsPage() {
       <div className="chart-wrap">
         {tab === 0 && (
           <>
-            <div className="chart-title">LAP TIME HISTORY</div>
-            <LapTimesChart drivers={drivers} />
-          </>
-        )}
-        {tab === 1 && (
-          <>
             <div className="chart-title">POSITION HISTORY</div>
             <PositionChart drivers={drivers} />
           </>
         )}
-        {tab === 2 && (
-          <>
-            <div className="chart-title">AVG SECTOR TIMES</div>
-            <SectorChart drivers={drivers} />
-          </>
-        )}
-        {tab === 3 && (
+        {tab === 1 && (
           <>
             <div className="chart-title">CHAMPIONSHIP POINTS</div>
             <PointsChart drivers={drivers} />
@@ -235,7 +152,6 @@ export default function GraphsPage() {
         )}
       </div>
 
-      {/* Training section */}
       <div className="section-title">Training Analysis</div>
       <div className="card" style={{ padding: 20 }}>
         <div style={{ fontFamily: "var(--font-mono)", fontSize: 11, color: "var(--text-3)", letterSpacing: 1 }}>
