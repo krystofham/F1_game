@@ -19,7 +19,7 @@ for race in championship:
             cars, teams, player, player_2, lap, SAFETY_CAR, LAPS_REMAINING,
             WETTINESS, forecast, weather, LAPS, climax,
             pneu, speed, PNEU_types, weather_1, weather_2, weather_3, weather_4,
-            training_type, k_wear, speed_bonus, season_count, race, time_laps
+            training_type, k_wear, k_speed, speed_bonus, season_count, race, time_laps
         )
     #post race
     RANK = [a for a in cars if not a.dnf]
