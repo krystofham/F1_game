@@ -4,7 +4,6 @@ import { api } from "../utils/api";
 import TyreBadge from "../components/TyreBadge";
 import WearBar from "../components/WearBar";
 
-// ── Pit / Action Form ───────────────────────────────────────────────────────
 const TYRE_OPTS = ["soft", "medium", "hard", "wet", "inter"];
 
 function PitForm({ drivers, onSubmit, disabled }) {
@@ -91,13 +90,12 @@ function PitForm({ drivers, onSubmit, disabled }) {
         onClick={handleSubmit}
         disabled={disabled}
       >
-        ✓ CONFIRM INSTRUCTIONS
+        CONFIRM INSTRUCTIONS
       </button>
     </div>
   );
 }
 
-// ── Init Race Form ──────────────────────────────────────────────────────────
 function InitForm({ onInit }) {
   const [cfg, setCfg] = useState({
     lenght: 2,
@@ -178,7 +176,7 @@ function InitForm({ onInit }) {
         color: "var(--text-3)",
         letterSpacing: 1,
       }}>
-        ⚠ FRONT_WING · REAR_WING · BRAKES · STABILIZATORS · SPRINGS — currently not active in engine
+        FRONT_WING · REAR_WING · BRAKES · STABILIZATORS · SPRINGS — currently not active in engine
       </div>
 
       <div className="grid-3" style={{ gap: 12, marginBottom: 20 }}>
@@ -209,18 +207,17 @@ function InitForm({ onInit }) {
 
       {err && (
         <div style={{ color: "var(--accent)", fontFamily: "var(--font-mono)", fontSize: 11, marginBottom: 12 }}>
-          ✕ {err}
+          {err}
         </div>
       )}
 
       <button className="btn btn-primary" onClick={handleInit} disabled={loading}>
-        {loading ? "INITIALIZING…" : "INIT RACE"}
+        {loading ? "INITIALIZING" : "INIT RACE"}
       </button>
     </div>
   );
 }
 
-// ── Race live table ─────────────────────────────────────────────────────────
 function RaceTable({ drivers }) {
   const getCurrentRacePos = (driver) => {
     if (driver.position_history && driver.position_history.length > 0) {
@@ -229,9 +226,12 @@ function RaceTable({ drivers }) {
     return driver.position || 99;
   };
 
-  const sorted = [...(drivers || [])].sort((a, b) => {
-    return getCurrentRacePos(a) - getCurrentRacePos(b);
-  });
+  const playerDrivers = (drivers || []).filter(d => d.is_player);
+  const otherDrivers = (drivers || []).filter(d => !d.is_player);
+
+  const sortedPlayers = [...playerDrivers].sort((a, b) => getCurrentRacePos(a) - getCurrentRacePos(b));
+  const sortedOthers = [...otherDrivers].sort((a, b) => getCurrentRacePos(a) - getCurrentRacePos(b));
+  const sorted = [...sortedPlayers, ...sortedOthers];
 
   return (
     <table className="data-table">
@@ -249,12 +249,12 @@ function RaceTable({ drivers }) {
       <tbody>
         {sorted.map((d, index) => {
           const currentPos = getCurrentRacePos(d);
-          
-          let gapDisplay = "—"; 
-          
+
+          let gapDisplay = "—";
+
           if (index > 0) {
             const previousDriver = sorted[index - 1];
-                        if (d.time != null && previousDriver.time != null) {
+            if (d.time != null && previousDriver.time != null) {
               const gap = d.time - previousDriver.time;
               gapDisplay = `+${Math.max(0, gap).toFixed(3)}`;
             }
@@ -275,10 +275,7 @@ function RaceTable({ drivers }) {
               </td>
               <td><TyreBadge type={d.pneu} /></td>
               <td style={{ minWidth: 120 }}><WearBar wear={d.wear || 0} /></td>
-              
-              {/* Vykreslení vypočítaného gapu */}
               <td className="text-mono">{gapDisplay}</td>
-              
               <td className="text-mono">{d.pit_stops}</td>
               <td>
                 {d.dnf ? (
@@ -294,23 +291,24 @@ function RaceTable({ drivers }) {
     </table>
   );
 }
-// ── Main Race Page ──────────────────────────────────────────────────────────
+
 export default function RacePage() {
   const [raceState, setRaceState] = useState(null);
   const [lap, setLap] = useState(0);
   const [totalLaps, setTotalLaps] = useState(null);
   const [running, setRunning] = useState(false);
-  const [finished, setFinished] = useState(false);
   const [postDone, setPostDone] = useState(false);
   const [log, setLog] = useState([]);
   const [drivers, setDrivers] = useState([]);
   const [simUntil, setSimUntil] = useState("");
-  const [pitSaved, setPitSaved] = useState(false); // ← zde, uvnitř komponenty
+  const [pitSaved, setPitSaved] = useState(false);
   const logRef = useRef(null);
   const { data: state, refetch: refetchState } = useApi(api.getState);
   const isLastRace = state?.b != null && state?.championship_length != null
     ? state.b >= state.championship_length
     : false;
+
+  const finished = lap >= totalLaps;
 
   useEffect(() => {
     if (state?.race_state) {
@@ -331,7 +329,6 @@ export default function RacePage() {
     setLog((p) => [...p, { lap, msg, type, time: Date.now() }]);
   };
 
-  // ← zde, uvnitř komponenty
   const handlePitSubmit = async (payload) => {
     try {
       await api.setLapUserData(payload);
@@ -339,7 +336,7 @@ export default function RacePage() {
       addLog(
         `Instructions: ${Object.entries(payload)
           .filter(([k]) => k.startsWith("driver_"))
-          .map(([k, v]) => `${k} → ${v.action === "2" ? "PIT (" + v.new_pneu + ")" : "GO"}`)
+          .map(([k, v]) => `${k} -> ${v.action === "2" ? "PIT (" + v.new_pneu + ")" : "GO"}`)
           .join(" | ")}`,
         "good"
       );
@@ -352,7 +349,6 @@ export default function RacePage() {
     setRaceState(res);
     setLap(res.lap ?? 0);
     setTotalLaps(res.total_laps);
-    setFinished(false);
     setPostDone(false);
     setLog([]);
     setPitSaved(false);
@@ -362,23 +358,22 @@ export default function RacePage() {
 
   const doSimLap = useCallback(async () => {
     if (finished) return;
-    setPitSaved(false); // reset po každém kole
+    setPitSaved(false);
     try {
       const res = await api.simLap();
       setLap(res.lap);
       setTotalLaps(res.total_laps);
       addLog(`Lap ${res.lap - 1} complete`, "");
       await refetchState();
-      if (res.finished) {
-        setFinished(true);
-        addLog("CHEQUERED FLAG 🏁", "good");
+      if (res.lap >= res.total_laps) {
+        addLog("CHEQUERED FLAG", "good");
       }
-      return res.finished;
+      return res.lap >= res.total_laps;
     } catch (e) {
       addLog(`Error: ${e.message}`, "danger");
       return true;
     }
-  }, [finished, lap]);
+  }, [finished, lap, totalLaps]);
 
   const handleSimOne = async () => {
     setRunning(true);
@@ -414,9 +409,6 @@ export default function RacePage() {
       addLog(`Post-race done: ${res.race}`, "good");
       setPostDone(true);
       await refetchState();
-      const fresh = await api.getState();
-      const last = fresh?.b >= fresh?.championship_length;
-      addLog(`DEBUG b=${fresh?.b} len=${fresh?.championship_length} isLast=${last}`, "highlight");
     } catch (e) {
       addLog(`Post-race error: ${e.message}`, "danger");
     }
@@ -427,9 +419,9 @@ export default function RacePage() {
       await api.postChampionship();
       addLog("Season ended. New season begun.", "highlight");
       setRaceState(null);
-      setFinished(false);
       setPostDone(false);
       setLap(0);
+      setTotalLaps(null);
       await refetchState();
     } catch (e) {
       addLog(`Championship error: ${e.message}`, "danger");
@@ -449,13 +441,10 @@ export default function RacePage() {
         </div>
       </div>
 
-      {/* No race init yet */}
       {!raceState && <InitForm onInit={handleInit} />}
 
-      {/* Race in progress / done */}
       {raceState && (
         <div>
-          {/* Progress bar */}
           <div className="race-progress">
             <div className="race-progress-fill" style={{ width: `${progress}%` }} />
             <span className="race-progress-label">
@@ -463,7 +452,6 @@ export default function RacePage() {
             </span>
           </div>
 
-          {/* Lap counter + controls */}
           <div className="flex items-center justify-between mb-6" style={{ marginBottom: 24, flexWrap: "wrap", gap: 16 }}>
             <div className="lap-counter">
               <span className="lap-num">{lap}</span>
@@ -476,14 +464,14 @@ export default function RacePage() {
               {!finished && (
                 <>
                   <button className="btn btn-primary" onClick={handleSimOne} disabled={running}>
-                    {running ? "SIMMING…" : "SIM LAP"}
+                    {running ? "SIMMING" : "SIM LAP"}
                   </button>
 
                   <div className="flex items-center" style={{ gap: 6 }}>
                     <div className="field" style={{ gap: 0 }}>
                       <input
                         type="number"
-                        placeholder="Until lap…"
+                        placeholder="Until lap"
                         value={simUntil}
                         onChange={(e) => setSimUntil(e.target.value)}
                         style={{ width: 100 }}
@@ -501,20 +489,20 @@ export default function RacePage() {
                   </button>
                 </>
               )}
-              {finished &&(
-              <>
-                <button className="btn btn-success" onClick={handlePostRace}>
-                  POST RACE
-                </button>
-                
-                <button className="btn btn-primary" onClick={() => setRaceState(null)}>
-                  NEXT RACE
-                </button>
+              {finished && (
+                <>
+                  <button className="btn btn-success" onClick={handlePostRace} disabled={postDone}>
+                    {postDone ? "DONE" : "POST RACE"}
+                  </button>
 
-                <button className="btn btn-danger" onClick={handlePostChampionship}>
-                  END SEASON
-                </button>
-              </>
+                  <button className="btn btn-primary" onClick={() => setRaceState(null)}>
+                    NEXT RACE
+                  </button>
+
+                  <button className="btn btn-danger" onClick={handlePostChampionship}>
+                    END SEASON
+                  </button>
+                </>
               )}
               {postDone && !isLastRace && (
                 <button className="btn btn-primary" onClick={() => setRaceState(null)}>
@@ -524,7 +512,6 @@ export default function RacePage() {
             </div>
           </div>
 
-          {/* Pit insatructions — pouze pokud závod běží */}
           {!finished && (
             <>
               <PitForm
@@ -534,30 +521,23 @@ export default function RacePage() {
               />
               {pitSaved && (
                 <div style={{ fontFamily: "var(--font-mono)", fontSize: 10, color: "var(--accent)", marginBottom: 12, letterSpacing: 1 }}>
-                  ✓ Instructions saved — will apply on next sim lap
+                  Instructions saved — will apply on next sim lap
                 </div>
               )}
             </>
           )}
-            <div>
-              <div className="section-title" style={{ marginTop: 0 }}>Live Positions</div>
-              <RaceTable drivers={drivers.filter((driver) => {if (driver.is_player == true){return driver} else return})} />
-                <div style={{"padding": 50}}>
-                </div>
-            </div>
+
           <div className="grid-2" style={{ gap: 24, alignItems: "start" }}>
-            {/* Race table */}
             <div>
               <div className="section-title" style={{ marginTop: 0 }}>Live Positions</div>
               <RaceTable drivers={drivers} />
             </div>
 
-            {/* Log */}
             <div>
               <div className="section-title" style={{ marginTop: 0 }}>Race Log</div>
               <div className="race-log" ref={logRef}>
                 {log.length === 0 && (
-                  <span style={{ color: "var(--text-3)" }}>Waiting for race events…</span>
+                  <span style={{ color: "var(--text-3)" }}>Waiting for race events</span>
                 )}
                 {log.map((entry, i) => (
                   <div key={i} className="log-entry">
@@ -573,7 +553,7 @@ export default function RacePage() {
                   style={{ fontSize: 10, letterSpacing: 1, padding: "7px 14px" }}
                   onClick={() => setRaceState(null)}
                 >
-                  ↺ RECONFIGURE RACE
+                  RECONFIGURE RACE
                 </button>
               </div>
             </div>
