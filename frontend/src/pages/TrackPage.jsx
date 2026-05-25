@@ -9,6 +9,12 @@ const COUNTRY_FLAGS = {
   brazil: "🇧🇷", australia: "🇦🇺", canada: "🇨🇦", china: "🇨🇳",
   uae: "🇦🇪", dubai: "🇦🇪", bahrain: "🇧🇭", azerbaijan: "🇦🇿",
   saudi: "🇸🇦", qatar: "🇶🇦",
+  czech: "🇨🇿", "czech republic": "🇨🇿", prague: "🇨🇿", ostrava: "🇨🇿",
+  poland: "🇵🇱", varsava: "🇵🇱", warsaw: "🇵🇱",
+  bahamas: "🇧🇸",
+  bulgaria: "🇧🇬", bulgarian: "🇧🇬",
+  turkey: "🇹🇷",
+  spain: "🇪🇸", espana: "🇪🇸"
 };
 
 function guessFlag(name) {
@@ -48,7 +54,7 @@ export default function TrackPage() {
     <div>
       <div className="page-header">
         <div className="page-eyebrow">
-          Race {b} of {championship.length || "?"}
+          Race {b} of {state.championship_length || "?"}
         </div>
         <div className="page-title">
           <span style={{ fontSize: 56, marginRight: 12 }}>{flag}</span>
@@ -56,7 +62,7 @@ export default function TrackPage() {
         </div>
       </div>
 
-      <div className="grid-4" style={{ gap: 14, marginBottom: 24 }}>
+      <div style={{ display: "flex", flexDirection: "column", gap: 14, marginBottom: 24 }}>
         <StatBlock label="Laps" value={currentTrack.laps ?? state?.race_state?.total_laps} />
         <StatBlock
           label="DNF Risk"
@@ -73,11 +79,10 @@ export default function TrackPage() {
         />
       </div>
 
-      {/* Tyre info */}
       {(currentTrack.pneu_types || currentTrack.speed_types) && (
         <div>
           <div className="section-title">Compound Profile</div>
-          <div className="grid-2" style={{ gap: 14 }}>
+          <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
             <div className="card">
               <div className="card-label" style={{ marginBottom: 10 }}>Tyre Compounds</div>
               <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
@@ -114,7 +119,6 @@ export default function TrackPage() {
         </div>
       )}
 
-      {/* Full championship schedule */}
       {championship.length > 0 && (
         <div>
           <div className="section-title">Season Calendar</div>
