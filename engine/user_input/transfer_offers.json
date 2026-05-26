@@ -1,154 +1,82 @@
 {
   "driver_1": {
-    "name": "Kim Nguen",
+    "name": "Max Verstappen",
     "offers": [
-      {
-        "name": "Elias Northgate",
-        "team": "AMD Assemblyte GP",
-        "points": 111,
-        "rating": 5.2769
-      },
-      {
-        "name": "Mikhail Antonov",
-        "team": "PyCharm motors",
-        "points": 146,
-        "rating": 5.9222
-      },
-      {
-        "name": "Hiro Tanaka",
-        "team": "Racing 404",
-        "points": 82,
-        "rating": 5.5671
-      },
-      {
-        "name": "Lukas Rennhardt",
-        "team": "Racing 404",
-        "points": 82,
-        "rating": 5.0186
-      },
       {
         "name": "Carlos Navarro",
         "team": "Intel QWERTY GP",
-        "points": 207,
-        "rating": 5.1491
-      },
-      {
-        "name": "Johan Reißer",
-        "team": "Underbyte Nvidia GP",
-        "points": 50,
-        "rating": 5.5273
-      },
-      {
-        "name": "Theo Hartman",
-        "team": "Underbyte Nvidia GP",
-        "points": 50,
-        "rating": 5.4621
+        "points": 0,
+        "rating": 5.3178
       },
       {
         "name": "Sebastian Krell",
         "team": "JavaScript Racing team",
-        "points": 76,
-        "rating": 5.1417
+        "points": 0,
+        "rating": 5.9009
       },
       {
-        "name": "Tyler Quinn",
-        "team": "Jawa Surenate Linux racing team",
-        "points": 129,
-        "rating": 5.1435
+        "name": "Alex Storme",
+        "team": "Scuderia Python",
+        "points": 0,
+        "rating": 5.0925
       },
       {
-        "name": "Julian Stroud",
-        "team": "Pixel motors",
-        "points": 70,
-        "rating": 5.4612
+        "name": "Matteo Blaze",
+        "team": "Scuderia Python",
+        "points": 0,
+        "rating": 5.569
       },
       {
-        "name": "Renzo Morandi",
-        "team": "Pixel motors",
-        "points": 70,
-        "rating": 5.3419
+        "name": "Enzo DaCosta",
+        "team": "JavaScript Racing team",
+        "points": 0,
+        "rating": 5.4688
       }
     ]
   },
   "driver_2": {
-    "name": "Max Verstappen",
+    "name": "Kim Nguen",
     "offers": [
       {
-        "name": "Riku Yamashita",
+        "name": "Carlos Navarro",
         "team": "Intel QWERTY GP",
-        "points": 207,
-        "rating": 5.5119
+        "points": 0,
+        "rating": 5.3178
       },
       {
         "name": "Tomás Moreira",
         "team": "VS racing 22",
-        "points": 162,
-        "rating": 5.3179
+        "points": 0,
+        "rating": 5.7725
       },
       {
-        "name": "Mikhail Antonov",
-        "team": "PyCharm motors",
-        "points": 146,
-        "rating": 5.9222
+        "name": "Alex Storme",
+        "team": "Scuderia Python",
+        "points": 0,
+        "rating": 5.0925
       },
       {
-        "name": "Hiro Tanaka",
-        "team": "Racing 404",
-        "points": 82,
-        "rating": 5.5671
+        "name": "Matteo Blaze",
+        "team": "Scuderia Python",
+        "points": 0,
+        "rating": 5.569
       },
       {
-        "name": "Lukas Rennhardt",
-        "team": "Racing 404",
-        "points": 82,
-        "rating": 5.0186
-      },
-      {
-        "name": "Carlos Navarro",
-        "team": "Intel QWERTY GP",
-        "points": 207,
-        "rating": 5.1491
-      },
-      {
-        "name": "Johan Reißer",
-        "team": "Underbyte Nvidia GP",
-        "points": 50,
-        "rating": 5.5273
-      },
-      {
-        "name": "Theo Hartman",
-        "team": "Underbyte Nvidia GP",
-        "points": 50,
-        "rating": 5.4621
+        "name": "Enzo DaCosta",
+        "team": "JavaScript Racing team",
+        "points": 0,
+        "rating": 5.4688
       },
       {
         "name": "Sebastian Krell",
         "team": "JavaScript Racing team",
-        "points": 76,
-        "rating": 5.1417
-      },
-      {
-        "name": "Tyler Quinn",
-        "team": "Jawa Surenate Linux racing team",
-        "points": 129,
-        "rating": 5.1435
-      },
-      {
-        "name": "Julian Stroud",
-        "team": "Pixel motors",
-        "points": 70,
-        "rating": 5.4612
-      },
-      {
-        "name": "Renzo Morandi",
-        "team": "Pixel motors",
-        "points": 70,
-        "rating": 5.3419
+        "points": 0,
+        "rating": 5.9009
       }
     ]
   },
   "mmr2_best": {
-    "name": "Leo Harrington",
-    "rating": 6.0641
+    "name": "Felipe Sandoval",
+    "rating": 6.013
   }
 }
