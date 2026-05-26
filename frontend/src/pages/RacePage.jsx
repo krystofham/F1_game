@@ -243,7 +243,6 @@ function RaceTable({ drivers }) {
           <th>WEAR</th>
           <th>GAP</th>
           <th>PITS</th>
-          <th>STATUS</th>
         </tr>
       </thead>
       <tbody>
@@ -277,13 +276,6 @@ function RaceTable({ drivers }) {
               <td style={{ minWidth: 120 }}><WearBar wear={d.wear || 0} /></td>
               <td className="text-mono">{gapDisplay}</td>
               <td className="text-mono">{d.pit_stops}</td>
-              <td>
-                {d.dnf ? (
-                  <span className="badge badge-err">DNF</span>
-                ) : (
-                  <span className="badge badge-ok">RACING</span>
-                )}
-              </td>
             </tr>
           );
         })}
@@ -527,27 +519,11 @@ export default function RacePage() {
             </>
           )}
 
-          <div className="grid-2" style={{ gap: 24, alignItems: "start" }}>
+          <div className="grid" style={{ gap: 24, alignItems: "start" }}>
             <div>
               <div className="section-title" style={{ marginTop: 0 }}>Live Positions</div>
               <RaceTable drivers={drivers} />
-            </div>
-
-            <div>
-              <div className="section-title" style={{ marginTop: 0 }}>Race Log</div>
-              <div className="race-log" ref={logRef}>
-                {log.length === 0 && (
-                  <span style={{ color: "var(--text-3)" }}>Waiting for race events</span>
-                )}
-                {log.map((entry, i) => (
-                  <div key={i} className="log-entry">
-                    <span className="log-lap">LAP {String(entry.lap).padStart(2, "0")}</span>
-                    <span className={`log-msg ${entry.type}`}>{entry.msg}</span>
-                  </div>
-                ))}
-              </div>
-
-              <div style={{ marginTop: 12 }}>
+              <div style={{"margin": "10px"}}>
                 <button
                   className="btn"
                   style={{ fontSize: 10, letterSpacing: 1, padding: "7px 14px" }}
@@ -557,6 +533,8 @@ export default function RacePage() {
                 </button>
               </div>
             </div>
+
+
           </div>
         </div>
       )}

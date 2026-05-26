@@ -23,10 +23,8 @@ function Sidebar() {
   return (
     <nav className="sidebar">
       <div className="sidebar-header">
-        <div className="logo-mark">F1</div>
         <div className="logo-text">
-          <span className="logo-title">APEX</span>
-          <span className="logo-sub">MANAGER</span>
+          <span className="logo-title">MMRAC1NG</span>
         </div>
       </div>
       <div className="nav-items">
@@ -42,12 +40,6 @@ function Sidebar() {
             <span className="nav-indicator" />
           </NavLink>
         ))}
-      </div>
-      <div className="sidebar-footer">
-        <div className="api-status">
-          <span className="status-dot" />
-          ENGINE LIVE
-        </div>
       </div>
     </nav>
   );
