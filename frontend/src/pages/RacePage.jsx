@@ -373,26 +373,42 @@ export default function RacePage() {
     setRunning(false);
   };
 
-  const handleSimUntil = async () => {
-    const target = parseInt(simUntil, 10);
-    if (!target || target <= lap) return;
-    setRunning(true);
-    for (let i = lap; i < target && !finished; i++) {
-      const done = await doSimLap();
-      if (done) break;
-      await new Promise((r) => setTimeout(r, 120));
-    }
-    setRunning(false);
+  const playSnapshots = async (snapshots, delayMs = 80) => {
+      for (const snap of snapshots) {
+          setLap(snap.lap);
+          setDrivers(snap.drivers);
+          await new Promise((r) => setTimeout(r, delayMs));
+      }
   };
 
   const handleSimAll = async () => {
-    setRunning(true);
-    let done = false;
-    while (!done) {
-      done = await doSimLap();
-      await new Promise((r) => setTimeout(r, 80));
-    }
-    setRunning(false);
+      setRunning(true);
+      try {
+          const res = await api.simRace();          // 1 request místo 70
+          await playSnapshots(res.snapshots);        // animace lokálně
+          setLap(res.final_state.lap);
+          setDrivers(res.final_state.drivers ?? []);
+          addLog("CHEQUERED FLAG", "good");
+          await refetchState();
+      } catch (e) {
+          addLog(`Error: ${e.message}`, "danger");
+      }
+      setRunning(false);
+  };
+
+  const handleSimUntil = async () => {
+      const target = parseInt(simUntil, 10);
+      if (!target || target <= lap) return;
+      setRunning(true);
+      try {
+          const res = await api.simRace();  // ← simuluje VŠECHNA kola na backendu
+          const toPlay = res.snapshots.filter(s => s.lap <= target);  // jen zobrazí do targetu
+          await playSnapshots(toPlay);
+          await refetchState();             // ← state.json bude na konci závodu!
+      } catch (e) {
+          addLog(`Error: ${e.message}`, "danger");
+      }
+      setRunning(false);
   };
 
   const handlePostRace = async () => {

@@ -10,7 +10,7 @@ class Drivermmr2:
         self.name = name
         self.rating = rating
         self.time = 0.0
-
+        self.team = None
 # Function to simulate the season
 def simulate_season_mmr2(drivers):
     for driver in drivers:

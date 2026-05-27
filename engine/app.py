@@ -352,3 +352,74 @@ async def api_do_transfer(data: dict):
     with open("state.json", "w", encoding="utf-8") as f:
         json.dump(updated_state, f, indent=2, ensure_ascii=False)
     return {"status": "ok", "driver_1": player.name, "driver_2": player_2.name}
+
+
+
+@app.post("/api/sim_race")
+async def api_sim_race():
+    """
+    Odsimuluje celý závod najednou. Volá se místo opakovaného /api/sim_lap.
+    """
+    state = _state()
+    race_ctx = state.get("race_state")
+    if not race_ctx:
+        raise HTTPException(status_code=400, detail="Race not initialized. Call /api/init_race first.")
+
+    total_laps = race_ctx["total_laps"]
+
+    cars, teams, player, player_2, championship, tracks, \
+    player.name, player_2.name, COUNT_CARS, SAFETY_CAR, LAPS_REMAINING, b, season_count = load_game_objects()
+
+    time_laps = state.get("time_laps", [])
+    race = state.get("race", "Unknown Race")
+    k_speed = race_ctx.get("k_speed", [1, 1.04, 1.08, 0.6, 0.65])
+
+    tyre_compounds = {
+        "hard":   {"wear": race_ctx["k_wear"][0], "speed": k_speed[0]},
+        "medium": {"wear": race_ctx["k_wear"][1], "speed": k_speed[1]},
+        "soft":   {"wear": race_ctx["k_wear"][2], "speed": k_speed[2]},
+        "wet":    {"wear": race_ctx["k_wear"][3], "speed": k_speed[3]},
+        "inter":  {"wear": race_ctx["k_wear"][4], "speed": k_speed[4]},
+    }
+
+    lap = state.get("lap", 0)
+    lap_snapshots = []
+
+    # ── Jediná smyčka, žádné I/O uvnitř ──────────────────────────────────
+    while lap <= total_laps:
+        lap, cars, teams = sim_the_lap(
+            cars, teams, player, player_2, lap,
+            SAFETY_CAR, LAPS_REMAINING,
+            race_ctx["wettiness"], race_ctx["forecast"], race_ctx["weather"],
+            total_laps, race_ctx["climax"],
+            race_ctx["pneu_type"], race_ctx["speed_type"],
+            tyre_compounds,
+            race_ctx["forecast"][0] if len(race_ctx["forecast"]) > 0 else race_ctx["weather"],
+            race_ctx["forecast"][1] if len(race_ctx["forecast"]) > 1 else race_ctx["weather"],
+            race_ctx["forecast"][2] if len(race_ctx["forecast"]) > 2 else race_ctx["weather"],
+            race_ctx["forecast"][3] if len(race_ctx["forecast"]) > 3 else race_ctx["weather"],
+            race_ctx["training_type"], race_ctx["k_wear"], k_speed,
+            race_ctx["speed_bonus"], season_count, race, time_laps
+        )
+
+        # Snapshot stavu po každém kole (pro frontend animaci)
+        current_state = _state()
+        lap_snapshots.append({
+            "lap": lap,
+            "drivers": current_state.get("drivers", []),
+            "time_laps": current_state.get("time_laps", []),
+        })
+
+        if lap > total_laps:
+            break
+
+    # Jeden finální zápis stavu
+    final_state = _state()
+
+    return {
+        "status": "ok",
+        "finished": True,
+        "total_laps": total_laps,
+        "snapshots": lap_snapshots,   # React může animovat kolo po kole lokálně
+        "final_state": final_state,
+    }
