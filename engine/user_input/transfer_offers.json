@@ -3,98 +3,110 @@
     "name": "Max Verstappen",
     "offers": [
       {
-        "name": "Lukas Rennhardt",
-        "team": "Racing 404",
-        "points": 75,
-        "rating": 5.465
+        "name": "Aiden Falk",
+        "team": "Formula 1.0 racing team",
+        "points": 600,
+        "rating": 5.656
       },
       {
-        "name": "Johan Reißer",
-        "team": "Underbyte Nvidia GP",
-        "points": 22,
-        "rating": 5.2459
+        "name": "Carlos Navarro",
+        "team": "Intel QWERTY GP",
+        "points": 146,
+        "rating": 5.6669
+      },
+      {
+        "name": "Tyler Quinn",
+        "team": "Jawa Surenate Linux racing team",
+        "points": 420,
+        "rating": 5.2698
       },
       {
         "name": "Elias Northgate",
         "team": "AMD Assemblyte GP",
-        "points": 5,
-        "rating": 5.7533
-      },
-      {
-        "name": "Alex Storme",
-        "team": "Scuderia Python",
-        "points": 95,
-        "rating": 5.5382
-      },
-      {
-        "name": "Matteo Blaze",
-        "team": "Scuderia Python",
-        "points": 95,
-        "rating": 5.4878
+        "points": 106,
+        "rating": 5.2139
       },
       {
         "name": "Arjun Desai",
         "team": "VS racing 22",
-        "points": 2,
-        "rating": 5.7519
+        "points": 384,
+        "rating": 5.4579
       },
       {
-        "name": "Tomás Moreira",
-        "team": "VS racing 22",
-        "points": 2,
-        "rating": 5.0771
+        "name": "Mikhail Antonov",
+        "team": "PyCharm motors",
+        "points": 704,
+        "rating": 5.3505
+      },
+      {
+        "name": "Alex Storme",
+        "team": "Scuderia Python",
+        "points": 42,
+        "rating": 5.6136
+      },
+      {
+        "name": "Matteo Blaze",
+        "team": "Scuderia Python",
+        "points": 42,
+        "rating": 5.5341
+      },
+      {
+        "name": "Riku Yamashita",
+        "team": "Intel QWERTY GP",
+        "points": 146,
+        "rating": 5.4928
+      },
+      {
+        "name": "Sebastian Krell",
+        "team": "JavaScript Racing team",
+        "points": 214,
+        "rating": 4.9512
+      },
+      {
+        "name": "Marco Falcone",
+        "team": "Java motors",
+        "points": 250,
+        "rating": 5.0742
+      },
+      {
+        "name": "Ivan Vasiliev",
+        "team": "Java motors",
+        "points": 250,
+        "rating": 5.3544
+      },
+      {
+        "name": "Felipe Marquez",
+        "team": "AMD Assemblyte GP",
+        "points": 106,
+        "rating": 5.3422
+      },
+      {
+        "name": "Julian Stroud",
+        "team": "Pixel motors",
+        "points": 94,
+        "rating": 5.3594
+      },
+      {
+        "name": "Renzo Morandi",
+        "team": "Pixel motors",
+        "points": 94,
+        "rating": 5.4077
       }
     ]
   },
   "driver_2": {
-    "name": "Kim Nguen",
+    "name": "Oliver Wright",
     "offers": [
       {
-        "name": "Alex Storme",
-        "team": "Scuderia Python",
-        "points": 95,
-        "rating": 5.5382
-      },
-      {
-        "name": "Hiro Tanaka",
-        "team": "Racing 404",
-        "points": 75,
-        "rating": 5.61
-      },
-      {
-        "name": "Nilapsai Vetrovski",
-        "team": "Microsoft PitStop Protocol racing team",
-        "points": 42,
-        "rating": 5.2915
-      },
-      {
-        "name": "Matteo Blaze",
-        "team": "Scuderia Python",
-        "points": 95,
-        "rating": 5.4878
-      },
-      {
-        "name": "Lukas Rennhardt",
-        "team": "Racing 404",
-        "points": 75,
-        "rating": 5.465
-      },
-      {
-        "name": "Arjun Desai",
-        "team": "VS racing 22",
-        "points": 2,
-        "rating": 5.7519
-      },
-      {
-        "name": "Tomás Moreira",
-        "team": "VS racing 22",
-        "points": 2,
-        "rating": 5.0771
+        "name": "Renzo Morandi",
+        "team": "Pixel motors",
+        "points": 94,
+        "rating": 5.4077
       }
     ]
   },
   "mmr2_best": {
-    "name": "Jordan Evans",
-    "rating": 5.994
+    "name": "Oliver Wright",
+    "rating": 0.2415
   }
 }

@@ -44,25 +44,33 @@ function Sidebar() {
     </nav>
   );
 }
-
 export default function App() {
   return (
     <BrowserRouter>
-      <div className="app-shell">
-        <Sidebar />
-        <main className="main-content">
-          <Routes>
-            <Route path="/" element={<StandingsPage />} />
-            <Route path="/race" element={<RacePage />} />
-            <Route path="/teams" element={<TeamsPage />} />
-            <Route path="/drivers" element={<DriversPage />} />
-            <Route path="/track" element={<TrackPage />} />
-            <Route path="/graphs" element={<GraphsPage />} />
-            <Route path="/team/:teamId" element={<TeamPage />} />
-            <Route path="/transfer" element={<TransferMarket />} />
-          </Routes>
-        </main>
-      </div>
+      <Routes>
+        <Route path="/iframe_track" element={
+          <div style={{ padding: 24, overflowY: "auto", height: "100vh", boxSizing: "border-box"}}>
+            <TrackPage />
+          </div>
+        } />
+        <Route path="/*" element={
+          <div className="app-shell">
+            <Sidebar />
+            <main className="main-content">
+              <Routes>
+                <Route path="/" element={<StandingsPage />} />
+                <Route path="/race" element={<RacePage />} />
+                <Route path="/teams" element={<TeamsPage />} />
+                <Route path="/drivers" element={<DriversPage />} />
+                <Route path="/track" element={<TrackPage />} />
+                <Route path="/graphs" element={<GraphsPage />} />
+                <Route path="/team/:teamId" element={<TeamPage />} />
+                <Route path="/transfer" element={<TransferMarket />} />
+              </Routes>
+            </main>
+          </div>
+        } />
+      </Routes>
     </BrowserRouter>
   );
 }

@@ -72,28 +72,33 @@ export default function TrackPage() {
       </div>
 
       <div style={{ display: "flex", flexDirection: "column", gap: 14, marginBottom: 24 }}>
-        <StatBlock label="Laps" value={currentTrack.laps ?? state?.race_state?.total_laps} />
         <StatBlock
           label="Safety car"
           value={safetyCar(state?.race_state?.safety_car) || "Error"}
           importance={safetyCarIndex}        
           />
-        {state?.race_state?.safetyCarIndex && (
+        {safetyCarIndex && (
           <StatBlock
             label="Safety car laps remaining"
-            value={safetyCar(state?.race_state?.safety_car_laps_remaining) || "Error"}
+            value={state?.race_state?.safety_car_laps_remaining || "Error"}
             importance = {true}
           />
         )}
         <StatBlock
-          label="DNF Risk"
-          value={dnfProb != null ? dnfProb.toFixed(1) : "Error"}
-          unit="%"
-        />
-        <StatBlock
           label="Weather"
           value={state?.race_state?.weather || "Error"}
           importance={state?.race_state?.weather != "sunny"}
+        />
+        <StatBlock
+          label="Wettiness of track"
+          value={state?.race_state?.wettiness ?? "Error"}
+          importance={state?.race_state?.wettiness > 0}        
+          unit={"%"}
+        />
+        <StatBlock
+          label="DNF Risk"
+          value={dnfProb != null ? dnfProb.toFixed(1) : "Error"}
+          unit="%"
         />
         <StatBlock
           label="Season"
@@ -103,12 +108,9 @@ export default function TrackPage() {
           label="Clima"
           value={state?.race_state?.climax || "Error"}
         />
-        <StatBlock
-          label="Wettiness of track"
-          value={state?.race_state?.wettiness ?? "Error"}
-          importance={state?.race_state?.wettiness > 0}        
-          unit={"%"}
-        />
+
+                <StatBlock label="Laps" value={currentTrack.laps ?? state?.race_state?.total_laps} />
+
       </div>
 
       {(currentTrack.pneu_types || currentTrack.speed_types) && (
