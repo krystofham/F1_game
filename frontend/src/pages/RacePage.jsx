@@ -373,7 +373,7 @@ export default function RacePage() {
     setRunning(false);
   };
 
-  const playSnapshots = async (snapshots, delayMs = 80) => {
+  const playSnapshots = async (snapshots, delayMs = 0) => {
       for (const snap of snapshots) {
           setLap(snap.lap);
           setDrivers(snap.drivers);

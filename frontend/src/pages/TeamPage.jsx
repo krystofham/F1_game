@@ -19,13 +19,13 @@ function RatingBar({ value }) {
   );
 }
 
-function StatBlock({ label, value, accent }) {
+function StatBlock({ label, value, accent, style }) {
   return (
-    <div className="card" style={{ flex: 1 }}>
+    <div className="card" style={{ flex: 1, ...style }}>
       <div className="card-label">{label}</div>
       <div
         className="card-value"
-        style={{ color: accent || "var(--text)", fontSize: 28 }}
+        style={{ color: accent || "var(--text)", fontSize: 35 }}
       >
         {value}
       </div>
@@ -38,13 +38,15 @@ function DriverCard({ name, index }) {
   return (
     <div
       style={{
-        background: "var(--bg-3)",
+        background: "var(--bg-2)",
         border: "1px solid var(--border)",
         borderLeft: `3px solid ${index === 0 ? "var(--accent)" : "var(--blue)"}`,
         padding: "18px 20px",
         display: "flex",
         alignItems: "center",
         gap: 16,
+        height: "100%", // Zajistí, že obě karty řidičů budou stejně vysoké
+        boxSizing: "border-box"
       }}
     >
       <div
@@ -81,9 +83,7 @@ function DriverCard({ name, index }) {
             color: "var(--text-3)",
             marginTop: 4,
           }}
-        >
-          DRIVER {index === 0 ? "01 · PRIMARY" : "02 · SECONDARY"}
-        </div>
+        >        </div>
       </div>
       <div
         style={{
@@ -152,7 +152,6 @@ export default function TeamPage() {
 
       {/* ── HEADER ── */}
       <div className="page-header" style={{ marginBottom: 28 }}>
-        <div className="page-eyebrow">TEAM PROFILE</div>
         <div
           className="page-title"
           style={{ fontSize: 36, letterSpacing: 0, lineHeight: 1.1 }}
@@ -246,27 +245,43 @@ export default function TeamPage() {
         </div>
       </div>
 
-      {/* ── STATS GRID ── */}
-      <div className="section-title">STATISTICS</div>
-      <div className="grid-3" style={{ marginBottom: 24 }}>
-        <StatBlock label="POINTS" value={team.points} accent="var(--accent)" />
-        <StatBlock
-          label="POSITION"
-          value={`P${team.position}`}
-          accent={team.position === 1 ? "var(--yellow)" : undefined}
-        />
-        <StatBlock label="DRIVERS" value={team.drivers.length} />
-      </div>
+      {/* ── STATS GRID (DRIVERS & POINTS) ── */}
+      <div className="section-title">TEAM OVERVIEW</div>
+      <div 
+        style={{ 
+          display: 'grid', 
+          gridTemplateColumns: '1fr 1fr 1fr', 
+          gridTemplateRows: 'auto auto',  
+          gap: '12px', 
+          marginBottom: '24px' 
+        }}
+      >
+        {/* První řidič - Levá půlka, 1. řádek */}
+        <div style={{ gridRow: '1', gridColumn: '1 / span 2' }}>
+          <DriverCard name={team.drivers[0]} index={0} />
+        </div>
 
-      {/* ── RATING VISUAL ── */}
+        {/* Druhý řidič - Levá půlka, 2. řádek */}
+        <div style={{ gridRow: '2', gridColumn: '1 / span 2' }}>
+          {team.drivers[1] && <DriverCard name={team.drivers[1]} index={1} />}
+        </div>
 
-
-      {/* ── DRIVERS ── */}
-      <div className="section-title">DRIVER LINEUP</div>
-      <div style={{ display: "flex", flexDirection: "column", gap: 10, marginBottom: 24 }}>
-        {team.drivers.map((name, i) => (
-          <DriverCard key={name} name={name} index={i} />
-        ))}
+        {/* Body (Points) - Pravá půlka přes oba řádky */}
+        <div style={{ gridRow: '1 / span 2', gridColumn: '3' }}>
+          <StatBlock 
+            label="POINTS" 
+            value={team.points} 
+            accent="var(--accent)" 
+            style={{ 
+              height: '100%', 
+              display: 'flex', 
+              flexDirection: 'column', 
+              justifyContent: 'center',
+              boxSizing: 'border-box',
+              textAlign: 'center',
+            }} 
+          />
+        </div>
       </div>
 
       {/* ── CHAMPIONSHIP CONTEXT ── */}

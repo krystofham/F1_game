@@ -151,20 +151,6 @@ export default function GraphsPage() {
           </>
         )}
       </div>
-
-      <div className="section-title">Training Analysis</div>
-      <div className="card" style={{ padding: 20 }}>
-        <div style={{ fontFamily: "var(--font-mono)", fontSize: 11, color: "var(--text-3)", letterSpacing: 1 }}>
-          Training telemetry (understeer / oversteer graphs) will appear here once training data is available in the engine state.
-        </div>
-        {state?.training && (
-          <div style={{ marginTop: 16 }}>
-            <pre style={{ fontFamily: "var(--font-mono)", fontSize: 11, color: "var(--text-2)" }}>
-              {JSON.stringify(state.training, null, 2)}
-            </pre>
-          </div>
-        )}
-      </div>
     </div>
   );
 }

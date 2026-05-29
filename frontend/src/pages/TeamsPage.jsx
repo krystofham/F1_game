@@ -185,12 +185,8 @@ function TeamCard({ team, currentRank, newRank, isLive, slotStyle = {} }) {
                   }}
                 >
                   {rankDiff > 0 ? `▲ +${rankDiff}` : `▼ ${rankDiff}`} POS
-                  {team.simulatedRacePoints > 0 && ` · +${team.simulatedRacePoints}`}
                 </span>
-              ) : (
-                <span className="badge" style={{ borderColor: "var(--text-3)", color: "var(--text-3)", fontSize: 9 }}>
-                  ▬ HOLD{team.simulatedRacePoints > 0 && ` · +${team.simulatedRacePoints}`}
-                </span>
+              ) : (<></>
               )}
             </div>
           )}
@@ -211,9 +207,6 @@ function TeamCard({ team, currentRank, newRank, isLive, slotStyle = {} }) {
                   }}
                 >
                   {d}
-                </span>
-                <span style={{ fontFamily: "var(--font-mono)", fontSize: 9, color: "var(--text-3)", letterSpacing: 1 }}>
-                  DRV {i + 1}
                 </span>
               </div>
             ))}

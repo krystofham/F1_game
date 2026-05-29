@@ -5,90 +5,96 @@
       {
         "name": "Alex Storme",
         "team": "Scuderia Python",
-        "points": 190,
-        "rating": 5.0927
+        "points": 0,
+        "rating": 5.5482
+      },
+      {
+        "name": "Lukas Rennhardt",
+        "team": "Racing 404",
+        "points": 0,
+        "rating": 5.475
       },
       {
         "name": "Carlos Navarro",
         "team": "Intel QWERTY GP",
-        "points": 66,
-        "rating": 5.1362
-      },
-      {
-        "name": "Julian Stroud",
-        "team": "Pixel motors",
         "points": 0,
-        "rating": 5.1841
-      },
-      {
-        "name": "Hiro Tanaka",
-        "team": "Racing 404",
-        "points": 150,
-        "rating": 5.4142
+        "rating": 5.3608
       },
       {
         "name": "Theo Hartman",
         "team": "Underbyte Nvidia GP",
-        "points": 44,
-        "rating": 5.2286
-      },
-      {
-        "name": "Enzo DaCosta",
-        "team": "JavaScript Racing team",
-        "points": 34,
-        "rating": 5.3794
-      },
-      {
-        "name": "Sebastian Krell",
-        "team": "JavaScript Racing team",
-        "points": 34,
-        "rating": 5.7343
-      },
-      {
-        "name": "Marco Falcone",
-        "team": "Java motors",
-        "points": 26,
-        "rating": 5.4245
-      },
-      {
-        "name": "Ivan Vasiliev",
-        "team": "Java motors",
-        "points": 26,
-        "rating": 5.2048
-      },
-      {
-        "name": "Tyler Quinn",
-        "team": "Jawa Surenate Linux racing team",
-        "points": 18,
-        "rating": 5.1401
-      },
-      {
-        "name": "Jae-Min Han",
-        "team": "Jawa Surenate Linux racing team",
-        "points": 18,
-        "rating": 5.2259
-      },
-      {
-        "name": "Renzo Morandi",
-        "team": "Pixel motors",
         "points": 0,
-        "rating": 5.5038
+        "rating": 5.9988
+      },
+      {
+        "name": "Elias Northgate",
+        "team": "AMD Assemblyte GP",
+        "points": 0,
+        "rating": 5.7633
+      },
+      {
+        "name": "Matteo Blaze",
+        "team": "Scuderia Python",
+        "points": 0,
+        "rating": 5.4978
+      },
+      {
+        "name": "Arjun Desai",
+        "team": "VS racing 22",
+        "points": 0,
+        "rating": 5.7619
+      },
+      {
+        "name": "Tomás Moreira",
+        "team": "VS racing 22",
+        "points": 0,
+        "rating": 5.0871
       }
     ]
   },
   "driver_2": {
-    "name": "Charles Lambert",
+    "name": "Kim Nguen",
     "offers": [
       {
-        "name": "Julian Stroud",
-        "team": "Pixel motors",
+        "name": "Matteo Blaze",
+        "team": "Scuderia Python",
         "points": 0,
-        "rating": 5.1841
+        "rating": 5.4978
+      },
+      {
+        "name": "Diego Ventura",
+        "team": "Formula 1.0 racing team",
+        "points": 0,
+        "rating": 5.2474
+      },
+      {
+        "name": "Alex Storme",
+        "team": "Scuderia Python",
+        "points": 0,
+        "rating": 5.5482
+      },
+      {
+        "name": "Lukas Rennhardt",
+        "team": "Racing 404",
+        "points": 0,
+        "rating": 5.475
+      },
+      {
+        "name": "Arjun Desai",
+        "team": "VS racing 22",
+        "points": 0,
+        "rating": 5.7619
+      },
+      {
+        "name": "Tomás Moreira",
+        "team": "VS racing 22",
+        "points": 0,
+        "rating": 5.0871
       }
     ]
   },
   "mmr2_best": {
-    "name": "Charles Lambert",
-    "rating": 0.9787
+    "name": "Jordan Evans",
+    "rating": 5.994
   }
 }
