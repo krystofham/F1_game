@@ -1,6 +1,7 @@
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 import os, json, random
+from fastapi.staticfiles import StaticFiles  
 from big_functions import *
 from load_data_json import *
 
@@ -9,19 +10,24 @@ app.add_middleware(CORSMiddleware, allow_origins=["*"], allow_methods=["*"], all
 
 _CONFIG = os.path.dirname(os.path.abspath(__file__))
 
+app.mount("/img", StaticFiles(directory="../img"), name="img") 
+
 # ---------------------------------------------------------------------------
 # Helpers
 # ---------------------------------------------------------------------------
 def load_game_objects():
-    from init import (
-        cars, teams, player, player_2, championship, tracks,
-        DRIVER_1, DRIVER_2, COUNT_CARS, SAFETY_CAR, LAPS_REMAINING
-    )
+    from init import cars, teams, championship, tracks, COUNT_CARS, SAFETY_CAR, LAPS_REMAINING
     state = load_state()
     b = state.get("b", 1)
     season_count = state.get("season_count", 1)
+
+    # Načti hráče podle is_player
+    players = [car for car in cars if car.is_player]
+    player = players[0] if len(players) > 0 else None
+    player_2 = players[1] if len(players) > 1 else None
+
     return cars, teams, player, player_2, championship, tracks, \
-           DRIVER_1, DRIVER_2, COUNT_CARS, SAFETY_CAR, LAPS_REMAINING, b, season_count
+           player.name, player_2.name, COUNT_CARS, SAFETY_CAR, LAPS_REMAINING, b, season_count
 def _load_json(path):
     with open(path, encoding="utf-8") as f:
         return json.load(f)
@@ -30,7 +36,7 @@ def _state():
     try:
         with open(f"state.json", "r") as input_file:
             data = json.load(input_file)
-        return data  # engine/state.json
+        return data
     except:
         return {} 
 
@@ -44,41 +50,72 @@ async def get_state():
 
 @app.get("/api/get_drivers")
 async def get_drivers():
-    return _load_json(os.path.join(_CONFIG, "config/drivers.json"))
+    state = _state()
+    return state["drivers"]
 
 @app.get("/api/get_teams")
 async def get_teams():
-    return _load_json(os.path.join(_CONFIG, "config/teams.json"))
+    state = _state()
+    return state["teams"]
 
-@app.get("/api/get_teams/{team_id}")
-async def get_team(team_id: int):
-    teams = _load_json(os.path.join(_CONFIG, "config/teams.json"))
-    if team_id >= len(teams["teams"]):
-        raise HTTPException(status_code=404, detail="Team index out of range")
-    return teams["teams"][team_id]
+@app.get("/api/get_teams/{team_name}")
+async def get_team(team_name: str):
+    state = _state()
+    teams = state["teams"]
+    for team in teams:
+        if team["name"].lower() == team_name.lower():
+            return team
+    raise HTTPException(status_code=404, detail=f"Team '{team_name}' not found")
 
 
 @app.post("/api/init_race")
 async def api_init_race():
-    """
-    Inicializuje závod: načte objekty z engine, zavolá init_race(),
-    uloží state. Vrátí race_ctx pro frontend.
-    """
     cars, teams, player, player_2, championship, tracks, \
-    DRIVER_1, DRIVER_2, COUNT_CARS, SAFETY_CAR, LAPS_REMAINING, b, season_count = load_game_objects()
-
-    state = _state()
-    race = championship[b - 1]
+    player.name, player_2.name, COUNT_CARS, SAFETY_CAR, LAPS_REMAINING, b, season_count = load_game_objects()
 
     speed_bonus, season_count, time_laps, k_speed, k_wear, training_type, \
     WETTINESS, lap, forecast, weather, climax, pneu, speed, PNEU_types, \
-    weather_1, weather_2, weather_3, weather_4, weather = init_race(
-        tracks, race, cars, teams, championship,
+    weather_1, weather_2, weather_3, weather_4, weather_actual = init_race(
+        tracks, championship[b - 1], cars, teams, championship,
         player, player_2, b, season_count
     )
 
-    return {"status": "ok", "race": race, "lap": lap, "total_laps": state.get("race_state", {}).get("total_laps")}
+    race = championship[b - 1]
+    track = next((t for t in tracks if t.name == race), None)
+    total_laps = track.laps if track else 67
 
+    state = _state()
+    state["lap"] = 0
+    state["time_laps"] = []
+    state["race"] = getattr(race, "name", str(race))
+    state["b"] = b                          # ← zachovej b
+    state["season_count"] = season_count    # ← zachovej season_count
+    state["player.name"] = player.name
+    state["player_2.name"] = player_2.name
+    state["championship_length"] = len(championship)  # ← zachovej délku
+    state["race_state"] = {
+        "total_laps": total_laps,
+        "climax": climax,
+        "weather": weather_actual,
+        "forecast": forecast,
+        "wettiness": WETTINESS,
+        "pneu_type": pneu,
+        "speed_type": speed,
+        "training_type": training_type,
+        "speed_bonus": speed_bonus,
+        "k_wear": k_wear,
+        "k_speed": k_speed
+    }
+
+    with open("state.json", "w", encoding="utf-8") as out_file:
+        json.dump(state, out_file, indent=4, ensure_ascii=False)
+
+    return {
+        "status": "ok",
+        "race": state["race"],
+        "lap": state["lap"],
+        "total_laps": total_laps
+    }
 
 @app.post("/api/sim_lap")
 async def api_sim_lap():
@@ -96,30 +133,32 @@ async def api_sim_lap():
         raise HTTPException(status_code=400, detail="Race already finished. Call /api/post_race.")
 
     cars, teams, player, player_2, championship, tracks, \
-    DRIVER_1, DRIVER_2, COUNT_CARS, SAFETY_CAR, LAPS_REMAINING, b, season_count = load_game_objects()
+    player.name, player_2.name, COUNT_CARS, SAFETY_CAR, LAPS_REMAINING, b, season_count = load_game_objects()
 
+    # time_laps se čte ze root úrovně state.json (ne z race_ctx)
     time_laps = state.get("time_laps", [])
-    race = state["race"]
+    race = state.get("race", "Unknown Race")
+
+    k_speed = race_ctx.get("k_speed", [1, 1.04, 1.08, 0.6, 0.65])
 
     lap, cars, teams = sim_the_lap(
         cars, teams, player, player_2, lap,
         SAFETY_CAR, LAPS_REMAINING,
         race_ctx["wettiness"], race_ctx["forecast"], race_ctx["weather"],
         race_ctx["total_laps"], race_ctx["climax"],
-        DRIVER_1, DRIVER_2,
         race_ctx["pneu_type"], race_ctx["speed_type"],
         {
-            "hard":   {"wear": race_ctx["k_wear"][0], "speed": race_ctx.get("k_speed", [1,1,1,1,1])[0]},
-            "medium": {"wear": race_ctx["k_wear"][1], "speed": race_ctx.get("k_speed", [1,1,1,1,1])[1]},
-            "soft":   {"wear": race_ctx["k_wear"][2], "speed": race_ctx.get("k_speed", [1,1,1,1,1])[2]},
-            "wet":    {"wear": race_ctx["k_wear"][3], "speed": race_ctx.get("k_speed", [1,1,1,1,1])[3]},
-            "inter":  {"wear": race_ctx["k_wear"][4], "speed": race_ctx.get("k_speed", [1,1,1,1,1])[4]},
+            "hard":   {"wear": race_ctx["k_wear"][0], "speed": k_speed[0]},
+            "medium": {"wear": race_ctx["k_wear"][1], "speed": k_speed[1]},
+            "soft":   {"wear": race_ctx["k_wear"][2], "speed": k_speed[2]},
+            "wet":    {"wear": race_ctx["k_wear"][3], "speed": k_speed[3]},
+            "inter":  {"wear": race_ctx["k_wear"][4], "speed": k_speed[4]},
         },
         race_ctx["forecast"][0] if len(race_ctx["forecast"]) > 0 else race_ctx["weather"],
         race_ctx["forecast"][1] if len(race_ctx["forecast"]) > 1 else race_ctx["weather"],
         race_ctx["forecast"][2] if len(race_ctx["forecast"]) > 2 else race_ctx["weather"],
         race_ctx["forecast"][3] if len(race_ctx["forecast"]) > 3 else race_ctx["weather"],
-        race_ctx["training_type"], race_ctx["k_wear"],race_ctx["k_speed"],
+        race_ctx["training_type"], race_ctx["k_wear"], k_speed,
         race_ctx["speed_bonus"], season_count, race, time_laps
     )
 
@@ -141,20 +180,31 @@ async def api_post_race():
     race_ctx = state.get("race_state", {})
 
     cars, teams, player, player_2, championship, tracks, \
-    DRIVER_1, DRIVER_2, COUNT_CARS, SAFETY_CAR, LAPS_REMAINING, b, season_count = load_game_objects()
-    time_laps = state.get("time_laps") or race_ctx.get("time_laps", [])
-    print(f"DEBUG full state keys: {list(state.keys())}")
-    print(f"DEBUG state type: {state.get('type')}")
-    race = state["race"]
+    player.name, player_2.name, COUNT_CARS, SAFETY_CAR, LAPS_REMAINING, b, season_count = load_game_objects()
+
+    time_laps = state.get("time_laps", [])
+    race = state.get("race", "Unknown Race")
     climax = race_ctx.get("climax", "sunny")
-    RANK = [a for a in cars if not a.dnf]
+
     teams, cars, time_laps = post_race_info(time_laps, player, player_2, cars, teams, COUNT_CARS)
-    save_state_end_of_race(cars, teams, season_count, race)
-    # points, cars, teams, players = plot_graph(RANK, DRIVER_1, DRIVER_2, teams, cars, player, player_2, climax)
+    save_state_end_of_race(cars, teams, season_count, race, time_laps)
     lap, time_laps, SAFETY_CAR, LAPS_REMAINING, weather, forecast, cars, WETTINESS = reset_race(climax, cars)
 
-    return {"status": "race_done", "race": race}
+    new_b = b + 1
+    championship_length = len(championship)
+    # Zapiš nové b do state
+    updated_state = _state()
+    updated_state["b"] = new_b
+    updated_state["season_count"] = season_count
+    updated_state["championship_length"] = championship_length
+    with open("state.json", "w", encoding="utf-8") as f:
+        json.dump(updated_state, f, indent=4, ensure_ascii=False)
 
+    # Konec šampionátu?
+    if new_b > championship_length:
+        return {"status": "race_done", "race": race, "championship_finished": True}
+
+    return {"status": "race_done", "race": race, "championship_finished": False}
 # ---------------------------------------------------------------------------
 # POST /api/post_championship  — po posledním závodě sezóny
 # ---------------------------------------------------------------------------
@@ -163,52 +213,213 @@ async def api_post_race():
 async def api_post_championship():
     state = _state()
     cars, teams, player, player_2, championship, tracks, \
-        DRIVER_1, DRIVER_2, COUNT_CARS, SAFETY_CAR, LAPS_REMAINING, b, season_count = load_game_objects()
- 
+        player.name, player_2.name, COUNT_CARS, SAFETY_CAR, LAPS_REMAINING, b, season_count = load_game_objects()
+
     save_state_end_of_season(cars, teams, season_count)
- 
+
     best, worst = simulate_season_mmr2(list_drivers_mmr2)
     season_count += 1
- 
+
     for mmr2_driver in list_drivers_mmr2:
         mmr2_driver.rating -= 1 / (season_count * 2)
- 
+
     worst.name   = random.choice(names_free_drivers)
     worst.rating = random.uniform(0.95, 1.05)
- 
+
     cars.sort(key=lambda x: x.points, reverse=True)
     last_car = cars[-1]
- 
+
     if last_car.is_player:
         old_best_name   = best.name
         old_best_rating = best.rating
- 
-        if DRIVER_1 == last_car.name:
-            DRIVER_1       = old_best_name
+        if player.name == last_car.name:
+            player.name       = old_best_name
             player.name    = old_best_name
             player.ratings = old_best_rating
-        elif DRIVER_2 == last_car.name:
-            DRIVER_2         = old_best_name
+        elif player_2.name == last_car.name:
+            player_2.name         = old_best_name
             player_2.name    = old_best_name
             player_2.ratings = old_best_rating
- 
-#        team_best     = best.team
-#        team_last_car = last_car.team
 
-#        idx_best     = team_best.drivers.index(best)
- #       idx_last_car = team_last_car.drivers.index(last_car)
-
-  #      team_best.drivers[idx_best]         = last_car
-   #     team_last_car.drivers[idx_last_car] = best
-
-#        best.team     = team_last_car
-    #    last_car.team = team_best
- 
-    teams, player, player_2, DRIVER_1, DRIVER_2, cars = trading_at_the_of_season(
-        teams, player, player_2, DRIVER_1, DRIVER_2, cars
+    teams, player, player_2, player.name, player_2.name, cars = trading_at_the_of_season(
+        teams, player, player_2, cars
     )
- 
+
     WETTINESS, cars, teams = reset_championship(cars, teams)
+
+    updated_state = _state()
+    updated_state["b"] = 1
+    updated_state["season_count"] = season_count
+    updated_state["championship_length"] = len(championship)
+    with open("state.json", "w", encoding="utf-8") as f:
+        json.dump(updated_state, f, indent=4, ensure_ascii=False)
+
     save_state_end_of_season(cars, teams, season_count)
- 
+
     return {"status": "championship_done", "season": season_count}
+
+# LAP USER DATA ENDPOINT
+@app.post("/api/set_lap_user_data")
+async def api_set_lap_user_data(data: dict):
+    path = os.path.join(_CONFIG, "../engine/user_input/lap_user_data.json")
+    with open(path, "w", encoding="utf-8") as f:
+        json.dump(data, f, indent=2, ensure_ascii=False)
+    return {"status": "ok"}
+
+
+# Tranfers
+@app.get("/api/get_transfer_offers")
+async def api_get_transfer_offers():
+    cars, teams, player, player_2, championship, tracks, \
+    player.name, player_2.name, COUNT_CARS, SAFETY_CAR, LAPS_REMAINING, b, season_count = load_game_objects()
+
+    average_rating = sum(x.ratings for x in cars) / (len(cars) + 1)
+
+    def build_offers(player_obj):
+        offers = []
+        if average_rating > player_obj.ratings:
+            # slabý hráč — jen 1 nabídka
+            t = teams[-1]
+            d = t.drivers[random.choice([0, 1])]
+            offers.append({"name": d.name, "team": t.name, "points": t.points, "rating": round(d.ratings, 4)})
+        else:
+            for t in teams:
+                if random.uniform(0, 1) > 0.7:
+                    d = t.drivers[random.choice([0, 1])]
+                    if not d.is_player:
+                        offers.append({"name": d.name, "team": t.name, "points": t.points, "rating": round(d.ratings, 4)})
+            for t in teams:
+                if len(t.drivers) >= 1 and not t.drivers[0].is_player and (t.rating - t.drivers[0].ratings) >= 0:
+                    d = t.drivers[0]
+                    offers.append({"name": d.name, "team": t.name, "points": t.points, "rating": round(d.ratings, 4)})
+                if len(t.drivers) >= 2 and not t.drivers[1].is_player and (t.rating - t.drivers[1].ratings) >= 0:
+                    d = t.drivers[1]
+                    offers.append({"name": d.name, "team": t.name, "points": t.points, "rating": round(d.ratings, 4)})
+        # deduplikace
+        seen = set()
+        unique = []
+        for o in offers:
+            if o["name"] not in seen:
+                seen.add(o["name"])
+                unique.append(o)
+        return unique
+
+    result = {
+        "driver_1": {"name": player.name, "offers": build_offers(player)},
+        "driver_2": {"name": player_2.name, "offers": build_offers(player_2)},
+        "mmr2_best": None
+    }
+
+    # MMR2 nabídka
+    try:
+        best, _ = simulate_season_mmr2(list_drivers_mmr2)
+        result["mmr2_best"] = {"name": best.name, "rating": round(best.rating, 4)}
+    except:
+        pass
+
+    path = os.path.join(_CONFIG, "../engine/user_input/transfer_offers.json")
+    with open(path, "w", encoding="utf-8") as f:
+        json.dump(result, f, indent=2, ensure_ascii=False)
+
+    return result
+
+
+@app.post("/api/do_transfer")
+async def api_do_transfer(data: dict):
+    # data: {"want": "yes"/"no", "where": "MMR1"/"MMR2", "pilot_to_change": "...", "chosen_pilot": "..."}
+    path_deal = os.path.join(_CONFIG, "../engine/user_input/deal.json")
+    path_transfer = os.path.join(_CONFIG, "../engine/user_input/transfer.json")
+
+    with open(path_deal, "w", encoding="utf-8") as f:
+        json.dump({"want": data.get("want", "yes"), "where": data.get("where"), "pilot_to_change": data.get("pilot_to_change"), "chosen_pilot": data.get("chosen_pilot", "")}, f, indent=2)
+    with open(path_transfer, "w", encoding="utf-8") as f:
+        json.dump({"pilot_to_change": data.get("pilot_to_change"), "chosen_pilot": data.get("chosen_pilot", "")}, f, indent=2)
+
+    cars, teams, player, player_2, championship, tracks, \
+    player.name, player_2.name, COUNT_CARS, SAFETY_CAR, LAPS_REMAINING, b, season_count = load_game_objects()
+
+    try:
+        player, player_2, player.name, player_2.name, cars = transfer(
+            cars, teams, player, player_2
+        )
+    except ValueError as e:
+        raise HTTPException(status_code=400, detail=str(e))
+
+    save_state_end_of_season(cars, teams, season_count)
+    updated_state = _state()
+    updated_state["player.name"] = player.name
+    updated_state["player_2.name"] = player_2.name
+    with open("state.json", "w", encoding="utf-8") as f:
+        json.dump(updated_state, f, indent=2, ensure_ascii=False)
+    return {"status": "ok", "driver_1": player.name, "driver_2": player_2.name}
+
+
+
+@app.post("/api/sim_race")
+async def api_sim_race():
+    """
+    Odsimuluje celý závod najednou. Volá se místo opakovaného /api/sim_lap.
+    """
+    state = _state()
+    race_ctx = state.get("race_state")
+    if not race_ctx:
+        raise HTTPException(status_code=400, detail="Race not initialized. Call /api/init_race first.")
+
+    total_laps = race_ctx["total_laps"]
+
+    cars, teams, player, player_2, championship, tracks, \
+    player.name, player_2.name, COUNT_CARS, SAFETY_CAR, LAPS_REMAINING, b, season_count = load_game_objects()
+
+    time_laps = state.get("time_laps", [])
+    race = state.get("race", "Unknown Race")
+    k_speed = race_ctx.get("k_speed", [1, 1.04, 1.08, 0.6, 0.65])
+
+    tyre_compounds = {
+        "hard":   {"wear": race_ctx["k_wear"][0], "speed": k_speed[0]},
+        "medium": {"wear": race_ctx["k_wear"][1], "speed": k_speed[1]},
+        "soft":   {"wear": race_ctx["k_wear"][2], "speed": k_speed[2]},
+        "wet":    {"wear": race_ctx["k_wear"][3], "speed": k_speed[3]},
+        "inter":  {"wear": race_ctx["k_wear"][4], "speed": k_speed[4]},
+    }
+
+    lap = state.get("lap", 0)
+    lap_snapshots = []
+
+    # ── Jediná smyčka, žádné I/O uvnitř ──────────────────────────────────
+    while lap <= total_laps:
+        lap, cars, teams = sim_the_lap(
+            cars, teams, player, player_2, lap,
+            SAFETY_CAR, LAPS_REMAINING,
+            race_ctx["wettiness"], race_ctx["forecast"], race_ctx["weather"],
+            total_laps, race_ctx["climax"],
+            race_ctx["pneu_type"], race_ctx["speed_type"],
+            tyre_compounds,
+            race_ctx["forecast"][0] if len(race_ctx["forecast"]) > 0 else race_ctx["weather"],
+            race_ctx["forecast"][1] if len(race_ctx["forecast"]) > 1 else race_ctx["weather"],
+            race_ctx["forecast"][2] if len(race_ctx["forecast"]) > 2 else race_ctx["weather"],
+            race_ctx["forecast"][3] if len(race_ctx["forecast"]) > 3 else race_ctx["weather"],
+            race_ctx["training_type"], race_ctx["k_wear"], k_speed,
+            race_ctx["speed_bonus"], season_count, race, time_laps
+        )
+
+        # Snapshot stavu po každém kole (pro frontend animaci)
+        current_state = _state()
+        lap_snapshots.append({
+            "lap": lap,
+            "drivers": current_state.get("drivers", []),
+            "time_laps": current_state.get("time_laps", []),
+        })
+
+        if lap > total_laps:
+            break
+
+    # Jeden finální zápis stavu
+    final_state = _state()
+
+    return {
+        "status": "ok",
+        "finished": True,
+        "total_laps": total_laps,
+        "snapshots": lap_snapshots,   # React může animovat kolo po kole lokálně
+        "final_state": final_state,
+    }
