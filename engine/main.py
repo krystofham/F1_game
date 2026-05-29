@@ -1,7 +1,7 @@
 from big_functions import * 
 
-lenght = get_lenght_of_championship()
-championshionship_race_count = len(championship) - lenght
+length = get_length_of_championship()
+championshionship_race_count = len(championship) - length
 if championshionship_race_count > 0:
     for _ in range(championshionship_race_count):
         championship.pop(random.randint(0, len(championship)-1))

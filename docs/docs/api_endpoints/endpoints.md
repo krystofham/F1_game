@@ -8,10 +8,10 @@ init race before it can begin
 Config file: init.json
 ### Structure
 Currently not working training_mode, front_wing, rear_wing, brakes, stabilizators, springs.
-lenght is for season len.
+length is for season len.
 ```json
 {
-    "lenght": 2,
+    "length": 2,
     "pneu_driver_1": "hard",
     "pneu_driver_2": "hard",
     "training_mode": 1,

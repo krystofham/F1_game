@@ -95,7 +95,7 @@ function PitForm({ drivers, onSubmit, disabled }) {
 
 function InitForm({ onInit }) {
   const [cfg, setCfg] = useState({
-    lenght: 2,
+    length: 2,
     pneu_driver_1: "hard",
     pneu_driver_2: "hard",
     training_mode: 1,
@@ -137,8 +137,8 @@ function InitForm({ onInit }) {
           <input
             type="number"
             min={1} max={24}
-            value={cfg.lenght}
-            onChange={(e) => set("lenght", +e.target.value)}
+            value={cfg.length}
+            onChange={(e) => set("length", +e.target.value)}
           />
         </div>
         <div className="field">
@@ -281,6 +281,38 @@ function RaceTable({ drivers }) {
   );
 }
 
+const simEverything = (deps) => {
+  const { finished, raceState, postDone, running, isLastRace, api, addLog, setPostDone, refetchState, setRaceState, setLap, setTotalLaps, handleInit } = deps;
+  return // comment this for production !! 
+  if (!finished || !raceState || postDone || running) return;
+
+  const run = async () => {
+    try {
+      const res = await api.postRace();
+      addLog(`Post-race done: ${res.race}`, "good");
+      setPostDone(true);
+      await refetchState();
+
+      if (isLastRace) {
+        await api.postChampionship();
+        addLog("Season ended. New season begun.", "highlight");
+        setRaceState(null);
+        setPostDone(false);
+        setLap(0);
+        setTotalLaps(null);
+        await refetchState();
+      } else {
+        const next = await api.initRace();
+        await handleInit(next);
+      }
+    } catch (e) {
+      addLog(`Auto post-race error: ${e.message}`, "danger");
+    }
+  };
+
+  run();
+};
+
 export default function RacePage() {
   const [raceState, setRaceState] = useState(null);
   const [lap, setLap] = useState(0);
@@ -297,7 +329,7 @@ export default function RacePage() {
     ? state.b >= state.championship_length
     : false;
 
-  const finished = lap >= totalLaps;
+  const finished = !!totalLaps && lap >= totalLaps;
 
   useEffect(() => {
     if (state?.race_state) {
@@ -434,8 +466,9 @@ export default function RacePage() {
   };
 
   const progress = totalLaps ? Math.min(100, (lap / totalLaps) * 100) : 0;
-
-  return (
+  const [showTrack, setShowTrack] = useState(true);
+  const deps = { finished, raceState, postDone, running, isLastRace, api, addLog, setPostDone, refetchState, setRaceState, setLap, setTotalLaps, handleInit };
+  useEffect(() => simEverything(deps), [finished, raceState, postDone, isLastRace, running]);  return (
     <div>
       <div className="page-header">
         <div className="page-eyebrow">
@@ -542,7 +575,38 @@ export default function RacePage() {
                 </button>
               </div>
             </div>
+            <button
+              className="btn"
+              style={{
+                position: "fixed",
+                bottom: showTrack ? 432 : 24,
+                right: 24,
+                zIndex: 101,
+                fontSize: 10,
+                letterSpacing: 1,
+                padding: "6px 12px",
+                transition: "bottom .2s",
+              }}
+              onClick={() => setShowTrack(p => !p)}
+            >
+              {showTrack ? "HIDE TRACK" : "SHOW TRACK"}
+            </button>
 
+            {showTrack && (
+              <iframe
+                src={`http://localhost:3001/iframe_track?lap=${lap}`}
+                title="Track stats"
+                style={{
+                  position: "fixed",
+                  bottom: 24,
+                  right: 24,
+                  width: 600,
+                  height: 400,
+                  border: "1px solid var(--border)",
+                  zIndex: 100,
+                }}
+              />
+            )}
 
           </div>
         </div>
