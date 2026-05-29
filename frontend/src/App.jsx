@@ -1,36 +1,76 @@
-import { useState, useEffect } from 'react'
-import { BrowserRouter, Routes, Route, Link } from 'react-router-dom'
-import './index.css'
-import { simLap, initRace, postRace, postChampionship } from './api_endpoints';
-import { Team, Player, Teams, Players } from './players_teams'
-import { Navbar, HeroSection } from './ui_elements'
+import { BrowserRouter, Routes, Route, NavLink } from "react-router-dom";
+import TeamsPage from "./pages/TeamsPage";
+import DriversPage from "./pages/DriversPage";
+import RacePage from "./pages/RacePage";
+import TrackPage from "./pages/TrackPage";
+import StandingsPage from "./pages/StandingsPage";
+import GraphsPage from "./pages/GraphsPage";
+import TeamPage from "./pages/TeamPage";
+import TransferMarket from "./pages/TransfersPage";
+import "./styles.css";
 
-const isMobile = window.matchMedia("(max-width: 768px)").matches;
+const NAV_ITEMS = [
+  { to: "/", label: "STANDINGS", icon: "▲" },
+  { to: "/race", label: "RACE CONTROL", icon: "◉" },
+  { to: "/teams", label: "TEAMS", icon: "◈" },
+  { to: "/drivers", label: "DRIVERS", icon: "◆" },
+  { to: "/track", label: "TRACK", icon: "◎" },
+  { to: "/graphs", label: "TELEMETRY", icon: "∿" },
+  { to: "/transfer", label: "TRANSFERS", icon: "⇄" },
+];
 
-
-export async function getFullState() {
-  try {
-    const response = await fetch("http://127.0.0.1:8000/api/get_state");
-    return await response.json();
-  } catch (err) {
-    console.error("Server spí:", err);
-    return null;
-  }
+function Sidebar() {
+  return (
+    <nav className="sidebar">
+      <div className="sidebar-header">
+        <div className="logo-text">
+          <span className="logo-title">MMRAC1NG</span>
+        </div>
+      </div>
+      <div className="nav-items">
+        {NAV_ITEMS.map((item) => (
+          <NavLink
+            key={item.to}
+            to={item.to}
+            end={item.to === "/"}
+            className={({ isActive }) => `nav-item ${isActive ? "active" : ""}`}
+          >
+            <span className="nav-icon">{item.icon}</span>
+            <span className="nav-label">{item.label}</span>
+            <span className="nav-indicator" />
+          </NavLink>
+        ))}
+      </div>
+    </nav>
+  );
 }
-
-
-
 export default function App() {
   return (
     <BrowserRouter>
-      <Navbar />
-      <div>
-        <Routes>
-          <Route path="/" element={<HeroSection isMobile={isMobile}/>} />
-          <Route path="/teams" element={<Teams />} />
-          <Route path="/players" element={<Players />} />
-        </Routes>
-      </div>
+      <Routes>
+        <Route path="/iframe_track" element={
+          <div style={{ padding: 24, overflowY: "auto", height: "100vh", boxSizing: "border-box"}}>
+            <TrackPage />
+          </div>
+        } />
+        <Route path="/*" element={
+          <div className="app-shell">
+            <Sidebar />
+            <main className="main-content">
+              <Routes>
+                <Route path="/" element={<StandingsPage />} />
+                <Route path="/race" element={<RacePage />} />
+                <Route path="/teams" element={<TeamsPage />} />
+                <Route path="/drivers" element={<DriversPage />} />
+                <Route path="/track" element={<TrackPage />} />
+                <Route path="/graphs" element={<GraphsPage />} />
+                <Route path="/team/:teamId" element={<TeamPage />} />
+                <Route path="/transfer" element={<TransferMarket />} />
+              </Routes>
+            </main>
+          </div>
+        } />
+      </Routes>
     </BrowserRouter>
   );
 }
