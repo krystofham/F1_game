@@ -277,7 +277,7 @@ const restTeams = displayedTeams.slice(6);
         <div>
           <div className="page-eyebrow">Constructor Championship</div>
           <div className="page-title">
-            TEAM <span>OVERVIEW</span>
+            TEAM OVERVIEW
           </div>
         </div>
 

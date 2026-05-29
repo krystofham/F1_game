@@ -32,9 +32,6 @@ function PitForm({ drivers, onSubmit, disabled }) {
 
   return (
     <div className="card" style={{ marginBottom: 24 }}>
-      <div style={{ fontFamily: "var(--font-display)", fontWeight: 700, fontSize: 13, letterSpacing: 2, textTransform: "uppercase", marginBottom: 14, color: "var(--text-2)" }}>
-        Driver Instructions — Next Lap
-      </div>
 
       <div style={{ display: "flex", gap: 16, flexWrap: "wrap" }}>
         {playerDrivers.map((d, i) => {
@@ -445,7 +442,7 @@ export default function RacePage() {
           {raceState ? (state?.race || "Race") : "Race Control"}
         </div>
         <div className="page-title">
-          RACE <span>CONTROL</span>
+          RACE CONTROL
         </div>
       </div>
 
@@ -501,10 +498,6 @@ export default function RacePage() {
                 <>
                   <button className="btn btn-success" onClick={handlePostRace} disabled={postDone}>
                     {postDone ? "DONE" : "POST RACE"}
-                  </button>
-
-                  <button className="btn btn-primary" onClick={() => setRaceState(null)}>
-                    NEXT RACE
                   </button>
 
                   <button className="btn btn-danger" onClick={handlePostChampionship}>

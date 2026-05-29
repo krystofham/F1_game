@@ -163,7 +163,7 @@ export default function DriversPage() {
       <div className="page-header">
         <div className="page-eyebrow">Driver Championship</div>
         <div className="page-title">
-          DRIVER <span>LIVE PROJECTION</span>
+          DRIVER LIVE PROJECTION
         </div>
       </div>
 

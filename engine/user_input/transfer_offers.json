@@ -3,52 +3,46 @@
     "name": "Max Verstappen",
     "offers": [
       {
-        "name": "Alex Storme",
-        "team": "Scuderia Python",
-        "points": 0,
-        "rating": 5.5482
-      },
-      {
         "name": "Lukas Rennhardt",
         "team": "Racing 404",
-        "points": 0,
-        "rating": 5.475
+        "points": 75,
+        "rating": 5.465
       },
       {
-        "name": "Carlos Navarro",
-        "team": "Intel QWERTY GP",
-        "points": 0,
-        "rating": 5.3608
-      },
-      {
-        "name": "Theo Hartman",
+        "name": "Johan Reißer",
         "team": "Underbyte Nvidia GP",
-        "points": 0,
-        "rating": 5.9988
+        "points": 22,
+        "rating": 5.2459
       },
       {
         "name": "Elias Northgate",
         "team": "AMD Assemblyte GP",
-        "points": 0,
-        "rating": 5.7633
+        "points": 5,
+        "rating": 5.7533
+      },
+      {
+        "name": "Alex Storme",
+        "team": "Scuderia Python",
+        "points": 95,
+        "rating": 5.5382
       },
       {
         "name": "Matteo Blaze",
         "team": "Scuderia Python",
-        "points": 0,
-        "rating": 5.4978
+        "points": 95,
+        "rating": 5.4878
       },
       {
         "name": "Arjun Desai",
         "team": "VS racing 22",
-        "points": 0,
-        "rating": 5.7619
+        "points": 2,
+        "rating": 5.7519
       },
       {
         "name": "Tomás Moreira",
         "team": "VS racing 22",
-        "points": 0,
-        "rating": 5.0871
+        "points": 2,
+        "rating": 5.0771
       }
     ]
   },
@@ -56,40 +50,46 @@
     "name": "Kim Nguen",
     "offers": [
       {
-        "name": "Matteo Blaze",
-        "team": "Scuderia Python",
-        "points": 0,
-        "rating": 5.4978
-      },
-      {
-        "name": "Diego Ventura",
-        "team": "Formula 1.0 racing team",
-        "points": 0,
-        "rating": 5.2474
-      },
-      {
         "name": "Alex Storme",
         "team": "Scuderia Python",
-        "points": 0,
-        "rating": 5.5482
+        "points": 95,
+        "rating": 5.5382
+      },
+      {
+        "name": "Hiro Tanaka",
+        "team": "Racing 404",
+        "points": 75,
+        "rating": 5.61
+      },
+      {
+        "name": "Nilapsai Vetrovski",
+        "team": "Microsoft PitStop Protocol racing team",
+        "points": 42,
+        "rating": 5.2915
+      },
+      {
+        "name": "Matteo Blaze",
+        "team": "Scuderia Python",
+        "points": 95,
+        "rating": 5.4878
       },
       {
         "name": "Lukas Rennhardt",
         "team": "Racing 404",
-        "points": 0,
-        "rating": 5.475
+        "points": 75,
+        "rating": 5.465
       },
       {
         "name": "Arjun Desai",
         "team": "VS racing 22",
-        "points": 0,
-        "rating": 5.7619
+        "points": 2,
+        "rating": 5.7519
       },
       {
         "name": "Tomás Moreira",
         "team": "VS racing 22",
-        "points": 0,
-        "rating": 5.0871
+        "points": 2,
+        "rating": 5.0771
       }
     ]
   },
