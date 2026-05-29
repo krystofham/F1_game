@@ -199,7 +199,6 @@ export default function DriversPage() {
                     expanded === d.name
                       ? "rgba(232,0,45,0.05)"
                       : "var(--bg-card)",
-                  border: "1px solid",
                   borderColor:
                     expanded === d.name ? "var(--accent)" : "var(--border)",
                   cursor: "pointer",
@@ -283,8 +282,8 @@ export default function DriversPage() {
                   {d.dnf ? (
                     <span className="badge badge-err">DNF</span>
                   ) : (
-                    <span className="badge badge-ok"></span>
-                  )}
+                    <></>                  
+                    )}
                 </div>
 
                 {/* Points projection */}

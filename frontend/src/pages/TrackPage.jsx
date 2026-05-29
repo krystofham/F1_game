@@ -13,10 +13,9 @@ const COUNTRY_FLAGS = {
   poland: "🇵🇱", varsava: "🇵🇱", warsaw: "🇵🇱",
   bahamas: "🇧🇸",
   bulgaria: "🇧🇬", bulgarian: "🇧🇬",
-  turkey: "🇹🇷",
-  spain: "🇪🇸", espana: "🇪🇸"
+  turkey: "🇹🇷", espana: "🇪🇸"
 };
-
+let safetyCarIndex = false;
 function guessFlag(name) {
   const lower = (name || "").toLowerCase();
   for (const [key, flag] of Object.entries(COUNTRY_FLAGS)) {
@@ -25,16 +24,26 @@ function guessFlag(name) {
   return "🏁";
 }
 
-function StatBlock({ label, value, unit }) {
+function StatBlock({ label, value, unit, importance }) {
   return (
-    <div className="card">
-      <div className="card-label">{label}</div>
+<div className="card" style={importance ? { borderColor: "red" } : {}}>      
+  <div className="card-label">{label}</div>
       <div className="card-value" style={{ fontSize: 26 }}>
         {value ?? "—"}
         {unit && <span style={{ fontSize: 14, color: "var(--text-2)", marginLeft: 6 }}>{unit}</span>}
       </div>
     </div>
   );
+}
+function safetyCar(value){
+  console.log(value)
+  if (value === false){
+    return "Safety car is not on track"
+  }
+  else {
+    safetyCarIndex = true;
+    return "Safety car IS OUT"
+  }
 }
 
 export default function TrackPage() {
@@ -65,17 +74,40 @@ export default function TrackPage() {
       <div style={{ display: "flex", flexDirection: "column", gap: 14, marginBottom: 24 }}>
         <StatBlock label="Laps" value={currentTrack.laps ?? state?.race_state?.total_laps} />
         <StatBlock
+          label="Safety car"
+          value={safetyCar(state?.race_state?.safety_car) || "Error"}
+          importance={safetyCarIndex}        
+          />
+        {state?.race_state?.safetyCarIndex && (
+          <StatBlock
+            label="Safety car laps remaining"
+            value={safetyCar(state?.race_state?.safety_car_laps_remaining) || "Error"}
+            importance = {true}
+          />
+        )}
+        <StatBlock
           label="DNF Risk"
-          value={dnfProb != null ? dnfProb.toFixed(1) : "—"}
+          value={dnfProb != null ? dnfProb.toFixed(1) : "Error"}
           unit="%"
         />
         <StatBlock
           label="Weather"
-          value={state?.race_state?.weather || "—"}
+          value={state?.race_state?.weather || "Error"}
+          importance={state?.race_state?.weather != "sunny"}
         />
         <StatBlock
           label="Season"
-          value={state?.season_count || 1}
+          value={state?.season_count || "Error"}
+        />
+        <StatBlock
+          label="Clima"
+          value={state?.race_state?.climax || "Error"}
+        />
+        <StatBlock
+          label="Wettiness of track"
+          value={state?.race_state?.wettiness ?? "Error"}
+          importance={state?.race_state?.wettiness > 0}        
+          unit={"%"}
         />
       </div>
 

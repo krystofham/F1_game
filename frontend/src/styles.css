@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@300;400;600;700;800;900&family=Barlow:wght@300;400;500&family=JetBrains+Mono:wght@400;500&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@300;400;600;700;800;900&family=Barlow:wght@300;400;500&family=Roboto:wght@400;500&display=swap');
 @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;700;800&display=swap');
 
 :root {
@@ -19,7 +19,7 @@
   --red: #ff4444;
   --font-display: 'Poppins', sans-serif;
   --font-body: 'Barlow', sans-serif;
-  --font-mono: 'JetBrains Mono', monospace;
+  --font-mono: 'Roboto', monospace;
 }
 
 * { box-sizing: border-box; margin: 0; padding: 0; scroll-behavior: smooth; }
@@ -362,7 +362,7 @@ body {
 
 .btn-danger {
   border-color: var(--accent);
-  background: var(--accent);
+  background: var(--bg-3);
   color: white;
 }
 
@@ -452,13 +452,14 @@ body {
 /* ── TEAM CARD ──────────────────────────────── */
 .team-card {
   background: var(--bg-card);
-  border: 1px solid var(--border);
   padding: 24px;
   position: relative;
   transition: border-color 0.2s;
 }
 
-.team-card:hover { border-color: var(--border-light); }
+.team-card:hover { 
+  border-color: var(--border-light); 
+}
 
 .team-img-wrap {
   height: 80px;
