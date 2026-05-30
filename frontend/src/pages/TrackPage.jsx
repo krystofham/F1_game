@@ -1,27 +1,14 @@
 import { useApi } from "../hooks/useApi";
 import { api } from "../utils/api";
 
-const COUNTRY_FLAGS = {
-  spain: "🇪🇸", uk: "🇬🇧", britain: "🇬🇧", italy: "🇮🇹",
-  monaco: "🇲🇨", austria: "🇦🇹", france: "🇫🇷", germany: "🇩🇪",
-  netherlands: "🇳🇱", belgium: "🇧🇪", hungary: "🇭🇺", singapore: "🇸🇬",
-  japan: "🇯🇵", usa: "🇺🇸", "united states": "🇺🇸", mexico: "🇲🇽",
-  brazil: "🇧🇷", australia: "🇦🇺", canada: "🇨🇦", china: "🇨🇳",
-  uae: "🇦🇪", dubai: "🇦🇪", bahrain: "🇧🇭", azerbaijan: "🇦🇿",
-  saudi: "🇸🇦", qatar: "🇶🇦",
-  czech: "🇨🇿", "czech republic": "🇨🇿", prague: "🇨🇿", ostrava: "🇨🇿",
-  poland: "🇵🇱", varsava: "🇵🇱", warsaw: "🇵🇱",
-  bahamas: "🇧🇸",
-  bulgaria: "🇧🇬", bulgarian: "🇧🇬",
-  turkey: "🇹🇷", espana: "🇪🇸"
-};
+const COUNTRY_FLAGS = {};
 let safetyCarIndex = false;
 function guessFlag(name) {
   const lower = (name || "").toLowerCase();
   for (const [key, flag] of Object.entries(COUNTRY_FLAGS)) {
     if (lower.includes(key)) return flag;
   }
-  return "🏁";
+  return
 }
 
 function StatBlock({ label, value, unit, importance }) {
