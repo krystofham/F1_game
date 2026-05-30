@@ -1,5 +1,4 @@
 import random
-import math
 class Car:
     def __init__(self, name, rating, is_player=False):
         self.name = name
@@ -90,6 +89,7 @@ class Car:
             s2 = s2+wettiness/2
             s3 = s3+wettiness/2
         lap_time = s1 + s2 + s3
+        print("Time of this lap is", lap_time)
         time_laps.append((lap_time, self.name, self.team.name, s1, s2, s3))
         self.time = self.time + self.wear/8 + lap_time
         self.wear += PNEU_types[self.pneu]["wear"]
@@ -190,10 +190,13 @@ class Car:
                 print(random.choice(["The tyres are pretty done now.", "I don´t know what are you doing there, but I am boxing. Or at least I wish.", "The tyres are ***!", "Please, take me out from this hell." "Please box, please."]))
         return None
     def drss(self, car_in_front):
-        if math.abs(car_in_front.time - self.time) < 1:
+        if abs(car_in_front.time - self.time) < 1:
+            print("difference is:", abs(car_in_front.time - self.time), "which is lower than 1")
+            print("My time is:", self.time)
+            print("His time is", car_in_front.time)
             self.drs = True
         else:
-            self.drs = Flase
+            self.drs = False
         return self.drs
 
     def simuluj_ai(self, training, WETTINESS, lap, LAPS, forecast, weather, laps, max_laps, k_wear, wettiness, TIME_S1, TIME_S2, TIME_S3, speed_bonus, time_laps, PNEU_types, SAFETY_CAR, LAPS_REMAINING):
