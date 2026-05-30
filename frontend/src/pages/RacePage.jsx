@@ -268,6 +268,7 @@ function RaceTable({ drivers }) {
                   {d.name}
                 </span>
                 {d.is_player && <span className="badge badge-ok" style={{ marginLeft: 6, fontSize: 7 }}>YOU</span>}
+                {d.drs && <span className="badge badge" style={{ marginLeft: 6, fontSize: 7, borderColor: "var(--green)", color: "var(--green)"}}>DRS open</span>}
               </td>
               <td><TyreBadge type={d.pneu} /></td>
               <td style={{ minWidth: 120 }}><WearBar wear={d.wear || 0} /></td>

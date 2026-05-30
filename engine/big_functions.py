@@ -31,7 +31,9 @@ def sim_the_lap(cars, teams, player, player_2, lap, SAFETY_CAR, LAPS_REMAINING, 
 
     for i, car in enumerate(cars, 1):
         if i != 1:
-            car.drs = car.drss(cars[i - 1])
+            car.drs = car.drss(cars[i - 2])
+        if i == 1:
+            car.drs = False
 
     player, player_2 = pit_player(player, player_2, LAPS, lap, TIME_S1, TIME_S2, TIME_S3, pneu, speed, PNEU_types, SAFETY_CAR, climax)
     cars.sort(key=lambda x: (x.dnf, x.time))

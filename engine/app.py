@@ -15,15 +15,33 @@ app.mount("/img", StaticFiles(directory="../img"), name="img")
 # ---------------------------------------------------------------------------
 # Helpers
 # ---------------------------------------------------------------------------
-def load_game_objects():
+def load_game_objects(apply_state=True):
     from init import cars, teams, championship, tracks, COUNT_CARS, SAFETY_CAR, LAPS_REMAINING
     state = load_state()
     b = state.get("b", 1)
     season_count = state.get("season_count", 1)
 
-    # Načti hráče podle is_player
+    if apply_state:
+        driver_state = {d["name"]: d for d in state.get("drivers", [])}
+        for car in cars:
+            if car.name in driver_state:
+                d = driver_state[car.name]
+                car.time     = d.get("time", 0.0)
+                car.wear     = d.get("wear", 0.0)
+                car.pneu     = d.get("pneu", car.pneu)
+                car.drs      = d.get("drs", False)
+                car.pit      = d.get("pit", False)
+                car.dnf      = d.get("dnf", False)
+                car.box      = d.get("pit_stops", 0)
+                car.position = d.get("position_history", [])
+                car.stints   = d.get("stints", [])
+
+    race_ctx = state.get("race_state", {})
+    SAFETY_CAR     = race_ctx.get("safety_car", SAFETY_CAR)
+    LAPS_REMAINING = race_ctx.get("safety_car_laps_remaining", LAPS_REMAINING)
+
     players = [car for car in cars if car.is_player]
-    player = players[0] if len(players) > 0 else None
+    player   = players[0] if len(players) > 0 else None
     player_2 = players[1] if len(players) > 1 else None
 
     return cars, teams, player, player_2, championship, tracks, \
@@ -71,7 +89,7 @@ async def get_team(team_name: str):
 @app.post("/api/init_race")
 async def api_init_race():
     cars, teams, player, player_2, championship, tracks, \
-    player.name, player_2.name, COUNT_CARS, SAFETY_CAR, LAPS_REMAINING, b, season_count = load_game_objects()
+    player.name, player_2.name, COUNT_CARS, SAFETY_CAR, LAPS_REMAINING, b, season_count = load_game_objects(apply_state=False)
 
     speed_bonus, season_count, time_laps, k_speed, k_wear, training_type, \
     WETTINESS, lap, forecast, weather, climax, pneu, speed, PNEU_types, \
