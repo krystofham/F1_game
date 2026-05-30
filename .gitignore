@@ -36,3 +36,12 @@ ENV/
 htmlcov/
 
 engine/state.json
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+.vscode/*
+!.vscode/settings.json
+!.vscode/extensions.jsondocs/
