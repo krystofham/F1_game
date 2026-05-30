@@ -441,3 +441,62 @@ async def api_sim_race():
         "snapshots": lap_snapshots,   # React může animovat kolo po kole lokálně
         "final_state": final_state,
     }
+
+@app.post("/api/sim_until")
+async def api_sim_until(data: dict):
+    target_lap = data.get("lap", 1)
+    state = _state()
+    race_ctx = state.get("race_state")
+    if not race_ctx:
+        raise HTTPException(status_code=400, detail="Race not initialized.")
+
+    total_laps = race_ctx["total_laps"]
+    cars, teams, player, player_2, championship, tracks, \
+    player.name, player_2.name, COUNT_CARS, SAFETY_CAR, LAPS_REMAINING, b, season_count = load_game_objects()
+
+    time_laps = state.get("time_laps", [])
+    race = state.get("race", "Unknown Race")
+    k_speed = race_ctx.get("k_speed", [1, 1.04, 1.08, 0.6, 0.65])
+    tyre_compounds = {
+        "hard":   {"wear": race_ctx["k_wear"][0], "speed": k_speed[0]},
+        "medium": {"wear": race_ctx["k_wear"][1], "speed": k_speed[1]},
+        "soft":   {"wear": race_ctx["k_wear"][2], "speed": k_speed[2]},
+        "wet":    {"wear": race_ctx["k_wear"][3], "speed": k_speed[3]},
+        "inter":  {"wear": race_ctx["k_wear"][4], "speed": k_speed[4]},
+    }
+
+    lap = state.get("lap", 0)
+    lap_snapshots = []
+
+    while lap < target_lap and lap <= total_laps:
+        current_race_ctx = _state().get("race_state", race_ctx)
+        forecast = current_race_ctx.get("forecast", race_ctx["forecast"])
+        SAFETY_CAR = current_race_ctx.get("safety_car", False)
+        LAPS_REMAINING = current_race_ctx.get("safety_car_laps_remaining", 0)
+
+        lap, cars, teams = sim_the_lap(
+            cars, teams, player, player_2, lap,
+            SAFETY_CAR, LAPS_REMAINING,
+            current_race_ctx["wettiness"], forecast, current_race_ctx["weather"],
+            total_laps, current_race_ctx["climax"],
+            current_race_ctx["pneu_type"], current_race_ctx["speed_type"],
+            tyre_compounds,
+            forecast[0] if len(forecast) > 0 else current_race_ctx["weather"],
+            forecast[1] if len(forecast) > 1 else current_race_ctx["weather"],
+            forecast[2] if len(forecast) > 2 else current_race_ctx["weather"],
+            forecast[3] if len(forecast) > 3 else current_race_ctx["weather"],
+            current_race_ctx["training_type"], current_race_ctx["k_wear"], k_speed,
+            current_race_ctx["speed_bonus"], season_count, race, time_laps
+        )
+        current_state = _state()
+        lap_snapshots.append({"lap": lap, "drivers": current_state.get("drivers", [])})
+
+    final_state = _state()
+    return {
+        "status": "ok",
+        "lap": lap,
+        "total_laps": total_laps,
+        "finished": lap >= total_laps,
+        "snapshots": lap_snapshots,
+        "final_state": final_state,
+    }
