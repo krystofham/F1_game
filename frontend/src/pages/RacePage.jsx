@@ -434,10 +434,11 @@ export default function RacePage() {
       if (!target || target <= lap) return;
       setRunning(true);
       try {
-          const res = await api.simRace();  // ← simuluje VŠECHNA kola na backendu
-          const toPlay = res.snapshots.filter(s => s.lap <= target);  // jen zobrazí do targetu
-          await playSnapshots(toPlay);
-          await refetchState();             // ← state.json bude na konci závodu!
+          const res = await api.simUntil(target);  // nový call
+          await playSnapshots(res.snapshots);
+          setLap(res.lap);
+          setDrivers(res.final_state.drivers ?? []);
+          await refetchState();
       } catch (e) {
           addLog(`Error: ${e.message}`, "danger");
       }
