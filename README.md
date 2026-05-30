@@ -452,8 +452,8 @@ Set in `init.py`:
 
 | Constant | Default | Description |
 |---|---|---|
-| `DRIVER_1` | `"Max Vershaeren"` | Player driver 1 name |
-| `DRIVER_2` | `"Kim Nguyen"` | Player driver 2 name |
+| `player.name` | `"Max Vershaeren"` | Player driver 1 name |
+| `player_2.name` | `"Kim Nguyen"` | Player driver 2 name |
 | `TEAM_PLAYER` | `"MySql AWS Maxim racing team"` | Player team name |
 | `COUNT_CARS` | 28 | Total cars on grid |
 | `TIME_S1/S2/S3` | 15 / 23 / 22 | Default sector times (overridden per track) |

@@ -89,7 +89,8 @@ class Car:
             s2 = s2+wettiness/2
             s3 = s3+wettiness/2
         lap_time = s1 + s2 + s3
-        time_laps.append((lap_time, self.name, self.team, s1, s2, s3))
+        print("Time of this lap is", lap_time)
+        time_laps.append((lap_time, self.name, self.team.name, s1, s2, s3))
         self.time = self.time + self.wear/8 + lap_time
         self.wear += PNEU_types[self.pneu]["wear"]
         prirustek = PNEU_types[self.pneu]["wear"] * random.uniform(0, 0.4)
@@ -144,7 +145,7 @@ class Car:
         elif forecast[0] in ["transitional", "sunny", "rain"] and forecast[3] in ["sunny"]:
             ideal = random.choice(["soft" , "medium", "hard", "medium", "hard"])
         return ideal if self.pit else None
-    def player_info(self, cars, DRIVER_1, COUNT_CARS, player, DRIVER_2,player_2, SAFETY_CAR):
+    def player_info(self, cars, COUNT_CARS, player, player_2, SAFETY_CAR):
         if self.dnf is False:
             if SAFETY_CAR is True:
                 print(random.choice(["Still safety car", "Still spinning slowly lap by lap."]))
@@ -154,11 +155,11 @@ class Car:
             if self.drs:
                 print("DRS active")
             RANK = [a.name for a in cars if not a.dnf]     
-            if DRIVER_1 == self.name:
-                position = RANK.index(DRIVER_1) + 1 if DRIVER_1 in RANK else COUNT_CARS
+            if player.name == self.name:
+                position = RANK.index(player.name) + 1 if player.name in RANK else COUNT_CARS
                 print(f"Driver 1 - {player.name}")
             else:
-                position = RANK.index(DRIVER_2) + 1 if DRIVER_2 in RANK else  COUNT_CARS
+                position = RANK.index(player_2.name) + 1 if player_2.name in RANK else  COUNT_CARS
                 print(f"Driver 2 - {player_2.name}")
             print(f"\n📊 Position: {position}. z {len(RANK)}")
             fake_o = int((self.wear) - random.uniform(-4, 4))
@@ -189,8 +190,13 @@ class Car:
                 print(random.choice(["The tyres are pretty done now.", "I don´t know what are you doing there, but I am boxing. Or at least I wish.", "The tyres are ***!", "Please, take me out from this hell." "Please box, please."]))
         return None
     def drss(self, car_in_front):
-        if car_in_front.time - self.time < 1:
+        if abs(car_in_front.time - self.time) < 1:
+            print("difference is:", abs(car_in_front.time - self.time), "which is lower than 1")
+            print("My time is:", self.time)
+            print("His time is", car_in_front.time)
             self.drs = True
+        else:
+            self.drs = False
         return self.drs
 
     def simuluj_ai(self, training, WETTINESS, lap, LAPS, forecast, weather, laps, max_laps, k_wear, wettiness, TIME_S1, TIME_S2, TIME_S3, speed_bonus, time_laps, PNEU_types, SAFETY_CAR, LAPS_REMAINING):

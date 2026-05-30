@@ -35,8 +35,6 @@ LAPS_REMAINING  = 0
 SAFETY_CAR      = False
 length          = 0
 
-DRIVER_1        = _drivers_cfg["player_drivers"]["driver_1"]
-DRIVER_2        = _drivers_cfg["player_drivers"]["driver_2"]
 TEAM_PLAYER     = _teams_cfg["player_team"]["name"]
 COUNT_CARS      = 28
 
@@ -69,8 +67,8 @@ championship = [
 
 cars = [Car(driver, random.uniform(5, 6)) for driver in drivers]
 
-player   = Car(DRIVER_1, random.uniform(5, 6), is_player=True)
-player_2 = Car(DRIVER_2, random.uniform(5, 6), is_player=True)
+player   = Car("Max Verstappen", random.uniform(5, 6), is_player=True)
+player_2 = Car("Kim Nguen", random.uniform(5, 6), is_player=True)
 cars.append(player)
 cars.append(player_2)
 
