@@ -230,7 +230,7 @@ export default function TeamPage() {
 
         <div style={{ textAlign: "right" }}>
           <div className="card-label" style={{ marginBottom: 4 }}>
-            {gap > 0 ? "GAP TO LEADER" : "CHAMPIONSHIP LEAD"}
+            {gap != 0 ? "GAP TO LEADER" : "CHAMPIONSHIP LEAD"}
           </div>
           <div
             style={{
@@ -240,7 +240,7 @@ export default function TeamPage() {
               color: gap > 0 ? "var(--accent)" : "var(--green)",
             }}
           >
-            {gap > 0 ? `-${gap} PTS` : "LEADER"}
+            {gap > 0 ? `${gap} PTS` : "LEADER"}
           </div>
         </div>
       </div>

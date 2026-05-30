@@ -1,11 +1,11 @@
 {
+  "commands": [],
   "driver_1": {
     "action": "1",
-    "new_pneu": "medium"
+    "new_pneu": "soft"
   },
   "driver_2": {
     "action": "1",
-    "new_pneu": "medium"
-  },
-  "commands": []
+    "new_pneu": "soft"
+  }
 }

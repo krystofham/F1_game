@@ -1,4 +1,4 @@
-import { useState, useCallback, useRef, useEffect } from "react";
+import { useState, useCallback, useRef, useEffect, useMemo } from "react";
 import { useApi } from "../hooks/useApi";
 import { api } from "../utils/api";
 import TyreBadge from "../components/TyreBadge";
@@ -7,36 +7,39 @@ import WearBar from "../components/WearBar";
 const TYRE_OPTS = ["soft", "medium", "hard", "wet", "inter"];
 
 function PitForm({ drivers, onSubmit, disabled }) {
-  const playerDrivers = (drivers || []).filter((d) => d.is_player);
+  const playerDrivers = useMemo(
+    () => (drivers || []).filter((d) => d.is_player).sort((a, b) => a.name.localeCompare(b.name)),
+    []
+  );
 
   const buildDefault = (list) => {
     const init = {};
-    list.forEach((d, i) => {
-      init[`driver_${i + 1}`] = { action: "1", new_pneu: "medium" };
+    list.forEach((d) => {
+      init[d.name] = { action: "1", new_pneu: "medium" };
     });
     return init;
   };
 
   const [actions, setActions] = useState(() => buildDefault(playerDrivers));
 
-  useEffect(() => {
-    setActions(buildDefault(playerDrivers));
-  }, [drivers]);
+  const setField = (name, field, value) =>
+    setActions((prev) => ({ ...prev, [name]: { ...prev[name], [field]: value } }));
 
-  const setField = (key, field, value) =>
-    setActions((prev) => ({ ...prev, [key]: { ...prev[key], [field]: value } }));
-
-  const handleSubmit = () => onSubmit({ ...actions, commands: [] });
+  const handleSubmit = () => {
+    const payload = { commands: [] };
+    playerDrivers.forEach((d, i) => {
+      payload[`driver_${i + 1}`] = actions[d.name] ?? { action: "1", new_pneu: "medium" };
+    });
+    onSubmit(payload);
+  };
 
   if (playerDrivers.length === 0) return null;
 
   return (
     <div className="card" style={{ marginBottom: 24 }}>
-
       <div style={{ display: "flex", gap: 16, flexWrap: "wrap" }}>
-        {playerDrivers.map((d, i) => {
-          const key = `driver_${i + 1}`;
-          const act = actions[key] ?? { action: "1", new_pneu: "medium" };
+        {playerDrivers.map((d) => {
+          const act = actions[d.name] ?? { action: "1", new_pneu: "medium" };
           const isPit = act.action === "2";
 
           return (
@@ -58,7 +61,7 @@ function PitForm({ drivers, onSubmit, disabled }) {
                     key={val}
                     className={`btn${act.action === val ? " btn-primary" : ""}`}
                     style={{ flex: 1, fontSize: 10, padding: "6px 0" }}
-                    onClick={() => setField(key, "action", val)}
+                    onClick={() => setField(d.name, "action", val)}
                     disabled={disabled}
                   >
                     {label}
@@ -70,7 +73,7 @@ function PitForm({ drivers, onSubmit, disabled }) {
                 <label style={{ fontSize: 9 }}>New Tyre</label>
                 <select
                   value={act.new_pneu}
-                  onChange={(e) => setField(key, "new_pneu", e.target.value)}
+                  onChange={(e) => setField(d.name, "new_pneu", e.target.value)}
                   disabled={disabled || !isPit}
                 >
                   {TYRE_OPTS.map((t) => <option key={t} value={t}>{t.toUpperCase()}</option>)}
