@@ -1,0 +1,112 @@
+{
+  "driver_1": {
+    "name": "Max Verstappen",
+    "offers": [
+      {
+        "name": "Renzo Morandi",
+        "team": "Pixel motors",
+        "points": 141,
+        "rating": 5.5632
+      }
+    ]
+  },
+  "driver_2": {
+    "name": "Kim Nguen",
+    "offers": [
+      {
+        "name": "Hiro Tanaka",
+        "team": "Racing 404",
+        "points": 112,
+        "rating": 5.6727
+      },
+      {
+        "name": "Nilapsai Vetrovski",
+        "team": "Microsoft PitStop Protocol racing team",
+        "points": 90,
+        "rating": 5.3667
+      },
+      {
+        "name": "Enzo DaCosta",
+        "team": "JavaScript Racing team",
+        "points": 95,
+        "rating": 5.1687
+      },
+      {
+        "name": "Renzo Morandi",
+        "team": "Pixel motors",
+        "points": 141,
+        "rating": 5.5632
+      },
+      {
+        "name": "Lukas Rennhardt",
+        "team": "Racing 404",
+        "points": 112,
+        "rating": 5.1136
+      },
+      {
+        "name": "Diego Ventura",
+        "team": "Formula 1.0 racing team",
+        "points": 175,
+        "rating": 4.9917
+      },
+      {
+        "name": "Aiden Falk",
+        "team": "Formula 1.0 racing team",
+        "points": 175,
+        "rating": 5.2059
+      },
+      {
+        "name": "Riku Yamashita",
+        "team": "Intel QWERTY GP",
+        "points": 234,
+        "rating": 5.3467
+      },
+      {
+        "name": "Carlos Navarro",
+        "team": "Intel QWERTY GP",
+        "points": 234,
+        "rating": 5.2133
+      },
+      {
+        "name": "Tyler Quinn",
+        "team": "Jawa Surenate Linux racing team",
+        "points": 174,
+        "rating": 5.1804
+      },
+      {
+        "name": "Jae-Min Han",
+        "team": "Jawa Surenate Linux racing team",
+        "points": 174,
+        "rating": 5.0189
+      },
+      {
+        "name": "Arjun Desai",
+        "team": "VS racing 22",
+        "points": 94,
+        "rating": 4.9553
+      },
+      {
+        "name": "Leo Krüger",
+        "team": "PyCharm motors",
+        "points": 58,
+        "rating": 5.2636
+      },
+      {
+        "name": "Mikhail Antonov",
+        "team": "PyCharm motors",
+        "points": 58,
+        "rating": 5.0169
+      },
+      {
+        "name": "Julian Stroud",
+        "team": "Pixel motors",
+        "points": 141,
+        "rating": 4.9488
+      }
+    ]
+  },
+  "mmr2_best": {
+    "name": "Lutime Meyer",
+    "rating": 0.9835
+  }
+}

@@ -1,122 +1,76 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from './assets/vite.svg'
-import heroImg from './assets/hero.png'
-import './App.css'
+import { BrowserRouter, Routes, Route, NavLink } from "react-router-dom";
+import TeamsPage from "./pages/TeamsPage";
+import DriversPage from "./pages/DriversPage";
+import RacePage from "./pages/RacePage";
+import TrackPage from "./pages/TrackPage";
+import StandingsPage from "./pages/StandingsPage";
+import GraphsPage from "./pages/GraphsPage";
+import TeamPage from "./pages/TeamPage";
+import TransferMarket from "./pages/TransfersPage";
+import "./styles.css";
 
-function App() {
-  const [count, setCount] = useState(0)
+const NAV_ITEMS = [
+  { to: "/", label: "STANDINGS", icon: "▲" },
+  { to: "/race", label: "RACE CONTROL", icon: "◉" },
+  { to: "/teams", label: "TEAMS", icon: "◈" },
+  { to: "/drivers", label: "DRIVERS", icon: "◆" },
+  { to: "/track", label: "TRACK", icon: "◎" },
+  { to: "/graphs", label: "TELEMETRY", icon: "∿" },
+  { to: "/transfer", label: "TRANSFERS", icon: "⇄" },
+];
 
+function Sidebar() {
   return (
-    <>
-      <section id="center">
-        <div className="hero">
-          <img src={heroImg} className="base" width="170" height="179" alt="" />
-          <img src={reactLogo} className="framework" alt="React logo" />
-          <img src={viteLogo} className="vite" alt="Vite logo" />
+    <nav className="sidebar">
+      <div className="sidebar-header">
+        <div className="logo-text">
+          <span className="logo-title">MMRAC1NG</span>
         </div>
-        <div>
-          <h1>Get started</h1>
-          <p>
-            Edit <code>src/App.jsx</code> and save to test <code>HMR</code>
-          </p>
-        </div>
-        <button
-          type="button"
-          className="counter"
-          onClick={() => setCount((count) => count + 1)}
-        >
-          Count is {count}
-        </button>
-      </section>
-
-      <div className="ticks"></div>
-
-      <section id="next-steps">
-        <div id="docs">
-          <svg className="icon" role="presentation" aria-hidden="true">
-            <use href="/icons.svg#documentation-icon"></use>
-          </svg>
-          <h2>Documentation</h2>
-          <p>Your questions, answered</p>
-          <ul>
-            <li>
-              <a href="https://vite.dev/" target="_blank">
-                <img className="logo" src={viteLogo} alt="" />
-                Explore Vite
-              </a>
-            </li>
-            <li>
-              <a href="https://react.dev/" target="_blank">
-                <img className="button-icon" src={reactLogo} alt="" />
-                Learn more
-              </a>
-            </li>
-          </ul>
-        </div>
-        <div id="social">
-          <svg className="icon" role="presentation" aria-hidden="true">
-            <use href="/icons.svg#social-icon"></use>
-          </svg>
-          <h2>Connect with us</h2>
-          <p>Join the Vite community</p>
-          <ul>
-            <li>
-              <a href="https://github.com/vitejs/vite" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#github-icon"></use>
-                </svg>
-                GitHub
-              </a>
-            </li>
-            <li>
-              <a href="https://chat.vite.dev/" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#discord-icon"></use>
-                </svg>
-                Discord
-              </a>
-            </li>
-            <li>
-              <a href="https://x.com/vite_js" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#x-icon"></use>
-                </svg>
-                X.com
-              </a>
-            </li>
-            <li>
-              <a href="https://bsky.app/profile/vite.dev" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#bluesky-icon"></use>
-                </svg>
-                Bluesky
-              </a>
-            </li>
-          </ul>
-        </div>
-      </section>
-
-      <div className="ticks"></div>
-      <section id="spacer"></section>
-    </>
-  )
+      </div>
+      <div className="nav-items">
+        {NAV_ITEMS.map((item) => (
+          <NavLink
+            key={item.to}
+            to={item.to}
+            end={item.to === "/"}
+            className={({ isActive }) => `nav-item ${isActive ? "active" : ""}`}
+          >
+            <span className="nav-icon">{item.icon}</span>
+            <span className="nav-label">{item.label}</span>
+            <span className="nav-indicator" />
+          </NavLink>
+        ))}
+      </div>
+    </nav>
+  );
 }
-
-export default App
+export default function App() {
+  return (
+    <BrowserRouter>
+      <Routes>
+        <Route path="/iframe_track" element={
+          <div style={{ padding: 24, overflowY: "auto", height: "100vh", boxSizing: "border-box"}}>
+            <TrackPage />
+          </div>
+        } />
+        <Route path="/*" element={
+          <div className="app-shell">
+            <Sidebar />
+            <main className="main-content">
+              <Routes>
+                <Route path="/" element={<StandingsPage />} />
+                <Route path="/race" element={<RacePage />} />
+                <Route path="/teams" element={<TeamsPage />} />
+                <Route path="/drivers" element={<DriversPage />} />
+                <Route path="/track" element={<TrackPage />} />
+                <Route path="/graphs" element={<GraphsPage />} />
+                <Route path="/team/:teamId" element={<TeamPage />} />
+                <Route path="/transfer" element={<TransferMarket />} />
+              </Routes>
+            </main>
+          </div>
+        } />
+      </Routes>
+    </BrowserRouter>
+  );
+}

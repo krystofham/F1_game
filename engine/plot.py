@@ -1,7 +1,10 @@
 import matplotlib.pyplot as plt
 import matplotlib.image as mpimg
 import random
-from engine import reset_race
+try:
+    from engine import reset_race
+except:
+    from engine.engine import reset_race
 def colours_graphs(cars, colours):
     for c in cars:
         if c.dnf:
@@ -20,23 +23,23 @@ def colours_graphs(cars, colours):
             colours.append("green")  
     return colours
 
-def plot_graph(RANK, DRIVER_1, DRIVER_2, teams, cars, player, player_2, climax):
+def plot_graph(RANK, teams, cars, player, player_2, climax):
     points = sorted(teams, key=lambda x: (x.points))
     # Rank count
     position_1 = None
     position_2 =None
     for x in RANK:
-        if x.name == DRIVER_1:
+        if x.name == player.name:
             position_1 = RANK.index(x) + 1
-        if x.name == DRIVER_2:
+        if x.name == player_2.name:
             position_2 = RANK.index(x) + 1
     if position_1 == None: 
         position_1 = 'DNF'    
     if position_2 == None: 
         position_2 = 'DNF'
     print("\n🏁 Final Position:")
-    print(f"{DRIVER_1}: {position_1}. position")
-    print(f"{DRIVER_2}: {position_2}. position")
+    print(f"{player.name}: {position_1}. position")
+    print(f"{player_2.name}: {position_2}. position")
     #time.sleep(4)
     # Results
     cars.sort(key=lambda x: (x.dnf, x.time))
