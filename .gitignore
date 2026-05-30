@@ -13,6 +13,12 @@ var/
 wheels/
 *.egg-info/
 
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
 # Environment variables (Sensitive info!)
 .env
 .venv
@@ -28,3 +34,5 @@ ENV/
 .pytest_cache/
 .coverage
 htmlcov/
+
+engine/state.json
