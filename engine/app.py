@@ -22,39 +22,74 @@ def load_game_objects(apply_state=True):
     season_count = state.get("season_count", 1)
 
     if apply_state:
-        driver_state = {d["name"]: d for d in state.get("drivers", [])}
-        for car in cars:
-            if car.name in driver_state:
-                d = driver_state[car.name]
-                car.time     = d.get("time", 0.0)
-                car.wear     = d.get("wear", 0.0)
-                car.pneu     = d.get("pneu", car.pneu)
-                car.drs      = d.get("drs", False)
-                car.pit      = d.get("pit", False)
-                car.dnf      = d.get("dnf", False)
-                car.box      = d.get("pit_stops", 0)
-                car.position = d.get("position_history", [])
-                car.stints   = d.get("stints", [])
+        state_drivers = state.get("drivers", [])
 
-    race_ctx = state.get("race_state", {})
+        # Deduplikace player záznamů
+        seen_player_names = set()
+        clean_drivers = []
+        for d in state_drivers:
+            if d.get("is_player"):
+                if d["name"] not in seen_player_names:
+                    seen_player_names.add(d["name"])
+                    clean_drivers.append(d)
+            else:
+                clean_drivers.append(d)
+
+        state_players = [d for d in clean_drivers if d.get("is_player")]
+        state_ai      = [d for d in clean_drivers if not d.get("is_player")]
+
+        # Hráčská auta — matchuj podle pořadí is_player, ne jména
+        player_cars = [c for c in cars if c.is_player]
+        for car, d in zip(player_cars, state_players):
+            car.name      = d["name"]
+            car.ratings   = d.get("rating", car.ratings)
+            car.time      = d.get("time", 0.0)
+            car.wear      = d.get("wear", 0.0)
+            car.pneu      = d.get("pneu", car.pneu)
+            car.drs       = d.get("drs", False)
+            car.pit       = d.get("pit", False)
+            car.dnf       = d.get("dnf", False)
+            car.box       = d.get("pit_stops", 0)
+            car.position  = d.get("position_history", [])
+            car.stints    = d.get("stints", [])
+            car.points    = d.get("points", car.points)
+            car.is_player = True
+
+        # AI auta — matchuj podle jména
+        ai_state_by_name = {d["name"]: d for d in state_ai}
+        for car in cars:
+            if car.is_player:
+                continue
+            d = ai_state_by_name.get(car.name)
+            if not d:
+                continue
+            car.ratings   = d.get("rating", car.ratings)
+            car.time      = d.get("time", 0.0)
+            car.wear      = d.get("wear", 0.0)
+            car.pneu      = d.get("pneu", car.pneu)
+            car.drs       = d.get("drs", False)
+            car.pit       = d.get("pit", False)
+            car.dnf       = d.get("dnf", False)
+            car.box       = d.get("pit_stops", 0)
+            car.position  = d.get("position_history", [])
+            car.stints    = d.get("stints", [])
+            car.is_player = False
+            car.points    = d.get("points", car.points)
+
+    race_ctx       = state.get("race_state", {})
     SAFETY_CAR     = race_ctx.get("safety_car", SAFETY_CAR)
     LAPS_REMAINING = race_ctx.get("safety_car_laps_remaining", LAPS_REMAINING)
 
-    # ← Načti jména ze state
     p1_name = state.get("player.name")
     p2_name = state.get("player_2.name")
+    player_cars = [c for c in cars if c.is_player]
 
-    players = [car for car in cars if car.is_player]
-
-    if p1_name and p2_name:
-        player   = next((c for c in players if c.name == p1_name), players[0] if players else None)
-        player_2 = next((c for c in players if c.name == p2_name), players[1] if len(players) > 1 else None)
-    else:
-        player   = players[0] if players else None
-        player_2 = players[1] if len(players) > 1 else None
+    player   = next((c for c in player_cars if c.name == p1_name), player_cars[0] if player_cars else None)
+    player_2 = next((c for c in player_cars if c.name == p2_name), player_cars[1] if len(player_cars) > 1 else None)
 
     return cars, teams, player, player_2, championship, tracks, \
            player.name, player_2.name, COUNT_CARS, SAFETY_CAR, LAPS_REMAINING, b, season_count
+
 
 def _load_json(path):
     with open(path, encoding="utf-8") as f:
@@ -87,7 +122,7 @@ async def get_teams():
     return state["teams"]
 
 @app.get("/api/get_teams/{team_name}")
-async def get_team(team_name: str):
+async def  get_team(team_name: str):
     state = _state()
     teams = state["teams"]
     for team in teams:
@@ -243,8 +278,6 @@ async def api_post_championship():
     cars, teams, player, player_2, championship, tracks, \
         player.name, player_2.name, COUNT_CARS, SAFETY_CAR, LAPS_REMAINING, b, season_count = load_game_objects()
 
-    save_state_end_of_season(cars, teams, season_count)
-
     best, worst = simulate_season_mmr2(list_drivers_mmr2)
     season_count += 1
 
@@ -261,11 +294,9 @@ async def api_post_championship():
         old_best_name   = best.name
         old_best_rating = best.rating
         if player.name == last_car.name:
-            player.name       = old_best_name
             player.name    = old_best_name
             player.ratings = old_best_rating
         elif player_2.name == last_car.name:
-            player_2.name         = old_best_name
             player_2.name    = old_best_name
             player_2.ratings = old_best_rating
 
@@ -273,16 +304,18 @@ async def api_post_championship():
         teams, player, player_2, cars
     )
 
+    save_state_end_of_season(cars, teams, season_count)  # ← před resetem, se správnými body
+
     WETTINESS, cars, teams = reset_championship(cars, teams)
 
     updated_state = _state()
     updated_state["b"] = 1
     updated_state["season_count"] = season_count
     updated_state["championship_length"] = len(championship)
+    updated_state["player.name"] = player.name      # ← přidáno
+    updated_state["player_2.name"] = player_2.name  # ← přidáno
     with open("state.json", "w", encoding="utf-8") as f:
         json.dump(updated_state, f, indent=4, ensure_ascii=False)
-
-    save_state_end_of_season(cars, teams, season_count)
 
     return {"status": "championship_done", "season": season_count}
 
@@ -298,90 +331,85 @@ async def api_set_lap_user_data(data: dict):
 # Tranfers
 @app.get("/api/get_transfer_offers")
 async def api_get_transfer_offers():
-    cars, teams, player, player_2, championship, tracks, \
-    player.name, player_2.name, COUNT_CARS, SAFETY_CAR, LAPS_REMAINING, b, season_count = load_game_objects()
+    state = _state()
+    drivers = state.get("drivers", [])
+    players = [d for d in drivers if d.get("is_player")]
 
-    average_rating = sum(x.ratings for x in cars) / (len(cars) + 1)
-
-    def build_offers(player_obj):
-        offers = []
-        if average_rating > player_obj.ratings:
-            # slabý hráč — jen 1 nabídka
-            t = teams[-1]
-            d = t.drivers[random.choice([0, 1])]
-            offers.append({"name": d.name, "team": t.name, "points": t.points, "rating": round(d.ratings, 4)})
-        else:
-            for t in teams:
-                if random.uniform(0, 1) > 0.7:
-                    d = t.drivers[random.choice([0, 1])]
-                    if not d.is_player:
-                        offers.append({"name": d.name, "team": t.name, "points": t.points, "rating": round(d.ratings, 4)})
-            for t in teams:
-                if len(t.drivers) >= 1 and not t.drivers[0].is_player and (t.rating - t.drivers[0].ratings) >= 0:
-                    d = t.drivers[0]
-                    offers.append({"name": d.name, "team": t.name, "points": t.points, "rating": round(d.ratings, 4)})
-                if len(t.drivers) >= 2 and not t.drivers[1].is_player and (t.rating - t.drivers[1].ratings) >= 0:
-                    d = t.drivers[1]
-                    offers.append({"name": d.name, "team": t.name, "points": t.points, "rating": round(d.ratings, 4)})
-        # deduplikace
-        seen = set()
-        unique = []
-        for o in offers:
-            if o["name"] not in seen:
-                seen.add(o["name"])
-                unique.append(o)
-        return unique
+    # MMR1 nabídky – AI driverů ze state.json
+    ai_drivers = [d for d in drivers if not d.get("is_player")]
+    offers_pool = [{"name": d["name"], "team": d.get("team","?"), "points": d.get("points",0), "rating": round(d.get("rating",1.0),4)} for d in ai_drivers]
+    random.shuffle(offers_pool)
 
     result = {
-        "driver_1": {"name": player.name, "offers": build_offers(player)},
-        "driver_2": {"name": player_2.name, "offers": build_offers(player_2)},
+        "driver_1": {"name": players[0]["name"] if len(players)>0 else "", "offers": offers_pool[:5]},
+        "driver_2": {"name": players[1]["name"] if len(players)>1 else "", "offers": offers_pool[5:10]},
         "mmr2_best": None
     }
 
-    # MMR2 nabídka
+    # MMR2
     try:
+        from engine.mmr2 import simulate_season_mmr2, list_drivers_mmr2
         best, _ = simulate_season_mmr2(list_drivers_mmr2)
         result["mmr2_best"] = {"name": best.name, "rating": round(best.rating, 4)}
     except:
         pass
 
-    path = os.path.join(_CONFIG, "../engine/user_input/transfer_offers.json")
-    with open(path, "w", encoding="utf-8") as f:
-        json.dump(result, f, indent=2, ensure_ascii=False)
-
     return result
-
 
 @app.post("/api/do_transfer")
 async def api_do_transfer(data: dict):
-    # data: {"want": "yes"/"no", "where": "MMR1"/"MMR2", "pilot_to_change": "...", "chosen_pilot": "..."}
-    path_deal = os.path.join(_CONFIG, "../engine/user_input/deal.json")
-    path_transfer = os.path.join(_CONFIG, "../engine/user_input/transfer.json")
+    pilot_to_change = data.get("pilot_to_change")
+    chosen_pilot    = data.get("chosen_pilot")
+    new_rating      = data.get("rating", None)
 
-    with open(path_deal, "w", encoding="utf-8") as f:
-        json.dump({"want": data.get("want", "yes"), "where": data.get("where"), "pilot_to_change": data.get("pilot_to_change"), "chosen_pilot": data.get("chosen_pilot", "")}, f, indent=2)
-    with open(path_transfer, "w", encoding="utf-8") as f:
-        json.dump({"pilot_to_change": data.get("pilot_to_change"), "chosen_pilot": data.get("chosen_pilot", "")}, f, indent=2)
+    if not pilot_to_change or not chosen_pilot:
+        raise HTTPException(status_code=400, detail="Missing pilot names")
 
-    cars, teams, player, player_2, championship, tracks, \
-    player.name, player_2.name, COUNT_CARS, SAFETY_CAR, LAPS_REMAINING, b, season_count = load_game_objects()
+    state = _state()
+    drivers = state.get("drivers", [])
 
-    try:
-        player, player_2, player.name, player_2.name, cars = transfer(
-            cars, teams, player, player_2
-        )
-    except ValueError as e:
-        raise HTTPException(status_code=400, detail=str(e))
+    p1_name = state.get("player.name", "")
+    p2_name = state.get("player_2.name", "")
 
-    save_state_end_of_season(cars, teams, season_count)
-    updated_state = _state()
-    updated_state["player.name"] = player.name
-    updated_state["player_2.name"] = player_2.name
+    if pilot_to_change not in (p1_name, p2_name):
+        raise HTTPException(status_code=400, detail=f"'{pilot_to_change}' is not a player driver")
+
+    # 1. Nejdřív uprav hráčský záznam IN-PLACE (ještě ve starém listu)
+    target = next((d for d in drivers if d["name"] == pilot_to_change and d.get("is_player")), None)
+    if not target:
+        raise HTTPException(status_code=404, detail=f"Player driver '{pilot_to_change}' not found")
+
+    target["name"] = chosen_pilot
+    if new_rating is not None:
+        target["rating"] = new_rating
+
+    # 2. Teprve pak odstraň AI duplikát (target už má nové jméno, takže ho filtr neodstraní)
+    state["drivers"] = [
+        d for d in drivers
+        if not (d["name"] == chosen_pilot and not d.get("is_player"))
+    ]
+
+    # 3. Aktualizuj root player.name / player_2.name
+    if pilot_to_change == p1_name:
+        state["player.name"] = chosen_pilot
+    elif pilot_to_change == p2_name:
+        state["player_2.name"] = chosen_pilot
+
+    # 4. Aktualizuj teams
+    for team in state.get("teams", []):
+        team["drivers"] = [
+            chosen_pilot if d == pilot_to_change else d
+            for d in team.get("drivers", [])
+        ]
+
     with open("state.json", "w", encoding="utf-8") as f:
-        json.dump(updated_state, f, indent=2, ensure_ascii=False)
-    return {"status": "ok", "driver_1": player.name, "driver_2": player_2.name}
+        json.dump(state, f, indent=4, ensure_ascii=False)
 
-
+    return {
+        "status": "ok",
+        "driver_1": state.get("player.name", ""),
+        "driver_2": state.get("player_2.name", ""),
+    }
 
 @app.post("/api/sim_race")
 async def api_sim_race():

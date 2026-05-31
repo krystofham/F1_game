@@ -44,7 +44,6 @@ def make_a_deal(player, teams, tymy_ridic_1_trade, tymy_ridic_2_trade, possible_
     data = load_data("transfer")
     new_pilot = data["chosen_pilot"].strip()
 
-    # Hledej pilota v teams
     new_car = None
     for team in teams:
         for driver in team.drivers:
@@ -63,19 +62,31 @@ def make_a_deal(player, teams, tymy_ridic_1_trade, tymy_ridic_2_trade, possible_
     idx_player = old_team.drivers.index(player)
     idx_new = new_team.drivers.index(new_car)
 
-    # Vyměň jezdce v týmech
     old_team.drivers[idx_player] = new_car
     new_team.drivers[idx_new] = player
 
-    # Aktualizuj týmy jezdců
     new_car.team = old_team
     player.team = new_team
 
-    # Aktualizuj is_player
-    new_car.is_player = True
+    # ← toto je klíčové
     player.is_player = False
+    new_car.is_player = True
 
-    return new_car  # ✅ Vrací nový objekt vozidla
+    # Převezmi race stav
+    new_car.time            = player.time
+    new_car.wear            = player.wear
+    new_car.pneu            = player.pneu
+    new_car.dnf             = player.dnf
+    new_car.box             = player.box
+    new_car.points          = player.points
+    new_car.position        = list(player.position)
+    new_car.stints          = list(player.stints)
+    new_car.last_stint_start = player.last_stint_start
+    new_car.destroy         = player.destroy
+    new_car.puncture        = player.puncture
+    new_car.safety_car_probability = player.safety_car_probability
+
+    return new_car
 def transef_mmr1(cars, teams, player, player_2):
     data = load_data("transfer")
     average_rating = sum(x.ratings for x in cars) / (len(cars) + 1)
@@ -109,7 +120,7 @@ def transef_mmr1(cars, teams, player, player_2):
             pass  # Pokud player není v cars, ignoruj
         player = new_player  # ✅ Přiřaď celý objekt
 
-    if player_2.name == swap:
+    elif player_2.name == swap:
         new_player_2 = make_a_deal(
             player_2, teams,
             tymy_ridic_1_trade, tymy_ridic_2_trade, possible_transfer
@@ -126,15 +137,15 @@ def transef_mmr1(cars, teams, player, player_2):
 def transfer(cars, teams, player, player_2):
     data = load_data("deal")
     new_pilot = data["where"]
- 
+
     if new_pilot not in ("MMR1", "MMR2"):
         raise ValueError("bad league")
- 
+
     if new_pilot == "MMR1":
         cars, teams, player, player_2, player.name, player_2.name = transef_mmr1(
             cars, teams, player, player_2
         )
- 
+
     elif new_pilot == "MMR2":
         best, worst = simulate_season_mmr2(list_drivers_mmr2)
         change = data["pilot_to_change"]
@@ -142,41 +153,44 @@ def transfer(cars, teams, player, player_2):
         if change not in (player.name, player_2.name):
             raise ValueError("bad driver")
 
-        if change == player.name:
-            target_player = player
-        else:
-            target_player = player_2
+        target_player = player if change == player.name else player_2
 
-        # Hráč odchází → už není is_player
+        # Převezmi race stav z target_playera — best nastupuje na jeho místo
+        best.time           = target_player.time
+        best.wear           = target_player.wear
+        best.pneu           = target_player.pneu
+        best.dnf            = target_player.dnf
+        best.box            = target_player.box
+        best.position       = list(target_player.position)
+        best.stints         = list(target_player.stints)
+        best.points         = target_player.points
+        best.last_stint_start = target_player.last_stint_start
+        best.destroy        = target_player.destroy
+        best.puncture       = target_player.puncture
+        best.safety_car_probability = target_player.safety_car_probability
+
         target_player.is_player = False
-
-        # Příchozí jezdec se stává hráčem
         best.is_player = True
 
-        # Fyzická výměna v týmech
         old_team = target_player.team
-        new_team = best.team
-
         idx_target = old_team.drivers.index(target_player)
-        idx_best   = new_team.drivers.index(best)
-
         old_team.drivers[idx_target] = best
-        new_team.drivers[idx_best]   = target_player
+        best.team = old_team
+        target_player.team = old_team  # target zůstane v týmu jako ghost
 
-        best.team          = old_team
-        target_player.team = new_team
+        try:
+            idx = cars.index(target_player)
+            cars[idx] = best
+        except ValueError:
+            cars.append(best)
 
         if change == player.name:
-            player.name = best.name
-            player   = best
+            player = best
         else:
-            player_2.name = best.name
             player_2 = best
 
-        # team.drivers zůstává beze změny – target_player je stále stejný objekt
-        # player / player_2 reference také zůstávají – jsou to stále stejné objekty
- 
     return player, player_2, player.name, player_2.name, cars
+
 def safety_car(car, weather, lap, SAFETY_CAR, LAPS_REMAINING):
     if weather == "sunny":
         if car.safety_car_probability < 1:
@@ -228,52 +242,45 @@ def generate_pneu_for_bots_on_start(cars: list, weather_1: str) -> list:
 
 def trading_at_the_of_season(teams, player, player_2, cars):
     new_pilot = load_data("deal")["want"]
- 
+
     if new_pilot not in ("yes", "no"):
         raise ValueError("bad typo")
- 
+
     if new_pilot == "yes":
         player, player_2, player.name, player_2.name, cars = transfer(
             cars, teams, player, player_2
         )
- 
-    class Want:
-        def __init__(self, name):
-            self.name = name          
-            self.transfer_did = False
- 
+
+    # Sestavení kandidátů na výměnu — přímo Car objekty
     want_trade = []
     for x in teams:
         for y in x.drivers:
-            if x.rating - y.ratings > 0.8 and y.is_player == False:
-                want_trade.append(Want(y))
- 
+            if x.rating - y.ratings > 0.8 and not y.is_player:
+                want_trade.append(y)  # Car objekt přímo
+
     while len(want_trade) >= 2:
-        driver_to_trade_1, driver_to_trade_2 = random.sample(want_trade, 2)
- 
-        drv_1 = driver_to_trade_1.name  
-        drv_2 = driver_to_trade_2.name 
- 
+        drv_1, drv_2 = random.sample(want_trade, 2)
+
         team_1 = drv_1.team
         team_2 = drv_2.team
- 
+
         print(
             f"Breaking!!!\n {drv_1.name} ({team_1.name}, {drv_1.points} points) "
             f"changes {drv_2.name} ({team_2.name}, {drv_2.points} points)\nBreaking!!!"
         )
- 
+
         idx_1 = team_1.drivers.index(drv_1)
         idx_2 = team_2.drivers.index(drv_2)
- 
+
         team_1.drivers[idx_1] = drv_2
         team_2.drivers[idx_2] = drv_1
- 
+
         drv_1.team = team_2
         drv_2.team = team_1
- 
-        want_trade.remove(driver_to_trade_1)
-        want_trade.remove(driver_to_trade_2)
- 
+
+        want_trade.remove(drv_1)
+        want_trade.remove(drv_2)
+
     return teams, player, player_2, player.name, player_2.name, cars
 
 def reset_championship(cars, teams):
