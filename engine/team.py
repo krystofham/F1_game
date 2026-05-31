@@ -64,8 +64,8 @@ class Team:
 
 teams = []
 def create_team(TEAM_PLAYER, player_1, player_2, teams, rating):
-    tym = Team(TEAM_PLAYER, rating)
-    tym.pridej_jezdce(player_1)
-    tym.pridej_jezdce(player_2)
-    teams.append(tym)
-    return tym
+    team = Team(TEAM_PLAYER, rating)
+    team.pridej_jezdce(player_1)
+    team.pridej_jezdce(player_2)
+    teams.append(team)
+    return team

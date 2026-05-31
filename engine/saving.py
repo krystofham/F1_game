@@ -63,12 +63,11 @@ def _build_standings(cars, teams, time_laps=None):
     }
 
 def _save(data: dict):
-    # Zachovej b a season_count z existujícího state
     if os.path.exists(_STATE_FILE):
         try:
             with open(_STATE_FILE, "r", encoding="utf-8") as f:
                 existing = json.load(f)
-            for key in ("b", "season_count", "championship_length"):
+            for key in ("b", "season_count", "championship_length", "player.name", "player_2.name"):
                 if key in existing and key not in data:
                     data[key] = existing[key]
         except (json.JSONDecodeError, IOError):

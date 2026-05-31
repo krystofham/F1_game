@@ -40,12 +40,22 @@ def load_game_objects(apply_state=True):
     SAFETY_CAR     = race_ctx.get("safety_car", SAFETY_CAR)
     LAPS_REMAINING = race_ctx.get("safety_car_laps_remaining", LAPS_REMAINING)
 
+    # ← Načti jména ze state
+    p1_name = state.get("player.name")
+    p2_name = state.get("player_2.name")
+
     players = [car for car in cars if car.is_player]
-    player   = players[0] if len(players) > 0 else None
-    player_2 = players[1] if len(players) > 1 else None
+
+    if p1_name and p2_name:
+        player   = next((c for c in players if c.name == p1_name), players[0] if players else None)
+        player_2 = next((c for c in players if c.name == p2_name), players[1] if len(players) > 1 else None)
+    else:
+        player   = players[0] if players else None
+        player_2 = players[1] if len(players) > 1 else None
 
     return cars, teams, player, player_2, championship, tracks, \
            player.name, player_2.name, COUNT_CARS, SAFETY_CAR, LAPS_REMAINING, b, season_count
+
 def _load_json(path):
     with open(path, encoding="utf-8") as f:
         return json.load(f)

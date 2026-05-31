@@ -1,6 +1,7 @@
 import random
 import matplotlib.pyplot as plt
 import matplotlib.image as mpimg
+import os, json
 try:
     from load_data_json import *
     from strategy import strategy
@@ -12,21 +13,22 @@ except:
 def pit_player(player, player_2, LAPS, lap, TIME_S1, TIME_S2, TIME_S3, pneu, speed, PNEU_types, SAFETY_CAR, climax):
     data = load_data("lap_user_data")
 
-    pick   = data["driver_1"]["action"].strip().lower()
-    pick_2 = data["driver_2"]["action"].strip().lower()
+    d1_data = data.get(player.name,   data.get("driver_1", {"action": "1", "new_pneu": "medium"}))
+    d2_data = data.get(player_2.name, data.get("driver_2", {"action": "1", "new_pneu": "medium"}))
+
+    pick   = d1_data["action"].strip().lower()
+    pick_2 = d2_data["action"].strip().lower()
 
     if not player.dnf:
         if pick == "pneustav":
             print(player.pneu, round(player.wear, 2), "%")
             player.time += 2
-
         elif pick == "pneusafe":
             print("PNEUSAFE active for 1 lap")
             player.wear -= 1
             player.time += 3
-
         elif pick == "2":
-            new = data["driver_1"]["new_pneu"].strip().lower()
+            new = d1_data["new_pneu"].strip().lower()
             if new not in PNEU_types:
                 raise ValueError(f"Driver 1: invalid tyre '{new}'")
             strategy(LAPS - lap, TIME_S1, TIME_S2, TIME_S3, pneu, speed, climax)
@@ -36,20 +38,17 @@ def pit_player(player, player_2, LAPS, lap, TIME_S1, TIME_S2, TIME_S3, pneu, spe
         if pick_2 == "pneustav":
             print(player_2.pneu, round(player_2.wear, 2), "%")
             player_2.time += 2
-
         elif pick_2 == "pneusafe":
             print("PNEUSAFE active for 1 lap")
             player_2.wear -= 1
             player_2.time += 3
-
         elif pick_2 == "2":
-            new = data["driver_2"]["new_pneu"].strip().lower()
+            new = d2_data["new_pneu"].strip().lower()
             if new not in PNEU_types:
                 raise ValueError(f"Driver 2: invalid tyre '{new}'")
             strategy(LAPS - lap, TIME_S1, TIME_S2, TIME_S3, pneu, speed, climax)
             player_2.pit_stop(new, SAFETY_CAR)
 
-    # --- Pit stop radio messages ---
     if not (player.dnf or player_2.dnf):
         if pick == "2" and pick_2 == "2":
             print(random.choice([
@@ -68,7 +67,6 @@ def pit_player(player, player_2, LAPS, lap, TIME_S1, TIME_S2, TIME_S3, pneu, spe
             ]))
             player.time   += 3
             player_2.time += 3
-
         elif pick_2 == "2" and pick != "2":
             print(random.choice([
                 "Box, box. Box this lap. Tyres ready, confirm entry.",
@@ -78,14 +76,10 @@ def pit_player(player, player_2, LAPS, lap, TIME_S1, TIME_S2, TIME_S3, pneu, spe
                 "Pit this lap. We're switching compound."
             ]))
             print(random.choice([
-                "Copy. In this lap.",
-                "Understood. Coming in.",
-                "On my way in.",
-                "Copy. Box, box",
-                "Copy, box this lap.",
-                "Copy, confirmed."
+                "Copy. In this lap.", "Understood. Coming in.",
+                "On my way in.", "Copy. Box, box",
+                "Copy, box this lap.", "Copy, confirmed."
             ]))
-
         elif pick == "2" and pick_2 != "2":
             print(random.choice([
                 "Box, box. Box this lap. Tyres ready, confirm entry.",
@@ -95,13 +89,22 @@ def pit_player(player, player_2, LAPS, lap, TIME_S1, TIME_S2, TIME_S3, pneu, spe
                 "Pit this lap. We're switching compound."
             ]))
             print(random.choice([
-                "Copy. In this lap.",
-                "Understood. Coming in.",
-                "On my way in.",
-                "Copy. Box, box",
-                "Copy, box this lap.",
-                "Copy, confirmed."
+                "Copy. In this lap.", "Understood. Coming in.",
+                "On my way in.", "Copy. Box, box",
+                "Copy, box this lap.", "Copy, confirmed."
             ]))
+
+    # Reset po přečtení — aby se pitstop neopakoval
+    try:
+        reset_path = os.path.join(os.path.dirname(__file__), "user_input/lap_user_data.json")
+        with open(reset_path, "w", encoding="utf-8") as f:
+            json.dump({
+                player.name:   {"action": "1", "new_pneu": "medium"},
+                player_2.name: {"action": "1", "new_pneu": "medium"},
+                "commands": []
+            }, f, indent=2)
+    except Exception as e:
+        print(f"Warning: could not reset lap_user_data: {e}")
 
     return player, player_2
 def info(WETTINESS, forecast, lap, weather, LAPS, climax):
