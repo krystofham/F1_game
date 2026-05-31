@@ -25,16 +25,24 @@ export default function TransferMarket() {
     }
   }
 
-  async function doTransfer() {
+async function doTransfer() {
     if (!selected.driver || !selected.pilot) return;
     setLoading(true);
     setError(null);
     try {
+      // Najdi rating vybraného pilota z offers
+      const allOffers = [
+        ...(offers?.driver_1?.offers || []),
+        ...(offers?.driver_2?.offers || []),
+      ];
+      const mmr2 = offers?.mmr2_best;
+      const found = allOffers.find(o => o.name === selected.pilot) 
+                 || (mmr2?.name === selected.pilot ? mmr2 : null);
+
       const body = {
-        want: "yes",
-        where: selected.league,
         pilot_to_change: selected.driver,
         chosen_pilot: selected.pilot,
+        rating: found?.rating ?? null,
       };
       const res = await fetch(`${API}/do_transfer`, {
         method: "POST",
@@ -42,15 +50,14 @@ export default function TransferMarket() {
         body: JSON.stringify(body),
       });
       if (!res.ok) throw new Error(await res.text());
-      const data = await res.json();
-      setResult(data);
+      setResult(await res.json());
       setOffers(null);
     } catch (e) {
-      setError(typeof e.message === "string" ? e.message : JSON.stringify(e.message));
+      setError(e.message);
     } finally {
       setLoading(false);
     }
-  }
+}
 
   const canConfirm = selected.driver && selected.pilot;
 

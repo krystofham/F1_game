@@ -108,15 +108,9 @@ def build_race_ctx(
 # Veřejné funkce
 # ---------------------------------------------------------------------------
 
-def save_state_end_of_lap(cars, teams, season, race, lap, race_ctx: dict = None, time_laps=None):
-    """
-    race_ctx je volitelný — pokud ho nepředáš, uloží se jen standings (zpětná kompatibilita).
-    time_laps se ukládá na root úrovni state.json (ne uvnitř race_ctx) aby přežil každé kolo.
-    """
-    # time_laps z race_ctx (zpětná kompatibilita) nebo z parametru
+def save_state_end_of_lap(cars, teams, season, race, lap, race_ctx=None, time_laps=None, player_name=None, player_2_name=None):
     tl = time_laps
     if tl is None and race_ctx is not None:
-        # Bezpečně vyjmout bez mutace — race_ctx zůstane neporušený
         tl = race_ctx.get("time_laps", [])
 
     data = {
@@ -128,11 +122,14 @@ def save_state_end_of_lap(cars, teams, season, race, lap, race_ctx: dict = None,
         **_build_standings(cars, teams, tl),
     }
     if race_ctx is not None:
-        # Uložit race_ctx BEZ time_laps (time_laps patří na root)
         ctx_to_save = {k: v for k, v in race_ctx.items() if k != "time_laps"}
         data["race_state"] = ctx_to_save
+    if player_name:
+        data["player.name"] = player_name
+    if player_2_name:
+        data["player_2.name"] = player_2_name
     _save(data)
-
+    
 def save_state_end_of_race(cars, teams, season, race, time_laps=None):
     data = {
         "type":      "race",
