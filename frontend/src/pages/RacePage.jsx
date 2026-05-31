@@ -26,11 +26,12 @@ function PitForm({ drivers, onSubmit, disabled }) {
     setActions((prev) => ({ ...prev, [name]: { ...prev[name], [field]: value } }));
 
   const handleSubmit = () => {
-    const payload = { commands: [] };
-    playerDrivers.forEach((d, i) => {
-      payload[`driver_${i + 1}`] = actions[d.name] ?? { action: "1", new_pneu: "medium" };
-    });
-    onSubmit(payload);
+      const payload = { commands: [] };
+      playerDrivers.forEach((d) => {
+          payload[d.name] = actions[d.name] ?? { action: "1", new_pneu: "medium" };
+      });
+      onSubmit(payload);
+      setActions(buildDefault(playerDrivers));
   };
 
   if (playerDrivers.length === 0) return null;
@@ -355,19 +356,19 @@ export default function RacePage() {
   };
 
   const handlePitSubmit = async (payload) => {
-    try {
-      await api.setLapUserData(payload);
-      setPitSaved(true);
-      addLog(
-        `Instructions: ${Object.entries(payload)
-          .filter(([k]) => k.startsWith("driver_"))
-          .map(([k, v]) => `${k} -> ${v.action === "2" ? "PIT (" + v.new_pneu + ")" : "GO"}`)
-          .join(" | ")}`,
-        "good"
-      );
-    } catch (e) {
-      addLog(`Pit instruction error: ${e.message}`, "danger");
-    }
+      try {
+          await api.setLapUserData(payload);
+          setPitSaved(true);
+          addLog(
+              `Instructions: ${Object.entries(payload)
+                  .filter(([k]) => k !== "commands")
+                  .map(([k, v]) => `${k} -> ${v.action === "2" ? "PIT (" + v.new_pneu + ")" : "GO"}`)
+                  .join(" | ")}`,
+              "good"
+          );
+      } catch (e) {
+          addLog(`Pit instruction error: ${e.message}`, "danger");
+      }
   };
 
   const handleInit = async (res) => {

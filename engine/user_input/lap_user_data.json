@@ -1,11 +1,11 @@
 {
-  "commands": [],
-  "driver_1": {
+  "Max Verstappen": {
     "action": "1",
     "new_pneu": "medium"
   },
-  "driver_2": {
+  "Kim Nguen": {
     "action": "1",
     "new_pneu": "medium"
-  }
+  },
+  "commands": []
 }
