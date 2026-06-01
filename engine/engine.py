@@ -244,7 +244,7 @@ def trading_at_the_of_season(teams, player, player_2, cars):
     want_trade = []
     for x in teams:
         for y in x.drivers:
-            if x.rating - y.ratings > 0.8 and not y.is_player:
+            if abs(x.rating - y.ratings) > 0.8 and not y.is_player:
                 want_trade.append(y)
 
     while len(want_trade) >= 2:
