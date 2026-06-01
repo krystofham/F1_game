@@ -103,6 +103,16 @@ def _state():
     except:
         return {} 
 
+def _clear_user_input():
+    """Vymaže obsah všech souborů ve složce user_input."""
+    folder = os.path.join(_CONFIG, "../engine/user_input")
+    for filename in os.listdir(folder):
+        path = os.path.join(folder, filename)
+        if os.path.isfile(path):
+            with open(path, "w", encoding="utf-8") as f:
+                json.dump({}, f)
+
+
 # ---------------------------------------------------------------------------
 # GET endpointy — data
 # ---------------------------------------------------------------------------
@@ -404,7 +414,7 @@ async def api_do_transfer(data: dict):
 
     with open("state.json", "w", encoding="utf-8") as f:
         json.dump(state, f, indent=4, ensure_ascii=False)
-
+    _clear_user_input()
     return {
         "status": "ok",
         "driver_1": state.get("player.name", ""),
