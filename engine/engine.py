@@ -241,40 +241,22 @@ def generate_pneu_for_bots_on_start(cars: list, weather_1: str) -> list:
     return cars
 
 def trading_at_the_of_season(teams, player, player_2, cars):
-    new_pilot = load_data("deal")["want"]
-
-    if new_pilot not in ("yes", "no"):
-        raise ValueError("bad typo")
-
-    if new_pilot == "yes":
-        player, player_2, player.name, player_2.name, cars = transfer(
-            cars, teams, player, player_2
-        )
-
-    # Sestavení kandidátů na výměnu — přímo Car objekty
     want_trade = []
     for x in teams:
         for y in x.drivers:
             if x.rating - y.ratings > 0.8 and not y.is_player:
-                want_trade.append(y)  # Car objekt přímo
+                want_trade.append(y)
 
     while len(want_trade) >= 2:
         drv_1, drv_2 = random.sample(want_trade, 2)
-
         team_1 = drv_1.team
         team_2 = drv_2.team
-
-        print(
-            f"Breaking!!!\n {drv_1.name} ({team_1.name}, {drv_1.points} points) "
-            f"changes {drv_2.name} ({team_2.name}, {drv_2.points} points)\nBreaking!!!"
-        )
 
         idx_1 = team_1.drivers.index(drv_1)
         idx_2 = team_2.drivers.index(drv_2)
 
         team_1.drivers[idx_1] = drv_2
         team_2.drivers[idx_2] = drv_1
-
         drv_1.team = team_2
         drv_2.team = team_1
 
@@ -282,7 +264,6 @@ def trading_at_the_of_season(teams, player, player_2, cars):
         want_trade.remove(drv_2)
 
     return teams, player, player_2, player.name, player_2.name, cars
-
 def reset_championship(cars, teams):
     for c in cars:
         c.points = 0
