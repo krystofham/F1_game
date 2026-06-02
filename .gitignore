@@ -34,7 +34,7 @@ ENV/
 .pytest_cache/
 .coverage
 htmlcov/
-
+engine/transfer_debug.log
 engine/state.json
 # Byte-compiled / optimized / DLL files
 __pycache__/
