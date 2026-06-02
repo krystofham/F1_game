@@ -1,3 +1,27 @@
+function resolveBaseUrl() {
+  const runtimeDesktopBase =
+    typeof window !== "undefined" &&
+    window.desktopEnv &&
+    typeof window.desktopEnv.getApiBaseUrl === "function"
+      ? window.desktopEnv.getApiBaseUrl()
+      : "";
+
+  if (runtimeDesktopBase) {
+    return runtimeDesktopBase;
+  }
+
+  if (import.meta.env.VITE_API_BASE_URL) {
+    return import.meta.env.VITE_API_BASE_URL;
+  }
+
+  // Keep Vite proxy behavior in browser development mode.
+  if (import.meta.env.DEV) {
+    return "";
+  }
+  return "http://127.0.0.1:8000";
+
+}
+// const BASE = resolveBaseUrl();
 const BASE = "http://localhost:8000";
 
 async function req(method, path, body) {

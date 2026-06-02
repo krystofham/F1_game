@@ -15,7 +15,8 @@ from weather import *
 from engine import *
 from plot import *
 from get_data import *
-
+from transfer_debug import clear_log
+clear_log()
 _BASE_DIR = os.path.dirname(__file__)
 _CONFIG_DIR = os.path.abspath(os.path.join(_BASE_DIR, "..", "config"))
 with open(os.path.join(_CONFIG_DIR, "drivers.json"), encoding="utf-8") as f:
