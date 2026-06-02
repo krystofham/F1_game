@@ -1,0 +1,41 @@
+name: Build Desktop Apps
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  release:
+    runs-on: ${{ matrix.os }}
+
+    strategy:
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'npm'
+          # Tímto řekneme GitHubu, kde má hledat package-lock.json pro cache
+          cache-dependency-path: frontend/package-lock.json
+
+      - name: Install dependencies
+        # Pomocí --prefix řekneme npm, že má pracovat uvnitř složky frontend
+        run: npm ci --prefix frontend
+
+      - name: Build Electron App
+        # Spustíme build skript uvnitř složky frontend
+        run: npm run desktop:build --prefix frontend
+
+      - name: Upload Artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: electron-build-${{ matrix.os }}
+          # Cesta k hotovým souborům je teď taky uvnitř složky frontend
+          path: frontend/dist-electron/

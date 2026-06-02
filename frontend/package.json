@@ -1,8 +1,8 @@
 {
-  "name": "f1-dashboard",
-  "version": "1.0.0",
-  "description": "Desktop dashboard for the F1 game simulation.",
-  "author": "F1 Game Team",
+  "name": "MMRAC1NG",
+  "version": "0.8.0",
+  "description": "Game in Web user interface about motorsport racing",
+  "author": "Kryštof Ham",
   "private": true,
   "main": "electron/main.cjs",
   "scripts": {
@@ -10,9 +10,10 @@
     "build": "vite build",
     "preview": "vite preview",
     "desktop:dev": "concurrently -k \"vite\" \"wait-on tcp:3000 && cross-env VITE_DEV_SERVER_URL=http://localhost:3000 electron .\"",
-    "desktop:build": "npm run desktop:build:linux",
+    "desktop:build": "cross-env ELECTRON_BUILD=1 npm run build && electron-builder",
     "desktop:build:linux": "cross-env ELECTRON_BUILD=1 npm run build && electron-builder --linux AppImage",
-    "desktop:build:win": "cross-env ELECTRON_BUILD=1 npm run build && electron-builder --win nsis"
+    "desktop:build:win": "cross-env ELECTRON_BUILD=1 npm run build && electron-builder --win nsis",
+    "desktop:build:mac": "cross-env ELECTRON_BUILD=1 npm run build && electron-builder --mac dmg"
   },
   "dependencies": {
     "react": "^18.2.0",
@@ -30,12 +31,12 @@
     "vite": "^5.1.0"
   },
   "build": {
-    "appId": "com.f1game.dashboard",
-    "productName": "F1 Dashboard",
+    "appId": "com.mmrac1ng.game",
+    "productName": "MMRAC1NG",
     "directories": {
       "output": "dist-electron"
     },
-    "files": [
+  "files": [
       "dist/**/*",
       "electron/**/*",
       "package.json"
@@ -50,6 +51,12 @@
         "AppImage"
       ],
       "category": "Game"
+    },
+    "mac": {
+      "target": [
+        "dmg"
+      ],
+      "category": "public.app-category.games"
     }
   }
 }
