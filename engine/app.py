@@ -4,6 +4,8 @@ import os, json, random
 from fastapi.staticfiles import StaticFiles  
 from big_functions import *
 from load_data_json import *
+from transfer_debug import log as td_log, snapshot_state as td_snapshot_state
+from transfer_debug import snapshot_cars as td_snapshot_cars
 
 app = FastAPI()
 app.add_middleware(CORSMiddleware, allow_origins=["*"], allow_methods=["*"], allow_headers=["*"])
@@ -15,8 +17,166 @@ app.mount("/img", StaticFiles(directory="../img"), name="img")
 # ---------------------------------------------------------------------------
 # Helpers
 # ---------------------------------------------------------------------------
+def _resolve_driver_car(driver_name, player_by_name, ai_by_name, player_names, is_player_slot):
+    """Najde správný Car objekt — hráč vs. AI u stejného jména po transferu."""
+    if is_player_slot and driver_name in player_by_name:
+        return player_by_name[driver_name]
+    if driver_name in ai_by_name and driver_name not in player_names:
+        return ai_by_name[driver_name]
+    if driver_name in player_by_name:
+        return player_by_name[driver_name]
+    if driver_name in ai_by_name:
+        return ai_by_name[driver_name]
+    return None
+
+
+def _remove_shadow_duplicate_cars(cars, player_names):
+    """Init má AI jezdce stejného jména jako hráč po transferu — bez týmu a duplicitní."""
+    for car in list(cars):
+        if car.team is None and not car.is_player and car.name in player_names:
+            cars.remove(car)
+
+
+def apply_teams_from_state(cars, teams, state_teams, state_drivers=None):
+    """Synchronizuje in-memory týmy podle state.json. Při neshodě vrátí False."""
+    if not state_teams:
+        return False
+
+    player_by_name = {c.name: c for c in cars if c.is_player}
+    player_names = set(player_by_name)
+    ai_by_name = {}
+    for c in cars:
+        if not c.is_player:
+            ai_by_name.setdefault(c.name, c)
+
+    is_player_slot = {}
+    for d in state_drivers or []:
+        name = d["name"]
+        if d.get("is_player"):
+            is_player_slot[name] = True
+        elif name not in is_player_slot:
+            is_player_slot[name] = False
+
+    team_by_name = {t.name: t for t in teams}
+    assignments = []
+    used_car_ids = set()
+
+    for st in state_teams:
+        team = team_by_name.get(st.get("name"))
+        if not team:
+            continue
+        for driver_name in st.get("drivers", []):
+            car = _resolve_driver_car(
+                driver_name, player_by_name, ai_by_name, player_names,
+                is_player_slot.get(driver_name, False),
+            )
+            if car is None or id(car) in used_car_ids:
+                td_log(
+                    "apply_teams_failed",
+                    driver=driver_name,
+                    team=st.get("name"),
+                    reason="no_car" if car is None else "duplicate_car",
+                    is_player_slot=is_player_slot.get(driver_name, False),
+                    player_names=sorted(player_names),
+                )
+                return False
+            assignments.append((team, car))
+            used_car_ids.add(id(car))
+
+    if not assignments:
+        td_log("apply_teams_failed", reason="no_assignments")
+        return False
+
+    for t in teams:
+        t.drivers = []
+    for car in cars:
+        car.team = None
+    for team, car in assignments:
+        team.pridej_jezdce(car)
+
+    removed = []
+    for car in list(cars):
+        if car.team is None and not car.is_player and car.name in player_names:
+            removed.append(car.name)
+    _remove_shadow_duplicate_cars(cars, player_names)
+    if removed:
+        td_log("shadow_duplicates_removed", names=removed)
+    td_log("apply_teams_ok", assignment_count=len(assignments))
+    return True
+
+
+def _apply_driver_dict_to_car(car, d):
+    car.name      = d["name"]
+    car.ratings   = d.get("rating", car.ratings)
+    car.time      = d.get("time", 0.0)
+    car.wear      = d.get("wear", 0.0)
+    car.pneu      = d.get("pneu", car.pneu)
+    car.drs       = d.get("drs", False)
+    car.pit       = d.get("pit", False)
+    car.dnf       = d.get("dnf", False)
+    car.box       = d.get("pit_stops", 0)
+    car.position  = d.get("position_history", [])
+    car.stints    = d.get("stints", [])
+    car.points    = d.get("points", car.points)
+    car.is_player = True
+
+
+def _apply_ai_driver_dict_to_car(car, d):
+    car.name      = d["name"]
+    car.ratings   = d.get("rating", car.ratings)
+    car.time      = d.get("time", 0.0)
+    car.wear      = d.get("wear", 0.0)
+    car.pneu      = d.get("pneu", car.pneu)
+    car.drs       = d.get("drs", False)
+    car.pit       = d.get("pit", False)
+    car.dnf       = d.get("dnf", False)
+    car.box       = d.get("pit_stops", 0)
+    car.position  = d.get("position_history", [])
+    car.stints    = d.get("stints", [])
+    car.is_player = False
+    car.points    = d.get("points", car.points)
+
+
+def _sync_ai_cars_with_state(cars, state_ai, player_names):
+    """
+    Namapuje AI auta na state AI i když došlo k přejmenování
+    (např. Johan -> player, Max -> AI).
+    """
+    ai_cars = [c for c in cars if not c.is_player]
+    ai_by_name = {}
+    for c in ai_cars:
+        ai_by_name.setdefault(c.name, []).append(c)
+
+    matched_car_ids = set()
+    unmatched_state = []
+
+    # 1) Přímý match podle jména
+    for d in state_ai:
+        pool = ai_by_name.get(d["name"], [])
+        chosen = next((c for c in pool if id(c) not in matched_car_ids), None)
+        if chosen is None:
+            unmatched_state.append(d)
+            continue
+        _apply_ai_driver_dict_to_car(chosen, d)
+        matched_car_ids.add(id(chosen))
+
+    # 2) Fallback: chybějící state AI přepiš do volných AI aut
+    free_ai_cars = [c for c in ai_cars if id(c) not in matched_car_ids]
+    for d in unmatched_state:
+        if not free_ai_cars:
+            td_log("ai_sync_exhausted", missing_name=d["name"])
+            break
+        # Preferuj auto, jehož jméno je teď hráčské (typicky 'Johan' po transferu)
+        idx = next((i for i, c in enumerate(free_ai_cars) if c.name in player_names), 0)
+        chosen = free_ai_cars.pop(idx)
+        old_name = chosen.name
+        _apply_ai_driver_dict_to_car(chosen, d)
+        td_log("ai_sync_renamed", old_name=old_name, new_name=d["name"])
+
+
 def load_game_objects(apply_state=True):
     from init import cars, teams, championship, tracks, COUNT_CARS, SAFETY_CAR, LAPS_REMAINING
+    from init import player as init_player, player_2 as init_player_2
     state = load_state()
     b = state.get("b", 1)
     season_count = state.get("season_count", 1)
@@ -35,46 +195,59 @@ def load_game_objects(apply_state=True):
             else:
                 clean_drivers.append(d)
 
-        state_players = [d for d in clean_drivers if d.get("is_player")]
-        state_ai      = [d for d in clean_drivers if not d.get("is_player")]
+        state_players_by_name = {
+            d["name"]: d for d in clean_drivers if d.get("is_player")
+        }
+        state_ai = [d for d in clean_drivers if not d.get("is_player")]
 
-        # Hráčská auta — matchuj podle pořadí is_player, ne jména
-        player_cars = [c for c in cars if c.is_player]
-        for car, d in zip(player_cars, state_players):
-            car.name      = d["name"]
-            car.ratings   = d.get("rating", car.ratings)
-            car.time      = d.get("time", 0.0)
-            car.wear      = d.get("wear", 0.0)
-            car.pneu      = d.get("pneu", car.pneu)
-            car.drs       = d.get("drs", False)
-            car.pit       = d.get("pit", False)
-            car.dnf       = d.get("dnf", False)
-            car.box       = d.get("pit_stops", 0)
-            car.position  = d.get("position_history", [])
-            car.stints    = d.get("stints", [])
-            car.points    = d.get("points", car.points)
-            car.is_player = True
+        p1_name = state.get("player.name", "")
+        p2_name = state.get("player_2.name", "")
 
-        # AI auta — matchuj podle jména
-        ai_state_by_name = {d["name"]: d for d in state_ai}
-        for car in cars:
-            if car.is_player:
+        # Hráčská auta — slot init player / player_2 podle player.name (ne pořadí v JSON)
+        slot_map = ((init_player, p1_name), (init_player_2, p2_name))
+        for car, expected_name in slot_map:
+            if not expected_name:
+                td_log("load_player_skip", slot=car.name, reason="empty player.name key")
                 continue
-            d = ai_state_by_name.get(car.name)
-            if not d:
-                continue
-            car.ratings   = d.get("rating", car.ratings)
-            car.time      = d.get("time", 0.0)
-            car.wear      = d.get("wear", 0.0)
-            car.pneu      = d.get("pneu", car.pneu)
-            car.drs       = d.get("drs", False)
-            car.pit       = d.get("pit", False)
-            car.dnf       = d.get("dnf", False)
-            car.box       = d.get("pit_stops", 0)
-            car.position  = d.get("position_history", [])
-            car.stints    = d.get("stints", [])
-            car.is_player = False
-            car.points    = d.get("points", car.points)
+            d = state_players_by_name.get(expected_name)
+            if d:
+                before = car.name
+                _apply_driver_dict_to_car(car, d)
+                if before != car.name:
+                    td_log(
+                        "load_player_renamed",
+                        slot_init=before,
+                        expected=expected_name,
+                        applied=car.name,
+                    )
+            else:
+                td_log(
+                    "load_player_missing",
+                    slot_init=car.name,
+                    expected=expected_name,
+                    available_players=list(state_players_by_name.keys()),
+                )
+
+        # AI auta — robustní sync i po přejmenování při transferu
+        _sync_ai_cars_with_state(cars, state_ai, {p1_name, p2_name})
+
+        teams_ok = apply_teams_from_state(
+            cars, teams, state.get("teams", []), clean_drivers
+        )
+        if not teams_ok:
+            td_log(
+                "apply_teams_skipped",
+                message="keeping init.py teams",
+                snapshot=td_snapshot_state(state, "after_failed_apply"),
+            )
+
+        td_log(
+            "load_game_objects",
+            apply_state=True,
+            teams_from_state=teams_ok,
+            state_snapshot=td_snapshot_state(state, "load"),
+            cars_snapshot=td_snapshot_cars(cars, init_player, init_player_2),
+        )
 
     race_ctx       = state.get("race_state", {})
     SAFETY_CAR     = race_ctx.get("safety_car", SAFETY_CAR)
@@ -374,6 +547,8 @@ async def api_do_transfer(data: dict):
 
     if not pilot_to_change or not chosen_pilot:
         raise HTTPException(status_code=400, detail="Missing pilot names")
+    if pilot_to_change == chosen_pilot:
+        raise HTTPException(status_code=400, detail="Cannot transfer to the same pilot")
 
     state = _state()
     drivers = state.get("drivers", [])
@@ -384,33 +559,77 @@ async def api_do_transfer(data: dict):
     if pilot_to_change not in (p1_name, p2_name):
         raise HTTPException(status_code=400, detail=f"'{pilot_to_change}' is not a player driver")
 
-    # 1. Nejdřív uprav hráčský záznam IN-PLACE (ještě ve starém listu)
+    td_log(
+        "do_transfer_start",
+        request=data,
+        before=td_snapshot_state(state, "before_transfer"),
+    )
+
     target = next((d for d in drivers if d["name"] == pilot_to_change and d.get("is_player")), None)
     if not target:
         raise HTTPException(status_code=404, detail=f"Player driver '{pilot_to_change}' not found")
 
+    outgoing_ai = next(
+        (d for d in drivers if d["name"] == chosen_pilot and not d.get("is_player")),
+        None,
+    )
+    if not outgoing_ai:
+        raise HTTPException(status_code=404, detail=f"Pilot '{chosen_pilot}' not found")
+
+    old_team_name = target.get("team", "")
+    new_team_name = outgoing_ai.get("team", "")
+
+    # 1. Hráč přebírá identitu cílového pilota a přestěhuje se do jeho týmu
     target["name"] = chosen_pilot
+    target["team"] = new_team_name
     if new_rating is not None:
         target["rating"] = new_rating
 
-    # 2. Teprve pak odstraň AI duplikát (target už má nové jméno, takže ho filtr neodstraní)
+    # 2. Odstraň AI duplikát (target už má nové jméno)
     state["drivers"] = [
         d for d in drivers
         if not (d["name"] == chosen_pilot and not d.get("is_player"))
     ]
 
-    # 3. Aktualizuj root player.name / player_2.name
+    # 3. Vrátit odchozího hráče jako AI do původního týmu
+    replacement = dict(outgoing_ai)
+    replacement["name"] = pilot_to_change
+    replacement["team"] = old_team_name
+    replacement["is_player"] = False
+    state["drivers"].append(replacement)
+
+    # 4. Aktualizuj root player.name / player_2.name
     if pilot_to_change == p1_name:
         state["player.name"] = chosen_pilot
     elif pilot_to_change == p2_name:
         state["player_2.name"] = chosen_pilot
 
-    # 4. Aktualizuj teams
+    # 5. Přepiš soupisky cíleně:
+    # - old team: pilot_to_change -> Max (AI replacement)
+    # - new team: chosen_pilot místo původního chosen_pilot (hráč přebírá jeho místo)
     for team in state.get("teams", []):
-        team["drivers"] = [
-            chosen_pilot if d == pilot_to_change else d
-            for d in team.get("drivers", [])
-        ]
+        if team.get("name") == old_team_name:
+            team["drivers"] = [
+                replacement["name"] if d == pilot_to_change else d
+                for d in team.get("drivers", [])
+            ]
+        elif team.get("name") == new_team_name:
+            team["drivers"] = [
+                chosen_pilot if d == chosen_pilot else d
+                for d in team.get("drivers", [])
+            ]
+
+    after_snap = td_snapshot_state(state, "after_transfer")
+    td_log(
+        "do_transfer_done",
+        pilot_to_change=pilot_to_change,
+        chosen_pilot=chosen_pilot,
+        old_team=old_team_name,
+        new_team=new_team_name,
+        replacement_name=replacement.get("name"),
+        replacement_team=replacement.get("team"),
+        after=after_snap,
+    )
 
     with open("state.json", "w", encoding="utf-8") as f:
         json.dump(state, f, indent=4, ensure_ascii=False)

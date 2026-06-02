@@ -109,6 +109,21 @@ def build_race_ctx(
 # ---------------------------------------------------------------------------
 
 def save_state_end_of_lap(cars, teams, season, race, lap, race_ctx=None, time_laps=None, player_name=None, player_2_name=None):
+    try:
+        from transfer_debug import log as td_log
+        player_cars = [c.name for c in cars if c.is_player]
+        td_log(
+            "save_state_end_of_lap",
+            lap=lap,
+            race=race,
+            player_name_arg=player_name,
+            player_2_name_arg=player_2_name,
+            player_cars_in_memory=player_cars,
+            max_in_memory="Max Verstappen" in player_cars,
+        )
+    except ImportError:
+        pass
+
     tl = time_laps
     if tl is None and race_ctx is not None:
         tl = race_ctx.get("time_laps", [])
