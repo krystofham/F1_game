@@ -45,6 +45,7 @@ class Car:
             self.destroy = True
             SAFETY_CAR = True
             LAPS_REMAINING = random.randint(3,6)
+            self.puncture = True
 
         if self.puncture and not self.destroy:
             self.destroy = True

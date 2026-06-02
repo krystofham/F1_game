@@ -386,7 +386,6 @@ async def api_sim_lap():
     race = state.get("race", "Unknown Race")
 
     k_speed = race_ctx.get("k_speed", [1, 1.04, 1.08, 0.6, 0.65])
-
     lap, cars, teams = sim_the_lap(
         cars, teams, player, player_2, lap,
         SAFETY_CAR, LAPS_REMAINING,

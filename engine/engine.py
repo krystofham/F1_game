@@ -212,7 +212,7 @@ def safety_car(car, weather, lap, SAFETY_CAR, LAPS_REMAINING):
         ]))
     else:
         if car.safety_car_probability < 1:
-            car.safety_car_probability = 200
+            car.safety_car_probability = 2500
         if random.randint(1,int((car.safety_car_probability/5))) == 1:
             if lap >= 3:
                 car.dnf = True
@@ -229,7 +229,7 @@ def safety_car(car, weather, lap, SAFETY_CAR, LAPS_REMAINING):
     if SAFETY_CAR !=True: 
         SAFETY_CAR=False
         LAPS_REMAINING = 0
-    return SAFETY_CAR, LAPS_REMAINING, car.dnf, car.time
+    return SAFETY_CAR, LAPS_REMAINING, car
 def generate_pneu_for_bots_on_start(cars: list, weather_1: str) -> list:
     for car in cars:
         if weather_1 in ('rain', 'heavy rain'):
