@@ -3,15 +3,15 @@ name: Build and Release Desktop Apps
 on:
   push:
     branches:
-          - main 
+      - main     # Spustí build při každém pushi na main
+    tags:
+      - 'v*'     # Spustí build, když vytvoříš tag (např. v1.0.2-kraken)
 
 jobs:
   release:
     runs-on: ${{ matrix.os }}
-
     strategy:
       matrix:
-        # Pouštíme build pro všechny tři platformy na jejich nativních systémech
         os: [ubuntu-latest, windows-latest, macos-latest]
 
     steps:
@@ -26,11 +26,9 @@ jobs:
           cache-dependency-path: frontend/package-lock.json
 
       - name: Install dependencies
-        # Musíme skočit do složky frontend, nainstalovat to tam a vygenerovat node_modules tamtéž
         run: cd frontend && npm ci
 
       - name: Build Electron App
-        # Podle toho, na jakém operačním systému zrovna běžíme, spustíme správný skript z package.json
         run: |
           cd frontend
           if [ "${{ matrix.os }}" = "macos-latest" ]; then
@@ -43,9 +41,8 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-      # Tento krok ponecháme, protože electron-builder v základním nastavení dává 
-      # hotové soubory do frontend/dist-electron/, odkud je tento skript vezme a nahraje na GitHub.
       - name: Release Packages
+        if: startsWith(github.ref, 'refs/tags/v')
         uses: softprops/action-gh-release@v2
         with:
           files: |
