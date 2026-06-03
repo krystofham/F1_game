@@ -4,6 +4,10 @@
   "description": "Game in Web user interface about motorsport racing",
   "author": "Kryštof Ham",
   "private": true,
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/krystofham/F1_game.git"
+  },
   "main": "electron/main.cjs",
   "scripts": {
     "dev": "vite",
