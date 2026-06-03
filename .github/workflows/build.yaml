@@ -29,6 +29,7 @@ jobs:
         run: cd frontend && npm ci
 
       - name: Build Electron App
+        shell: bash
         run: |
           cd frontend
           if [ "${{ matrix.os }}" = "macos-latest" ]; then
