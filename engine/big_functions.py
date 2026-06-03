@@ -1,4 +1,6 @@
 from init import *
+import os, json as _json
+from log import log
 def sim_the_lap(cars, teams, player, player_2, lap, SAFETY_CAR, LAPS_REMAINING, WETTINESS, forecast, weather, LAPS, climax, pneu, speed, PNEU_types, weather_1, weather_2, weather_3, weather_4, training_type, k_wear, k_speed,speed_bonus, season_count, race, time_laps):
     # Načti aktuální stav
     state = load_state()
@@ -93,6 +95,14 @@ def sim_the_lap(cars, teams, player, player_2, lap, SAFETY_CAR, LAPS_REMAINING, 
     return lap, cars, teams
 
 def init_race(tracks, race, cars, teams, championship, player, player_2, b, season_count):
+    _cfg = {}
+    try:
+        _p = os.path.join(os.path.dirname(__file__), "user_input/init.json")
+        with open(_p, encoding="utf-8") as _f:
+            _cfg = _json.load(_f)
+    except Exception:
+        pass
+
     WETTINESS = 0
     climax = random.choice(["transitional","sunny","sunny","sunny"])
     lap = 0
@@ -150,11 +160,27 @@ def init_race(tracks, race, cars, teams, championship, player, player_2, b, seas
         car.pneu = random.choice(["hard", "medium"])
     player.pneu = get_player_pneu(PNEU_types, player.pneu, "driver_1")
     player_2.pneu = get_player_pneu(PNEU_types, player_2.pneu, "driver_2")
+    player.pneu = _cfg.get("pneu_driver_1", "hard")
+    player_2.pneu = _cfg.get("pneu_driver_2", "hard")
     cars = generate_pneu_for_bots_on_start(cars, weather_1)
+    for car in cars:
+        if car.is_player:
+            if player.name == car.name:
+                car.pneu = player.pneu
+            elif player_2.name == car.name:
+                car.pneu = player_2.pneu
+            else:
+                log(
+                    "[ERROR] BAD CONFIG", 
+                    details=f"The player name is {player.name}, player_2 {player_2.name}, car {car.name} claim to be player like this: {car.is_player}"
+                )  
+                raise ValueError("bad condfig in players, contact me on github: https://github.com/krystofham/F1_game/")
+    players_list = [player.pneu, player_2.pneu, [car.pneu for car in cars if car.is_player], _cfg.get("pneu_driver_1", "error"), _cfg.get("pneu_driver_2", "hard")]
+    log("[INIT RACE PNEU]", pneu=players_list)
     simulation = []
     #Training
-    # speed_bonus, training_type = training(speed, climax, cars)
-    training_type = "1"
+    # speed_bonus, training_type = training(speed, climax, cars)]
+    training_type = str(_cfg.get("training_mode", 1))
     speed_bonus = True
     #Qualification
     simulation = qualification(simulation, cars, TIME_S1, TIME_S2, TIME_S3, training_type)

@@ -44,6 +44,7 @@ export const api = {
   getTeam: (name) => req("GET", `/api/get_teams/${encodeURIComponent(name)}`),
   initRace: () => req("POST", "/api/init_race"),
   simLap: () => req("POST", "/api/sim_lap"),
+  setInitConfig: (cfg) => req("POST", "/api/set_init_config", cfg),
   simUntil: (lap) => req("POST", "/api/sim_until", { lap }),
   simRace: () => req("POST", "/api/sim_race"),
   postRace: () => req("POST", "/api/post_race"),

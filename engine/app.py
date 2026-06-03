@@ -4,8 +4,8 @@ import os, json, random
 from fastapi.staticfiles import StaticFiles  
 from big_functions import *
 from load_data_json import *
-from transfer_debug import log as td_log, snapshot_state as td_snapshot_state
-from transfer_debug import snapshot_cars as td_snapshot_cars
+from log import log as td_log, snapshot_state as td_snapshot_state
+from log import snapshot_cars as td_snapshot_cars
 
 app = FastAPI()
 app.add_middleware(CORSMiddleware, allow_origins=["*"], allow_methods=["*"], allow_headers=["*"])
@@ -509,6 +509,19 @@ async def api_set_lap_user_data(data: dict):
         json.dump(data, f, indent=2, ensure_ascii=False)
     return {"status": "ok"}
 
+# INIT RACE
+@app.post("/api/set_init_config")
+async def api_set_init_config(data: dict):
+    path = os.path.join(_CONFIG, "../engine/user_input/init.json")
+    log(f"[DEBUG] Path", path=f"Writing init config to: {os.path.abspath(path)}")
+    log(f"[DEBUG] Data ", payload = data)
+    with open(path, "w", encoding="utf-8") as f:
+        json.dump(data, f, indent=2, ensure_ascii=False)
+    
+    with open(path, "r") as f:
+        log("[DEBUG]", file = f"Verified written: {f.read()}")
+    
+    return {"status": "ok"}
 
 # Tranfers
 @app.get("/api/get_transfer_offers")

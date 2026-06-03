@@ -232,12 +232,13 @@ def safety_car(car, weather, lap, SAFETY_CAR, LAPS_REMAINING):
     return SAFETY_CAR, LAPS_REMAINING, car
 def generate_pneu_for_bots_on_start(cars: list, weather_1: str) -> list:
     for car in cars:
-        if weather_1 in ('rain', 'heavy rain'):
-            car.pneu = random.choice(["wet", "inter"])
-        elif weather_1 == "transitional":
-            car.pneu = random.choice(["soft", "inter"])
-        else:
-            car.pneu = random.choice(["hard", "medium", "soft"])
+        if not car.is_player:
+            if weather_1 in ('rain', 'heavy rain'):
+                car.pneu = random.choice(["wet", "inter"])
+            elif weather_1 == "transitional":
+                car.pneu = random.choice(["soft", "inter"])
+            else:
+                car.pneu = random.choice(["hard", "medium", "soft"])
     return cars
 
 def trading_at_the_of_season(teams, player, player_2, cars):

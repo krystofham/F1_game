@@ -15,7 +15,7 @@ from weather import *
 from engine import *
 from plot import *
 from get_data import *
-from transfer_debug import clear_log
+from log import clear_log
 clear_log()
 _BASE_DIR = os.path.dirname(__file__)
 _CONFIG_DIR = os.path.abspath(os.path.join(_BASE_DIR, "..", "config"))

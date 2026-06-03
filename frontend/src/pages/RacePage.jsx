@@ -118,8 +118,13 @@ function InitForm({ onInit }) {
     setLoading(true);
     setErr(null);
     try {
+      await api.setInitConfig({
+        pneu_driver_1: cfg.pneu_driver_1,
+        pneu_driver_2: cfg.pneu_driver_2,
+        training_mode: cfg.training_mode,
+      });
       const res = await api.initRace();
-      onInit(res);
+      onInit(res);  // předá jen výsledek initRace, config už je uložen
     } catch (e) {
       setErr(e.message);
     } finally {
