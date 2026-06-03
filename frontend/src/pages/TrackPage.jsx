@@ -2,19 +2,19 @@ import { useApi } from "../hooks/useApi";
 import { api } from "../utils/api";
 
 const COUNTRY_FLAGS = {};
-let safetyCarIndex = false;
+
 function guessFlag(name) {
   const lower = (name || "").toLowerCase();
   for (const [key, flag] of Object.entries(COUNTRY_FLAGS)) {
     if (lower.includes(key)) return flag;
   }
-  return
+  return "";
 }
 
 function StatBlock({ label, value, unit, importance }) {
   return (
-<div className="card" style={importance ? { borderColor: "red" } : {}}>      
-  <div className="card-label">{label}</div>
+    <div className="card" style={importance ? { borderColor: "red" } : {}}>      
+      <div className="card-label">{label}</div>
       <div className="card-value" style={{ fontSize: 26 }}>
         {value ?? "—"}
         {unit && <span style={{ fontSize: 14, color: "var(--text-2)", marginLeft: 6 }}>{unit}</span>}
@@ -22,30 +22,38 @@ function StatBlock({ label, value, unit, importance }) {
     </div>
   );
 }
-function safetyCar(value){
-  console.log(value)
-  if (value === false){
-    return "Safety car is not on track"
-  }
-  else {
-    safetyCarIndex = true;
-    return "Safety car IS OUT"
-  }
-}
 
 export default function TrackPage() {
+  // 1. Všechny hooky na absolutním topu komponenty
   const { data: state, loading, error } = useApi(api.getState);
+  const { data: tracks } = useApi(api.getTracks);
 
-  const race = state?.race;
-  const championship = state?.championship || [];
-  const b = state?.b ?? 1;
-  const currentTrack = championship[b - 1] || {};
-
+  // 2. Loading a Error stavy až ZA hooky
   if (loading) return <div className="loading">LOADING TRACK</div>;
   if (error) return <div className="empty">⚠ {error}</div>;
 
-  const flag = guessFlag(currentTrack.name || race || "");
-  const dnfProb = 100 * 22 * (state?.race_state?.total_laps) / 5000
+  // 3. Bezpečné vytažení aktuálního jména závodu ze state
+  const race = state?.race;
+  const championship = state?.championship || [];
+  const b = state?.b ?? 1;
+  const rawTrack = championship[b - 1];
+  
+  // Zde získáme čistý string jména (podpora pro objekty i raw stringy)
+  const currentTrackName = typeof rawTrack === "string" ? rawTrack : rawTrack?.name || race || "";
+
+  // 4. Porovnání jména s polem z tracks.json (api.getTracks)
+  const trackDetails = tracks?.find(t => t.name === currentTrackName) || {};
+
+  // 5. Výpočty pravděpodobností z nalezeného okruhu
+  const scProb = trackDetails.sc_prob || 5000; 
+  const totalLaps = trackDetails.laps ?? state?.race_state?.total_laps ?? 0;
+  const dnfProb = 100 * 28 * totalLaps / scProb;
+
+  // Bezpečný stav pro safety car bez globálních mutací
+  const isSafetyCarOut = state?.race_state?.safety_car !== false;
+
+  const flag = guessFlag(currentTrackName);
+
   return (
     <div>
       <div className="page-header">
@@ -54,27 +62,27 @@ export default function TrackPage() {
         </div>
         <div className="page-title">
           <span style={{ fontSize: 56, marginRight: 12 }}>{flag}</span>
-          <span>{(currentTrack.name || race || "CIRCUIT").toUpperCase()}</span>
+          <span>{currentTrackName.toUpperCase() || "CIRCUIT"}</span>
         </div>
       </div>
 
       <div style={{ display: "flex", flexDirection: "column", gap: 14, marginBottom: 24 }}>
         <StatBlock
           label="Safety car"
-          value={safetyCar(state?.race_state?.safety_car) || "Error"}
-          importance={safetyCarIndex}        
-          />
-        {safetyCarIndex && (
+          value={isSafetyCarOut ? "Safety car IS OUT" : "Safety car is not on track"}
+          importance={isSafetyCarOut}        
+        />
+        {isSafetyCarOut && (
           <StatBlock
             label="Safety car laps remaining"
-            value={state?.race_state?.safety_car_laps_remaining || "Error"}
-            importance = {true}
+            value={state?.race_state?.safety_car_laps_remaining ?? "Error"}
+            importance={true}
           />
         )}
         <StatBlock
           label="Weather"
           value={state?.race_state?.weather || "Error"}
-          importance={state?.race_state?.weather != "sunny"}
+          importance={state?.race_state?.weather !== "sunny"}
         />
         <StatBlock
           label="Wettiness of track"
@@ -84,7 +92,7 @@ export default function TrackPage() {
         />
         <StatBlock
           label="DNF Risk"
-          value={dnfProb != null ? dnfProb.toFixed(1) : "Error"}
+          value={dnfProb ? dnfProb.toFixed(1) : "Error"}
           unit="%"
         />
         <StatBlock
@@ -96,18 +104,18 @@ export default function TrackPage() {
           value={state?.race_state?.climax || "Error"}
         />
 
-                <StatBlock label="Laps" value={currentTrack.laps ?? state?.race_state?.total_laps} />
-
+        <StatBlock label="Laps" value={totalLaps} />
       </div>
 
-      {(currentTrack.pneu_types || currentTrack.speed_types) && (
+      {/* Profil směsí se nyní renderuje na základě spárovaných detailů z tracks.json */}
+      {(trackDetails.pneu_types || trackDetails.speed_types) && (
         <div>
           <div className="section-title">Compound Profile</div>
           <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
             <div className="card">
               <div className="card-label" style={{ marginBottom: 10 }}>Tyre Compounds</div>
               <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
-                {(currentTrack.pneu_types || ["soft", "medium", "hard"]).map((t) => (
+                {(trackDetails.pneu_types || ["soft", "medium", "hard"]).map((t) => (
                   <div
                     key={t}
                     className={`tyre ${t}`}
@@ -144,8 +152,8 @@ export default function TrackPage() {
         <div>
           <div className="section-title">Season Calendar</div>
           <div style={{ display: "flex", flexDirection: "column", gap: 3 }}>
-            {championship.map((race, i) => {
-              const name = typeof race === "string" ? race : race?.name ?? `Race ${i + 1}`;
+            {championship.map((raceItem, i) => {
+              const name = typeof raceItem === "string" ? raceItem : raceItem?.name ?? `Race ${i + 1}`;
               const isCurrent = i + 1 === b;
               const isDone = i + 1 < b;
               return (

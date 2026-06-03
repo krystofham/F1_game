@@ -1,0 +1,112 @@
+[
+  {
+    "name": "Huawei GP SPA",
+    "pneu_wear": "hard",
+    "speed_type": "quick",
+    "temp_1": 22,
+    "temp_2": 25,
+    "temp_3": 18,
+    "laps": 70,
+    "dnf_probability": 4500
+  },
+  {
+    "name": "LG TV Grand Prix du France",
+    "pneu_wear": "hard",
+    "speed_type": "slow",
+    "temp_1": 26,
+    "temp_2": 19,
+    "temp_3": 22,
+    "laps": 74,
+    "dnf_probability": 4500
+  },
+  {
+    "name": "Sony Varsava Grand Prix",
+    "pneu_wear": "hard",
+    "speed_type": "medium",
+    "temp_1": 35,
+    "temp_2": 18,
+    "temp_3": 24,
+    "laps": 62,
+    "dnf_probability": 5000
+  },
+  {
+    "name": "META China Grand Prix",
+    "pneu_wear": "medium",
+    "speed_type": "slow",
+    "temp_1": 25,
+    "temp_2": 34,
+    "temp_3": 30,
+    "laps": 56,
+    "dnf_probability": 4500
+  },
+  {
+    "name": "Ostrava Apple GP",
+    "pneu_wear": "medium",
+    "speed_type": "quick",
+    "temp_1": 20,
+    "temp_2": 26,
+    "temp_3": 18,
+    "laps": 67,
+    "dnf_probability": 4500
+  },
+  {
+    "name": "Python circuit Bahamas",
+    "pneu_wear": "hard",
+    "speed_type": "medium",
+    "temp_1": 25,
+    "temp_2": 23,
+    "temp_3": 38,
+    "laps": 72,
+    "dnf_probability": 5000
+  },
+  {
+    "name": "HP Bulgarian GP",
+    "pneu_wear": "medium",
+    "speed_type": "medium",
+    "temp_1": 23,
+    "temp_2": 29,
+    "temp_3": 20,
+    "laps": 60,
+    "dnf_probability": 5000
+  },
+  {
+    "name": "AWS Grand Prix de Espana",
+    "pneu_wear": "medium",
+    "speed_type": "quick",
+    "temp_1": 26,
+    "temp_2": 31,
+    "temp_3": 16,
+    "laps": 51,
+    "dnf_probability": 6000
+  },
+  {
+    "name": "AirBNB Prague GP",
+    "pneu_wear": "soft",
+    "speed_type": "quick",
+    "temp_1": 20,
+    "temp_2": 33,
+    "temp_3": 40,
+    "laps": 42,
+    "dnf_probability": 4500
+  },
+  {
+    "name": "eBay Skyline Turkey GP",
+    "pneu_wear": "medium",
+    "speed_type": "slow",
+    "temp_1": 27,
+    "temp_2": 24,
+    "temp_3": 36,
+    "laps": 49,
+    "dnf_probability": 4900
+  },
+  {
+    "name": "Java airlines Monza IBM Italy GP",
+    "pneu_wear": "soft",
+    "speed_type": "quick",
+    "temp_1": 30,
+    "temp_2": 16,
+    "temp_3": 18,
+    "laps": 50,
+    "dnf_probability": 5100
+  }
+]

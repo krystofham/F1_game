@@ -16,7 +16,7 @@ def sim_the_lap(cars, teams, player, player_2, lap, SAFETY_CAR, LAPS_REMAINING, 
 
     # Safety car
     for car in cars:
-        SAFETY_CAR, LAPS_REMAINING, car = safety_car(car, weather, lap, SAFETY_CAR, LAPS_REMAINING)
+        SAFETY_CAR, LAPS_REMAINING, car = safety_car(car, weather, lap, SAFETY_CAR, LAPS_REMAINING, LAPS)
     if SAFETY_CAR:
         LAPS_REMAINING -= 1
     if LAPS_REMAINING == 0:

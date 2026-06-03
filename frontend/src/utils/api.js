@@ -41,6 +41,7 @@ export const api = {
   getState: () => req("GET", "/api/get_state"),
   getDrivers: () => req("GET", "/api/get_drivers"),
   getTeams: () => req("GET", "/api/get_teams"),
+  getTracks: () => req("GET", "/api/tracks"), 
   getTeam: (name) => req("GET", `/api/get_teams/${encodeURIComponent(name)}`),
   initRace: () => req("POST", "/api/init_race"),
   simLap: () => req("POST", "/api/sim_lap"),

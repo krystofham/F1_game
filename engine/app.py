@@ -6,7 +6,6 @@ from big_functions import *
 from load_data_json import *
 from log import log as td_log, snapshot_state as td_snapshot_state
 from log import snapshot_cars as td_snapshot_cars
-
 app = FastAPI()
 app.add_middleware(CORSMiddleware, allow_origins=["*"], allow_methods=["*"], allow_headers=["*"])
 
@@ -779,3 +778,37 @@ async def api_sim_until(data: dict):
         "snapshots": lap_snapshots,
         "final_state": final_state,
     }
+
+# Tracks
+
+@app.get("/api/tracks")
+def get_tracks_api():
+    """
+    API endpoint pro FastAPI, který načte náhodně seřazené tratě 
+    a vrátí je jako JSON pro frontend.
+    """
+    try:
+        loaded_tracks = Track.load_all_from_json()
+        
+        if not loaded_tracks:
+            raise HTTPException(status_code=404, detail="Žádné tratě nebyly načteny nebo soubor chybí")
+        tracks_data = [
+            {
+                "name": track.name,
+                "pneu_wear": track.pneu,
+                "speed_type": track.speed,
+                "temp_1": track.TIME_S1,
+                "temp_2": track.TIME_S2,
+                "temp_3": track.TIME_S3,
+                "laps": track.laps,
+                "sc_prob": track.dnf_probability
+            }
+            for track in loaded_tracks
+        ]
+        
+        return tracks_data
+
+    except HTTPException as http_ex:
+        raise http_ex
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Interní chyba serveru: {str(e)}")

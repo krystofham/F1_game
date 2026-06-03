@@ -1,4 +1,6 @@
 import random
+import json
+import os
 try:
     from weather import generate_weather
     from mmr2 import simulate_season_mmr2, list_drivers_mmr2
@@ -191,45 +193,65 @@ def transfer(cars, teams, player, player_2):
 
     return player, player_2, player.name, player_2.name, cars
 
-def safety_car(car, weather, lap, SAFETY_CAR, LAPS_REMAINING):
+
+def safety_car(car, weather, lap, SAFETY_CAR, LAPS_REMAINING, LAPS):
+    json_path = os.path.join(os.path.dirname(__file__), "..", "config", "tracks.json")
+    
+    with open(json_path, "r", encoding="utf-8") as f:
+        tracks_data = json.load(f)
+    
+    track_details = None
+    for t in tracks_data:
+        if t["laps"] == LAPS:
+            track_details = t
+            break
+            
+    if track_details is None:
+        raise ValueError(f"Track not found in tracks.json")
+        
+    sc_prob = track_details.get("dnf_probability")
+
     if weather == "sunny":
         if car.safety_car_probability < 1:
-            car.safety_car_probability = 200
-        if random.randint(1,int((car.safety_car_probability/10))) == 1:
+            car.safety_car_probability = sc_prob
+        if random.randint(1, int((car.safety_car_probability / 10))) == 1:
             car.time += random.randint(10, 55)
             print("Mistake from driver")
-        if random.randint(1, car.safety_car_probability) == 1:
+        if random.randint(1, int(car.safety_car_probability)) == 1:
             if lap >= 3:
                 car.dnf = True
                 SAFETY_CAR = True
-                LAPS_REMAINING = random.randint(3,6)
+                LAPS_REMAINING = random.randint(3, 6)
                 print(f"{car.name} recieved DNF")
                 print(random.choice([
-            "Radio: Crash ahead, safety car is out!",
-            "Radio: We’ve got yellow flags – full course yellow!",
-            "Radio: Big crash, bring the delta in check.",
-            "Radio: Watch the debris – SC deployed!"
-        ]))
+                    "Radio: Crash ahead, safety car is out!",
+                    "Radio: We’ve got yellow flags – full course yellow!",
+                    "Radio: Big crash, bring the delta in check.",
+                    "Radio: Watch the debris – SC deployed!"
+                ]))
     else:
         if car.safety_car_probability < 1:
-            car.safety_car_probability = 2500
-        if random.randint(1,int((car.safety_car_probability/5))) == 1:
+            car.safety_car_probability = int(sc_prob / 2)
+        if random.randint(1, int((car.safety_car_probability / 5))) == 1:
             if lap >= 3:
                 car.dnf = True
                 SAFETY_CAR = True
-                LAPS_REMAINING = random.randint(3,6)
+                LAPS_REMAINING = random.randint(3, 6)
                 print(f"{car.name} recieved DNF")
                 print(random.choice([
-            "Radio: Crash ahead, safety car is out!",
-            "Radio: We’ve got yellow flags – full course yellow!",
-            "Radio: Big crash, bring the delta in check.",
-            "Radio: Watch the debris – SC deployed!"
-        ]))
-    if car.dnf != True: car.dnf =False
-    if SAFETY_CAR !=True: 
-        SAFETY_CAR=False
+                    "Radio: Crash ahead, safety car is out!",
+                    "Radio: We’ve got yellow flags – full course yellow!",
+                    "Radio: Big crash, bring the delta in check.",
+                    "Radio: Watch the debris – SC deployed!"
+                ]))
+                
+    if car.dnf != True: 
+        car.dnf = False
+    if SAFETY_CAR != True: 
+        SAFETY_CAR = False
         LAPS_REMAINING = 0
     return SAFETY_CAR, LAPS_REMAINING, car
+
 def generate_pneu_for_bots_on_start(cars: list, weather_1: str) -> list:
     for car in cars:
         if not car.is_player:

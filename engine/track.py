@@ -1,3 +1,8 @@
+from log import log
+import os
+import random
+import json
+
 class Track:
     def __init__(self, name, pneu, speed, TIME_S1, TIME_S2, TIME_S3, laps, dnf_probability):
         self.name = name
@@ -8,15 +13,39 @@ class Track:
         self.TIME_S3 = TIME_S3
         self.laps = laps
         self.dnf_probability = dnf_probability
-tracks = []
-tracks.append(Track("Huawei GP SPA", "hard", "quick", 22, 25, 18, 70, 4500))
-tracks.append(Track("LG TV Grand Prix du France", "hard", "slow", 26, 19, 22, 74, 4500))
-tracks.append(Track("Sony Varsava Grand Prix","hard", "medium", 35, 18, 24, 62, 5000))
-tracks.append(Track("META China Grand Prix", "medium", "slow", 25, 34, 30, 56, 4500))
-tracks.append(Track("Ostrava Apple GP", "medium", "quick", 20, 26, 18, 67, 4500))
-tracks.append(Track("Python circuit Bahamas", "hard", "medium", 25, 23, 38, 72, 5000))
-tracks.append(Track("HP Bulgarian GP", "medium", "medium", 23, 29, 20, 60, 5000))
-tracks.append(Track("AWS Grand Prix de Espana", "medium", "quick", 26, 31, 16, 51, 6000))
-tracks.append(Track("AirBNB Prague GP", "soft", "quick", 20, 33, 40, 42, 4500))
-tracks.append(Track("eBay Skyline Turkey GP","medium", "slow", 27, 24, 36, 49, 4900))
-tracks.append(Track("Java airlines Monza IBM Italy GP","soft", "quick", 30, 16, 18, 50, 5100))
+    @staticmethod
+    def load_all_from_json():
+        """
+        Načte konfiguraci ze souboru /config/tracks.json přesně podle poskytnuté struktury.
+        """
+        # Cesta o úroveň výš (z /engine do /config)
+        current_dir = os.path.dirname(os.path.abspath(__file__))
+        json_path = os.path.join(current_dir, '..', 'config', 'tracks.json')
+
+        tracks_list = []
+        try:
+            with open(json_path, 'r', encoding='utf-8') as f:
+                data = json.load(f)
+                for item in data:
+                    track = Track(
+                        name=item["name"],
+                        pneu=item["pneu_wear"],
+                        speed=item["speed_type"],
+                        TIME_S1=item["temp_1"],
+                        TIME_S2=item["temp_2"],
+                        TIME_S3=item["temp_3"],
+                        laps=item["laps"],
+                        dnf_probability=item["dnf_probability"] 
+                    )
+                    tracks_list.append(track)
+        except FileNotFoundError:
+            log(f"[ERROR] Soubor s tratěmi nebyl nalezen na adrese: {json_path}")
+            return []
+        except json.JSONDecodeError:
+            log(f"[ERROR] Chyba při čtení JSONu v: {json_path}")
+            return []
+        random.shuffle(tracks_list)
+        return tracks_list
+
+# Automatické načtení při importu modulu
+tracks = Track.load_all_from_json()

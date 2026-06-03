@@ -224,4 +224,4 @@ def save_season_csv(cars, teams, season_count):
                 "driver_2_points": d[1].points if len(d) > 1 else 0,
             })
 
-    print(f"📁 Uloženo: {drivers_file}, {teams_file}")
+    print(f"Uloženo: {drivers_file}, {teams_file}")
