@@ -1,108 +1,71 @@
-# F1 Manager Simulator
-
-> This documentation is heavily done with AI.
-
-> A terminal-based Formula 1 career management game written in Python. Manage a team, develop race strategy, handle pit stops, and fight for the championship across multiple seasons.
+This readme is done with AI.
+Join discord for developer/everybody https://discord.gg/qFdBFqWQV
 
 ---
 
-## 📋 Table of Contents
+# MMRAC1NG
 
-- [Overview](#overview)
-- [Features](#features)
-- [Project Structure](#project-structure)
-- [Installation](#installation)
-- [How to Play](#how-to-play)
-- [Game Systems](#game-systems)
-  - [Training & Car Setup](#training--car-setup)
-  - [Tyre Strategy](#tyre-strategy)
-  - [Weather System](#weather-system)
-  - [Race Simulation](#race-simulation)
-  - [Safety Car](#safety-car)
-  - [Pit Stops](#pit-stops)
-  - [Points System](#points-system)
-  - [Driver Transfers](#driver-transfers)
-  - [MMR2 (Minor League)](#mmr2-minor-league)
-- [Module Reference](#module-reference)
-- [Configuration & Constants](#configuration--constants)
-- [Planned Features (Roadmap)](#planned-features-roadmap)
-- [License](#license)
+> Formula 1 career management simulator — Python race engine + React/Electron dashboard.
+
+![Platform](https://img.shields.io/badge/platform-Windows%20%7C%20Linux%20%7C%20macOS-blue)
+![License](https://img.shields.io/badge/license-MIT-green)
 
 ---
 
-## Overview
-
-F1 Manager Simulator puts you in the role of a Formula 1 team principal. Each race weekend you:
-
-1. Configure your car setup during **training**
-2. Watch your drivers qualify
-3. Choose **starting tyres** for both drivers
-4. React to **live weather**, **safety car** periods, and tyre wear every lap
-5. Make **pit stop decisions** for both cars
-6. Earn **championship points** and compete across a full season
-
-The simulation runs entirely in the terminal with matplotlib graphs displayed after each race.
-
----
-
-## Features
-
-- Full race simulation with lap-by-lap output
-- Two player-controlled drivers on the same team
-- Dynamic weather system (sunny → transitional → rain → heavy rain)
-- Tyre wear simulation with 5 compounds (hard, medium, soft, inter, wet)
-- Safety car events and crash DNFs
-- DRS activation within 1 second of the car ahead
-- AI pit strategy logic that reacts to weather and wear
-- Driver & constructor championship standings
-- Car setup system affecting cornering, grip, and speed
-- Driver transfers between MMR1 and MMR2
-- Multi-season career mode
-- Post-race graphs: race results, position-over-laps chart
-
----
-
-## Project Structure
+## Architecture
 
 ```
-f1-manager/
+F1_game/
+├── engine/          # Python — race simulation core (FastAPI on :8000)
+│   ├── app.py       # REST API (FastAPI) — bridge between engine and frontend
+│   ├── main.py      # Season loop entry point
+│   ├── big_functions.py  # sim_the_lap, init_race, post_race_info, reset_race
+│   ├── car.py       # Car class — lap sim, pit stops, tyre logic, AI decisions
+│   ├── team.py      # Team class — points, driver registration
+│   ├── track.py     # Track class — sector times, laps, DNF probability
+│   ├── engine.py    # Qualification, safety car, transfers
+│   ├── weather.py   # Markov weather chain + track wettiness
+│   ├── strategy.py  # 1/2/3-stop strategy advisor
+│   ├── mmr2.py      # Minor league parallel season
+│   ├── saving.py    # save_state_end_of_race / end_of_season → state.json
+│   ├── log.py       # Debug logging + state snapshots
+│   ├── state.json   # Live game state (race progress, drivers, teams)
+│   └── user_input/  # JSON files written by frontend, read by engine each lap
+│       ├── lap_user_data.json   # Player pit decisions this lap
+│       └── init.json            # Race config (tyres, training mode)
 │
-├── main.py              # Entry point — season loop, race loop, post-season logic
-├── init.py              # Global constants, initial driver/team/track lists
+├── frontend/        # React + Vite + Electron
+│   ├── src/
+│   │   ├── App.jsx              # Router + sidebar
+│   │   ├── pages/
+│   │   │   ├── RacePage.jsx     # Race control (init, sim lap/all, pit form)
+│   │   │   ├── StandingsPage.jsx
+│   │   │   ├── DriversPage.jsx
+│   │   │   ├── TeamsPage.jsx / TeamPage.jsx
+│   │   │   ├── TrackPage.jsx    # Also rendered as iframe inside RacePage
+│   │   │   ├── GraphsPage.jsx   # Telemetry / recharts
+│   │   │   └── TransfersPage.jsx
+│   │   ├── utils/api.js         # fetch wrapper → http://localhost:8000
+│   │   └── hooks/useApi.js      # useApi / useAction hooks
+│   └── electron/
+│       ├── main.cjs             # Electron main process
+│       └── preload.cjs
 │
-├── car.py               # Car class — lap simulation, pit stops, tyre logic, AI decisions
-├── team.py              # Team class — points calculation, driver registration
-├── track.py             # Track definitions — sector times, laps, DNF probability
+├── config/          # JSON data loaded by engine
+│   ├── drivers.json
+│   ├── teams.json
+│   └── tracks.json
 │
-├── engine.py            # Qualification, race reset, safety car events, transfer logic
-├── weather.py           # Weather generation and track wettiness
-├── strategy.py          # Strategy advisor — prints possible 1/2/3-stop strategies
-│
-├── simulating_sectors.py # Car setup training — wing/brake/suspension settings + graphs
-├── printing_info.py     # In-race UI — pit menus, lap info display, leaderboard
-├── plot.py              # Post-race matplotlib charts
-├── mmr2.py              # Minor league season simulation (promotion/relegation source)
-│
-├── img/                 # Team logo images (used for championship winner display)
-└── README.md
+└── img/             # Team logo PNGs (served by FastAPI at /img/*)
 ```
 
-### Module Dependency Map
+**Data flow per lap:**
 
 ```
-main.py
- ├── init.py          (constants, team/track/driver lists)
- ├── engine.py        (qualification, safety_car, reset_race, transfer)
- │    └── mmr2.py     (simulate_season_mmr2)
- │    └── weather.py  (generate_weather)
- ├── car.py           (Car class)
- ├── team.py          (Team class, create_team)
- ├── track.py         (Track class, tracks[])
- ├── weather.py       (wet_track, generate_weather)
- ├── strategy.py      (strategy advisor)
- ├── simulating_sectors.py  (training, car setup)
- ├── printing_info.py (pit_player, info, drivers_table, post_race_info)
- └── plot.py          (plot_graph, colours_graphs)
+Frontend → POST /api/set_lap_user_data → user_input/lap_user_data.json
+Frontend → POST /api/sim_lap
+Engine   → reads state.json + user_input → simulates lap → writes state.json
+Frontend → GET /api/get_state → renders updated standings
 ```
 
 ---
@@ -111,390 +74,165 @@ main.py
 
 ### Requirements
 
-- Python 3.8 or higher
-- pip
+- Python 3.10+
+- Node.js 20+
+- npm
 
-### Dependencies
-
-```bash
-pip install matplotlib
-```
-
-### Clone & Run
+### Engine
 
 ```bash
-git clone https://github.com/your-username/f1-manager.git
-cd f1-manager
-python3 main.py
+cd engine
+pip install fastapi uvicorn
+uvicorn app:app --reload --port 8000
 ```
 
-> **Note:** The game is fully interactive and runs in the terminal. A graphical window (matplotlib) will open after each race to show results.
+### Frontend (dev)
+
+```bash
+cd frontend
+npm install
+npm run dev          # Vite on :5173
+```
+
+### Desktop app (dev)
+
+```bash
+cd frontend
+npm run desktop:dev  # Electron + Vite concurrently
+```
+
+---
+
+## Download
+
+Pre-built binaries are available on the [Releases page](https://github.com/krystofham/F1_game/releases):
+
+| Platform | File |
+|---|---|
+| Windows | `MMRAC1NG-Setup-*.exe` |
+| Linux | `MMRAC1NG-*.AppImage` |
+| macOS | `MMRAC1NG-*.dmg` |
+
+> **The FastAPI engine must be running on `localhost:8000`** before launching the desktop app.
 
 ---
 
 ## How to Play
 
-### 1. Start the Game
+### 1. Start the engine
 
 ```bash
-python3 main.py
+cd engine && uvicorn app:app --port 8000
 ```
-
-You will be asked:
-
+or 
+```bash
+cd engine && fastapi dev app.py
 ```
-What is the length of the championship:
-```
+### 2. Open the app
 
-Enter a number between 1 and 11 (total available circuits). The game will select that many races from the championship calendar.
+Launch the downloaded binary or run `npm run desktop:dev`.
+
+### 3. Race Control page
+
+- Set **season length**, **training mode**, and **starting tyres** for both drivers
+- Click **INIT RACE** — engine initialises the race weekend (qualification, weather, tyre compounds)
+- Each lap:
+  - Choose **CONTINUE** or **PIT STOP** + new tyre for each of your drivers
+  - Click **CONFIRM INSTRUCTIONS** (saved to `lap_user_data.json`)
+  - Click **SIM LAP**, or use **SIM TO** / **SIM ALL** to skip ahead
+- After the final lap: **POST RACE** → saves results, advances championship
+- After all races: **END SEASON** → MMR2 promotion/relegation, AI transfers, points reset
 
 ---
 
-### 2. Race Weekend Flow
+## API Endpoints
 
-Each race follows this order:
-
-```
-Training (car setup) → Qualification → Race Laps → Post-Race → Next Race
-```
-
-#### Training
-
-You have **3 attempts** to configure:
-
-| Setting | Range | Effect |
+| Method | Path | Description |
 |---|---|---|
-| Front wing | 0–11 | Higher = less understeer, more drag |
-| Rear wing | 0–11 | Higher = more downforce, less top speed |
-| Brakes | 50–60 | Balance affects oversteer/understeer |
-| Anti-roll bars | 1 (soft) / 2 (hard) | Hard = faster, less grip |
-| Springs | 1 (hard) / 2 (soft) | Hard = faster, less stable |
-
-After each attempt, a **sector simulation graph** shows your car vs a benchmark bot across 15 corners.
-
-A good setup can unlock a **speed bonus** that applies during the race.
-
-#### Tyre Selection
-
-Before the race you pick starting tyres for each driver:
-
-```
-Pick pneu for driver 1: [hard / medium / soft / wet / inter]
-```
-
-The **strategy advisor** will print suggested 1-stop, 2-stop, and 3-stop strategies based on the track and expected weather.
-
-#### During the Race
-
-Each lap you see:
-- Current weather and forecast (4 laps ahead — occasionally inaccurate)
-- Track wettiness percentage
-- Top 6 leaderboard with gaps and tyre wear
-- Your drivers' position, delta to the car ahead/behind, tyre wear
-
-Then for **each of your drivers** you choose:
-
-```
-Action: [1] continue [2] box
-```
-
-If you box, you pick the new tyre compound.
-
-**Secret commands** (undocumented in-game):
-- `PNEUSTAV` — displays exact tyre wear for that driver (costs +2s)
-- `PNEUSAFE` — reduces tyre wear by 1% (costs +3s)
-
----
-
-### 3. Post-Race
-
-After the race you see:
-- Final classification with times and points
-- Fastest lap + fastest sector holders
-- Constructor standings
-- Three matplotlib graphs open:
-  1. Horizontal bar chart of total race times
-  2. Position-over-laps for all drivers
-  3. Position-over-laps for your two drivers only
-
----
-
-### 4. Post-Season
-
-At the end of the championship:
-- The **last-place driver** is automatically replaced by the MMR2 champion
-- AI teams may swap drivers based on team rating vs driver rating mismatch
-- You are asked if you want to **sign a new driver** (optional transfer)
-- All points reset for the new season
+| GET | `/api/get_state` | Full game state (drivers, teams, race progress) |
+| GET | `/api/get_drivers` | Driver list from state |
+| GET | `/api/get_teams` | Team list |
+| GET | `/api/get_teams/{name}` | Single team |
+| GET | `/api/tracks` | All tracks from config |
+| POST | `/api/set_init_config` | Write race config (tyres, training mode) |
+| POST | `/api/init_race` | Initialise race weekend |
+| POST | `/api/set_lap_user_data` | Save player pit decisions |
+| POST | `/api/sim_lap` | Simulate one lap |
+| POST | `/api/sim_until` | Simulate up to target lap |
+| POST | `/api/sim_race` | Simulate entire race, returns snapshots |
+| POST | `/api/post_race` | Save results, advance championship counter |
+| POST | `/api/post_championship` | End season, MMR2, transfers, reset |
+| GET | `/api/get_transfer_offers` | Generate transfer market offers |
+| POST | `/api/do_transfer` | Execute driver transfer |
 
 ---
 
 ## Game Systems
 
-### Training & Car Setup
-
-File: `simulating_sectors.py`
-
-The setup system simulates 15 corners across three types (slow, medium, fast). Each setting shifts an internal vector of 6 attributes:
-
-```python
-settings = [speed_in_training, understeer, oversteer, acceleration, grip, curb_handling]
-```
-
-The resulting `speed_bonus` flag (True/False) is passed into the race simulation. A good setup (`speed_bonus = True`) shaves approximately 0.3–0.5 seconds off each sector per lap.
-
-Car setup also adjusts the player's `safety_car_probability` — good grip/curb handling reduces crash risk; extreme understeer/oversteer increases it.
-
----
-
-### Tyre Strategy
-
-File: `strategy.py`, `car.py`
-
-Five compounds are available:
-
-| Compound | Wear rate | Speed multiplier | Best in |
-|---|---|---|---|
-| Hard | Low | ~1.0× | Dry, long stints |
-| Medium | Medium | ~1.04× | Dry, balanced |
-| Soft | High | ~1.08× | Dry, qualifying |
-| Inter | Medium | ~0.65× | Light rain / drying track |
-| Wet | Medium | ~0.60× | Heavy rain |
-
-**Wear rates** and **speed multipliers** scale with the track's `pneu` and `speed` classification. A "soft" track wears tyres faster; a "quick" track provides higher speed multipliers across all compounds.
-
-Tyres degrade every lap (`PNEU_types[compound]["wear"]` + random noise). At 80% wear there is a 55% chance per lap of a puncture. At 100% wear a DNF is guaranteed.
-
----
-
-### Weather System
-
-File: `weather.py`
-
-Weather is a Markov chain with four states:
-
-```
-sunny → transitional → rain → heavy rain
-```
-
-Transitions depend on the track's `climax` setting (either `"sunny"` or `"transitional"`). On a sunny climax the weather is locked to sunny. On a transitional climax, rain can develop over the race.
-
-The 4-lap forecast shown in-game has a ~20% chance of being randomised (fake), forcing the player to read the situation themselves.
-
-**Track wettiness** (`WETTINESS`) is a 0–100% value that increases in rain and dries in sun. Dry-weather tyres on a wet track (wettiness > 55%) receive a heavy time penalty.
-
----
-
 ### Race Simulation
 
-File: `car.py` — `simuluj_lap()`
-
-Each lap, sector times are calculated as:
+Each lap, sector times are calculated per car:
 
 ```
 sector_time = (base_sector_time × random(0.99–1.01) + driver_rating/2 + team_rating/2) / tyre_speed_multiplier
 ```
 
-Modifiers applied on top:
-- **Safety car active**: all sectors × 2.5
-- **DRS active**: each sector − random(0.5–0.7)s
-- **Training bonus**: each sector − random(0.1–0.3)s
-- **Speed bonus** (from setup): each sector − random(0.3–0.5)s
-- **Wrong tyre for conditions**: each sector + wettiness/2
+Modifiers: safety car (×2.5), DRS (−0.5–0.7s/sector), speed bonus from training (−0.3–0.5s/sector), wrong tyre for conditions (+wettiness/2).
 
-Accumulated time (`car.time`) includes tyre wear degradation (`wear/8` per lap).
+### Tyre Compounds
 
----
+| Compound | Wear | Speed | Best in |
+|---|---|---|---|
+| Hard | Low | 1.0× | Long dry stints |
+| Medium | Medium | 1.04× | Balanced dry |
+| Soft | High | 1.08× | Short dry / qualifying |
+| Inter | Medium | 0.65× | Drying track |
+| Wet | Medium | 0.60× | Heavy rain |
+
+At 80% wear: 55% puncture chance per lap. At 100%: guaranteed DNF.
+
+### Weather
+
+Markov chain: `sunny → transitional → rain → heavy rain`. Track wettiness (0–100%) updates each lap. The 4-lap forecast has a ~20% chance of being randomised (deliberately inaccurate).
 
 ### Safety Car
 
-File: `engine.py` — `safety_car()`
+Per-car probability roll each lap, based on track `dnf_probability`. Wet conditions multiply risk ×5. SC lasts 3–6 laps; pit cost drops from 100s to 50s during SC.
 
-Each car has a `safety_car_probability` value (set from the track's `dnf_probability`). Every lap, a random check determines if that car causes an incident:
+### Points
 
-- In dry conditions: `1-in-probability` chance of DNF + safety car
-- In wet conditions: `1-in-(probability/5)` — five times more likely
-- Minor mistakes (no DNF) can also occur, adding random time
-
-The safety car lasts a random 3–6 laps (`LAPS_REMAINING`).
-
----
-
-### Pit Stops
-
-File: `car.py` — `pit_stop()`, `printing_info.py` — `pit_player()`
-
-Pit stop cost:
-- Normal conditions: **+100 seconds**
-- Safety car active: **+50 seconds** (undercut advantage)
-
-After pitting:
-- Tyre wear resets to 0
-- The new compound is applied
-- The stint is recorded: `(start_time, stint_duration, compound)`
-
-AI pit logic (`choose_ai()`) checks:
-1. Is the current tyre wrong for forecasted weather?
-2. Is wear ≥ 80%?
-3. Is safety car out and wear > 70%?
-4. How many laps remain — pick the fastest compound that will last?
-
----
-
-### Points System
-
-File: `car.py` — `vypocitej_points_jezdec()`, `team.py` — `vypocitej_points()`
-
-Points are awarded to finishing positions 1–23:
-
-| Position | Points |
-|---|---|
-| 1st | 50 |
-| 2nd | 45 |
-| 3rd | 40 |
-| 4th | 35 |
-| 5th | 30 |
-| 6th | 25 |
-| 7th | 22 |
-| 8–10th | 20 / 18 / 15 |
-| 11–23rd | 12 down to 1 |
-
-Fastest lap earns +2 points for the team.
-
----
-
-### Driver Transfers
-
-File: `engine.py` — `transfer()`
-
-At the end of each season you can optionally sign a new driver. Options come from:
-
-1. **MMR1 (current grid)** — teams whose rating significantly exceeds a driver's rating will offer them. High-rated player drivers attract more suitors.
-2. **MMR2 (minor league)** — the MMR2 season champion can be recruited to replace one of your drivers.
-
-Transfers swap names and ratings between the old and new driver objects.
-
----
+Custom scale: 1st = 50 pts, 2nd = 45, down to 23rd = 1 pt. Fastest lap +2 pts for the constructor.
 
 ### MMR2 (Minor League)
 
-File: `mmr2.py`
+Parallel 20-driver series simulated at season end. Champion is available for promotion to your team. Worst MMR2 driver is replaced by a reserve from the free driver pool.
 
-A simplified parallel series with 20 drivers running a 12-race × 50-lap season. Each lap time is `driver.rating × random(0.98–1.02)`. The best (lowest cumulative time) and worst driver are returned to `main.py` for promotion/relegation logic.
+### Transfers
 
-The worst MMR2 driver is replaced each season by a name from `names_free_drivers` (a pool of 25 reserve drivers in `init.py`).
-
----
-
-## Module Reference
-
-### `car.py` — `Car`
-
-| Method | Purpose |
-|---|---|
-| `__init__(name, rating, is_player)` | Create a car with given driver name and rating (5–7 scale) |
-| `efectivity_pneu(weather, PNEU_types)` | Returns speed multiplier for current compound + weather |
-| `simuluj_lap(...)` | Simulate one lap; returns updated `SAFETY_CAR`, `LAPS_REMAINING` |
-| `pit_stop(new_pneu, SAFETY_CAR)` | Execute pit stop, record stint |
-| `choose_ai(...)` | AI strategy decision; returns new tyre or None |
-| `simuluj_ai(...)` | Wrapper: AI pit decision + lap simulation |
-| `player_info(...)` | Print lap info for player-controlled cars |
-| `drss(car_in_front)` | Activate DRS if gap < 1s |
-| `vhodne_pneu(weather)` | Return list of appropriate compounds for weather |
-| `vypocitej_points_jezdec(RANK)` | Add championship points based on final position |
-
-### `team.py` — `Team`
-
-| Method | Purpose |
-|---|---|
-| `__init__(name, rating)` | Create team |
-| `pridej_jezdce(car)` | Register a driver to this team |
-| `vypocitej_points(RANK, COUNT_CARS)` | Add constructor points from both drivers' positions |
-
-### `engine.py`
-
-| Function | Purpose |
-|---|---|
-| `qualification(simulation, cars, ...)` | Sort cars by simulated quali time; apply grid penalties |
-| `reset_race(climax, cars)` | Reset all race state variables for a new race |
-| `safety_car(car, weather, lap, ...)` | Roll for safety car / DNF events per car per lap |
-| `transfer(cars, teams, player, ...)` | Handle end-of-season driver transfer UI |
-
-### `weather.py`
-
-| Function | Purpose |
-|---|---|
-| `generate_weather(current, climax)` | Markov transition to next weather state |
-| `wet_track(weather, wettiness)` | Update track wettiness % each lap |
-
-### `strategy.py`
-
-| Function | Purpose |
-|---|---|
-| `strategy(LAPS, ...)` | Print 1/2/3-stop strategy options with estimated race times |
-
-### `track.py` — `Track`
-
-| Attribute | Description |
-|---|---|
-| `name` | Race name (matches championship calendar) |
-| `pneu` | Tyre wear category: `"soft"`, `"medium"`, `"hard"` |
-| `speed` | Track speed: `"slow"`, `"medium"`, `"quick"` |
-| `TIME_S1/S2/S3` | Base sector times in seconds |
-| `laps` | Total race laps |
-| `dnf_probability` | Base denominator for crash probability roll |
+After each season you can swap one of your drivers for an AI driver or the MMR2 champion. The outgoing player driver becomes an AI in their old team.
 
 ---
 
-## Configuration & Constants
+## Build & Release
 
-Set in `init.py`:
+Releases are built automatically via GitHub Actions on any tag matching `v*`:
 
-| Constant | Default | Description |
-|---|---|---|
-| `player.name` | `"Max Vershaeren"` | Player driver 1 name |
-| `player_2.name` | `"Kim Nguyen"` | Player driver 2 name |
-| `TEAM_PLAYER` | `"MySql AWS Maxim racing team"` | Player team name |
-| `COUNT_CARS` | 28 | Total cars on grid |
-| `TIME_S1/S2/S3` | 15 / 23 / 22 | Default sector times (overridden per track) |
+```bash
+git tag v1.0.5-name
+git push origin v1.0.5-name
+```
 
-To add new tracks, append a `Track(...)` to the `tracks` list in `track.py`. To add new circuits to the calendar, append to the `championship` list in `init.py`.
+Produces `.exe` (Windows), `.AppImage` (Linux), `.dmg` (macOS) uploaded to GitHub Releases.
 
----
+To build locally:
 
-## Planned Features (Roadmap)
-
-From `what_i_want.txt` and the developer notes:
-
-**Gameplay**
-- [ ] Driver fatigue & morale system
-- [ ] Team orders (allow teammate past)
-- [ ] Mechanical failures (engine, gearbox, suspension)
-- [ ] Overtaking probability per sector / DRS zone
-- [ ] Fuel management (light vs heavy load)
-- [ ] Tyre temperature simulation
-- [X] Driver rating evolution over seasons
-- [ ] Driving style per driver (aggressive, conservative, etc.)
-
-**Weather**
-- [ ] Sector-based rain (one sector wet, others dry)
-- [X] Weather radar with limited accuracy
-
-**Analytics**
-- [ ] Web dashboard for standings and lap data
-- [ ] Scickit learn for AI decisions
-
-**Technical**
-- [X] JSON/YAML config files for circuits, teams, drivers
-- [ ] Save / load season state
-- [ ] Season history & CSV export
-- [X] Modular architecture refactor
-- [ ] Replay system
-- [ ] pit, dnf_count for cars
----
+```bash
+cd frontend
+npm run desktop:build:linux   # AppImage
+npm run desktop:build:win     # NSIS installer
+npm run desktop:build:mac     # DMG
+```
 
 ## License
 
-MIT License — see [LICENSE](LICENSE) for details.
-
-Copyright (c) 2025 Mightysniper22
+MIT © 2025 Kryštof Ham
