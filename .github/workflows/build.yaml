@@ -2,8 +2,8 @@ name: Build and Release Desktop Apps
 
 on:
   push:
-    tags:
-      - 'v*' # Spustí se POUZE tehdy, když vytvoříš tag začínající na 'v' (např. v1.0.0)
+    branches:
+          - main
 
 jobs:
   release:
@@ -11,6 +11,7 @@ jobs:
 
     strategy:
       matrix:
+        # Pouštíme build pro všechny tři platformy na jejich nativních systémech
         os: [ubuntu-latest, windows-latest, macos-latest]
 
     steps:
@@ -25,16 +26,28 @@ jobs:
           cache-dependency-path: frontend/package-lock.json
 
       - name: Install dependencies
-        run: npm ci --prefix frontend
+        # Musíme skočit do složky frontend, nainstalovat to tam a vygenerovat node_modules tamtéž
+        run: cd frontend && npm ci
 
       - name: Build Electron App
-        run: npm run desktop:build --prefix frontend
+        # Podle toho, na jakém operačním systému zrovna běžíme, spustíme správný skript z package.json
+        run: |
+          cd frontend
+          if [ "${{ matrix.os }}" = "macos-latest" ]; then
+            npx electron-builder --mac dmg -c.mac.identity=null
+          elif [ "${{ matrix.os }}" = "windows-latest" ]; then
+            npm run desktop:build:win
+          else
+            npm run desktop:build:linux
+          fi
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-      # TENTO KROK SAMOTNÝ NAHRAJE SOUBORY DO RELEASE
+      # Tento krok ponecháme, protože electron-builder v základním nastavení dává 
+      # hotové soubory do frontend/dist-electron/, odkud je tento skript vezme a nahraje na GitHub.
       - name: Release Packages
         uses: softprops/action-gh-release@v2
         with:
-          # Najde ve složce dist-electron všechny instalátory (.exe, .dmg, .AppImage)
           files: |
             frontend/dist-electron/*.exe
             frontend/dist-electron/*.dmg
