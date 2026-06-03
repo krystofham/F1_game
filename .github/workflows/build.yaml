@@ -50,5 +50,6 @@ jobs:
             frontend/dist-electron/*.exe
             frontend/dist-electron/*.dmg
             frontend/dist-electron/*.AppImage
+          fail_on_unmatched_files: false  # ← přidej toto!
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
