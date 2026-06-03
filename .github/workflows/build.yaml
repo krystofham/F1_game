@@ -2,8 +2,8 @@ name: Build and Release Desktop Apps
 
 on:
   push:
-    tags:
-      - '*'
+    branches:
+          - main 
 
 jobs:
   release:
