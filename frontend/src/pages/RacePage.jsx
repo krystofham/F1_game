@@ -97,7 +97,7 @@ function PitForm({ drivers, onSubmit, disabled }) {
   );
 }
 
-function InitForm({ onInit, currentWeather }) {
+function InitForm({ onInit, currentClima, currentWeather, AvgPneu }) {
   const [cfg, setCfg] = useState({
     // Default values
     length: 2,
@@ -109,7 +109,9 @@ function InitForm({ onInit, currentWeather }) {
     brakes: 55,
     stabilizators: 1,
     springs: 1,
-    weather: currentWeather
+    clima: currentClima,
+    weather: currentWeather,
+    AvgPneu: AvgPneu
   });
   const [loading, setLoading] = useState(false);
   const [err, setErr] = useState(null);
@@ -143,10 +145,19 @@ function InitForm({ onInit, currentWeather }) {
         Race Configuration
       </div>
       <div style={{ fontFamily: "var(--font-mono)", fontSize: 12, color: "var(--text-2)", marginBottom: 20 }}>
-        Current Weather: <span style={{ color: "var(--accent)" }}>{(currentWeather ?? "Invalid weather").toUpperCase()}</span>
+        Current clima: <span style={{ color: "var(--accent)" }}>{(currentClima ?? "Invalid weather").toUpperCase()}</span>
       </div>
+      { currentWeather != "sunny" && (
+        <div>
+          Starting weather: <span style={{ color: "var(--accent)" }}>{(currentWeather ?? "Invalid weather").toUpperCase()}</span>
+          <br></br>
+          AVG pneu: <span style={{ color: "var(--accent)" }}>{(AvgPneu ?? "Invalid data").toUpperCase()}</span>
+        </div>
+      )}
 
       <div className="grid-2" style={{ gap: 14, marginBottom: 14 }}>
+        {false && (
+        <>
         <div className="field">
           <label>Season Length</label>
           <input
@@ -163,7 +174,9 @@ function InitForm({ onInit, currentWeather }) {
             <option value={2}>2 — Short</option>
             <option value={3}>3 — None</option>
           </select>
-        </div>
+            </div>
+        </>
+        )}
         <div className="field">
           <label>Driver 1 Tyre</label>
           <select value={cfg.pneu_driver_1} onChange={(e) => set("pneu_driver_1", e.target.value)}>
@@ -177,46 +190,33 @@ function InitForm({ onInit, currentWeather }) {
           </select>
         </div>
       </div>
-
-      <div style={{
-        padding: "10px 14px",
-        background: "var(--bg)",
-        border: "1px solid var(--border)",
-        marginBottom: 16,
-        fontFamily: "var(--font-mono)",
-        fontSize: 10,
-        color: "var(--text-3)",
-        letterSpacing: 1,
-      }}>
-        FRONT_WING · REAR_WING · BRAKES · STABILIZATORS · SPRINGS — currently not active in engine
-      </div>
-
-      <div className="grid-3" style={{ gap: 12, marginBottom: 20 }}>
-        {[
-          { k: "front_wing", label: "Front Wing", min: 1, max: 11 },
-          { k: "rear_wing", label: "Rear Wing", min: 1, max: 11 },
-          { k: "brakes", label: "Brakes", min: 10, max: 100 },
-          { k: "stabilizators", label: "Stabilizators", min: 1, max: 10 },
-          { k: "springs", label: "Springs", min: 1, max: 10 },
-        ].map(({ k, label, min, max }) => (
-          <div key={k} className="field">
-            <label>{label}</label>
-            <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-              <input
-                type="range"
-                min={min} max={max}
-                value={cfg[k]}
-                onChange={(e) => set(k, +e.target.value)}
-                style={{ flex: 1, accentColor: "var(--accent)" }}
-              />
-              <span style={{ fontFamily: "var(--font-mono)", fontSize: 12, minWidth: 28 }}>
-                {cfg[k]}
-              </span>
+      {false && (
+        <div className="grid-3" style={{ gap: 12, marginBottom: 20 }}>
+          {[
+            { k: "front_wing", label: "Front Wing", min: 1, max: 11 },
+            { k: "rear_wing", label: "Rear Wing", min: 1, max: 11 },
+            { k: "brakes", label: "Brakes", min: 10, max: 100 },
+            { k: "stabilizators", label: "Stabilizators", min: 1, max: 10 },
+            { k: "springs", label: "Springs", min: 1, max: 10 },
+          ].map(({ k, label, min, max }) => (
+            <div key={k} className="field">
+              <label>{label}</label>
+              <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                <input
+                  type="range"
+                  min={min} max={max}
+                  value={cfg[k]}
+                  onChange={(e) => set(k, +e.target.value)}
+                  style={{ flex: 1, accentColor: "var(--accent)" }}
+                />
+                <span style={{ fontFamily: "var(--font-mono)", fontSize: 12, minWidth: 28 }}>
+                  {cfg[k]}
+                </span>
+              </div>
             </div>
-          </div>
-        ))}
-      </div>
-
+          ))}
+        </div>
+      )}
       {err && (
         <div style={{ color: "var(--accent)", fontFamily: "var(--font-mono)", fontSize: 11, marginBottom: 12 }}>
           {err}
@@ -495,9 +495,30 @@ export default function RacePage() {
           RACE CONTROL
         </div>
       </div>
+      {!raceState && (
+        <>
+          {/* 
+          JAK FUNGUJE PROP AvgPneu NA ŘÁDKU VYŠE:
+          1. Spočítá výskyt pneu:
+            const pneuCounts = raceData.drivers.reduce((acc, driver) => {
+              const pneu = driver.current_tyre;
+              if (pneu) acc[pneu] = (acc[pneu] || 0) + 1;
+              return acc;
+            }, {});
 
-      {!raceState && <InitForm onInit={handleInit} currentWeather={state?.race_state?.climax} />}
-
+          2. Vybere pneumatiku s nejvyšším počtem výskytů:
+            const AvgPneu = Object.keys(pneuCounts).reduce((a, b) => 
+              pneuCounts[a] > pneuCounts[b] ? a : b
+            );
+        */}
+        <InitForm 
+            onInit={handleInit}
+            currentClima={state?.race_state?.climax}
+            currentWeather={state?.race_state?.weather}
+            AvgPneu={Object.entries(state?.drivers?.reduce((acc, d) => (acc[d.pneu] = (acc[d.pneu] || 0) + 1, acc), {}) || {}).sort((a, b) => b[1] - a[1])[0]?.[0] || "N/A"}          
+        />
+        </>
+    )}
       {raceState && (
         <div>
           <div className="race-progress">
