@@ -1,6 +1,6 @@
 import random
-import matplotlib.pyplot as plt
-import matplotlib.image as mpimg
+#import matplotlib.pyplot as plt
+#import matplotlib.image as mpimg
 import os, json
 try:
     from load_data_json import *
@@ -200,9 +200,9 @@ def print_teams_end_championship(teams:list) -> list:
         if i == 1:  
             t.rating += 1
             img = mpimg.imread(f'../img/{t.name}.png')
-            plt.imshow(img)
-            plt.axis('off')
-            plt.show()
+            #plt.imshow(img)
+            #plt.axis('off')
+            #plt.show()
         print(f"{i}. {t.name} – {t.points} points")
         if i == len(teams):
             t.rating -=1

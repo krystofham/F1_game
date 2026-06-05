@@ -1,5 +1,5 @@
 import random
-import matplotlib.pyplot as plt
+#import matplotlib.pyplot as plt
 try:
     from load_data_json import *
 except:
@@ -148,7 +148,7 @@ def technical_sector_sim(settings):
 
 
     turns = list(range(1, 16))
-    fig, axs = plt.subplots(3, 1, figsize=(14, 10), sharex=True)
+    #fig, axs = plt.subplots(3, 1, figsize=(14, 10), sharex=True)
 # Time comparison
     axs[0].plot(turns, time_sim_player, label="player – time", marker='o', color='orange')
     axs[0].plot(turns, time_sim, label="Bot – time", marker='o', color='blue')
@@ -170,8 +170,8 @@ def technical_sector_sim(settings):
     axs[2].legend()
     axs[2].grid(True)
 
-    plt.tight_layout()
-    plt.show()
+    #plt.tight_layout()
+    #plt.show()
 def training(speed, climax, cars):
     speed_in_training = 0
     understeer_in_traning = 0

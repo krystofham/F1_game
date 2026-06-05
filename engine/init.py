@@ -1,8 +1,6 @@
 import random
 import json
 import os
-import matplotlib.pyplot as plt
-import matplotlib.image as mpimg
 from printing_info import *
 from simulating_sectors import *
 from strategy import *
@@ -13,7 +11,7 @@ from saving import *
 from car import *
 from weather import *
 from engine import *
-from plot import *
+#from plot import *
 from get_data import *
 from log import clear_log
 clear_log()
