@@ -13,15 +13,21 @@ from weather import *
 from engine import *
 #from plot import *
 from get_data import *
-from log import clear_log
+from log import clear_log, log
 clear_log()
+log("[INFO INIT]", payload = "succesfull init of everything, init.py run")
 _BASE_DIR = os.path.dirname(__file__)
 _CONFIG_DIR = os.path.abspath(os.path.join(_BASE_DIR, "..", "config"))
+log("[INFO INIT]", payload = f"Base dir: {_BASE_DIR} | Config dir: {_CONFIG_DIR}")
+
 with open(os.path.join(_CONFIG_DIR, "drivers.json"), encoding="utf-8") as f:
     _drivers_cfg = json.load(f)
 
 with open(os.path.join(_CONFIG_DIR, "teams.json"), encoding="utf-8") as f:
     _teams_cfg = json.load(f)
+
+log("[INFO INIT]", teams = _teams_cfg)
+log("[INFO INIT]", drivers = _drivers_cfg)
 
 RANK            = 0
 WETTINESS       = 0
@@ -70,7 +76,7 @@ player   = Car("Max Verstappen", random.uniform(5, 6), is_player=True)
 player_2 = Car("Kim Nguen", random.uniform(5, 6), is_player=True)
 cars.append(player)
 cars.append(player_2)
-
+log("[INFO INIT]", cars=cars)
 _pt = _teams_cfg["player_team"]
 create_team(
     _pt["name"],
@@ -89,3 +95,4 @@ for _t in _teams_cfg["teams"]:
         teams,
         random.uniform(_t["performance_min"], _t["performance_max"]),
     )
+log("[INFO INIT]", teams = teams)
