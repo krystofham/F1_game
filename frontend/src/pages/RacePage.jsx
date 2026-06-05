@@ -97,8 +97,9 @@ function PitForm({ drivers, onSubmit, disabled }) {
   );
 }
 
-function InitForm({ onInit }) {
+function InitForm({ onInit, currentWeather }) {
   const [cfg, setCfg] = useState({
+    // Default values
     length: 2,
     pneu_driver_1: "hard",
     pneu_driver_2: "hard",
@@ -108,6 +109,7 @@ function InitForm({ onInit }) {
     brakes: 55,
     stabilizators: 1,
     springs: 1,
+    weather: currentWeather
   });
   const [loading, setLoading] = useState(false);
   const [err, setErr] = useState(null);
@@ -133,11 +135,15 @@ function InitForm({ onInit }) {
   };
 
   const tyreOpts = ["soft", "medium", "hard", "wet", "inter"];
+      // state?.race_state.climax
 
   return (
     <div className="card" style={{ maxWidth: 620 }}>
       <div style={{ fontFamily: "var(--font-display)", fontWeight: 700, fontSize: 18, letterSpacing: 2, marginBottom: 20, textTransform: "uppercase" }}>
         Race Configuration
+      </div>
+      <div style={{ fontFamily: "var(--font-mono)", fontSize: 12, color: "var(--text-2)", marginBottom: 20 }}>
+        Current Weather: <span style={{ color: "var(--accent)" }}>{(currentWeather ?? "Invalid weather").toUpperCase()}</span>
       </div>
 
       <div className="grid-2" style={{ gap: 14, marginBottom: 14 }}>
@@ -479,7 +485,7 @@ export default function RacePage() {
   const progress = totalLaps ? Math.min(100, (lap / totalLaps) * 100) : 0;
   const [showTrack, setShowTrack] = useState(true);
   const deps = { finished, raceState, postDone, running, isLastRace, api, addLog, setPostDone, refetchState, setRaceState, setLap, setTotalLaps, handleInit };
-  useEffect(() => simEverything(deps), [finished, raceState, postDone, isLastRace, running]);  return (
+  useEffect(() => simEverything(deps), [finished, raceState, postDone, isLastRace, running]); return (
     <div>
       <div className="page-header">
         <div className="page-eyebrow">
@@ -490,7 +496,7 @@ export default function RacePage() {
         </div>
       </div>
 
-      {!raceState && <InitForm onInit={handleInit} />}
+      {!raceState && <InitForm onInit={handleInit} currentWeather={state?.race_state?.climax} />}
 
       {raceState && (
         <div>
@@ -602,10 +608,9 @@ export default function RacePage() {
             >
               {showTrack ? "HIDE TRACK" : "SHOW TRACK"}
             </button>
-
             {showTrack && (
               <iframe
-                src={`http://localhost:3001/iframe_track?lap=${lap}`}
+                src={`http://${window.location.host}/iframe_track?lap=${lap}`}
                 title="Track stats"
                 style={{
                   position: "fixed",
