@@ -4,7 +4,7 @@ import os
 from collections import Counter
 from datetime import datetime
 
-_LOG_PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)), "transfer_debug.log")
+_LOG_PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)), "info.log")
 
 
 def log(event: str, **payload) -> dict:
