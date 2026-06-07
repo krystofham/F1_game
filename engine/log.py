@@ -3,38 +3,50 @@ import json
 import os
 from collections import Counter
 from datetime import datetime
+import atexit
 
 _LOG_PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)), "info.log")
 
 def dlog (**payload) -> dict:
-    entry = dlog( **payload)
+    entry = log("[DEBUG]", **payload)
     return entry
 def ilog (**payload) -> dict:
-    entry = log("[INFO]" **payload)
+    entry = log("[INFO]", **payload)
     return entry
 def wlog (**payload) -> dict:
-    entry = log("[WARNING]" **payload)
+    entry = log("[WARNING]", **payload)
     return entry
 def elog (**payload) -> dict:
-    entry = log("[ERROR]" **payload)
-    return entry
-def log(event: str, **payload) -> dict:
-    entry = {
-        "ts": datetime.now().isoformat(timespec="seconds"),
-        "event": event,
-        **payload,
-    }
-    try:
-        print(f"[TRANSFER_DEBUG] {json.dumps(entry, ensure_ascii=False)}")
-    except Exception:
-        print(f"[TRANSFER_DEBUG] {event}")
-    try:
-        with open(_LOG_PATH, "a", encoding="utf-8") as f:
-            f.write(json.dumps(entry, ensure_ascii=False) + "\n")
-    except OSError:
-        pass
+    entry = log("[ERROR]",   **payload)
     return entry
 
+_buffer: list[str] = []
+_FLUSH_EVERY = 20  # zapiš každých 20 záznamů
+DEBUG_MODE = False 
+def log(event: str, **payload) -> dict:
+    entry = {"ts": datetime.now().isoformat(timespec="seconds"), "event": event, **payload}
+    line  = json.dumps(entry, ensure_ascii=False)
+    
+    if DEBUG_MODE:
+        print(line)
+    
+    _buffer.append(line)
+    if len(_buffer) >= _FLUSH_EVERY:
+        _flush()
+    
+    return entry
+
+def _flush() -> None:
+    if not _buffer:
+        return
+    try:
+        with open(_LOG_PATH, "a", encoding="utf-8") as f:
+            f.write("\n".join(_buffer) + "\n")
+        _buffer.clear()
+    except OSError:
+        pass
+
+atexit.register(_flush)  # při ukončení zapíše zbytek
 
 def read_log(max_lines: int = 200) -> list[dict]:
     if not os.path.exists(_LOG_PATH):
@@ -65,58 +77,105 @@ def clear_log() -> None:
 
 
 def snapshot_state(state: dict, label: str) -> dict:
-    drivers = state.get("drivers", [])
-    names = [d.get("name") for d in drivers]
-    counts = Counter(names)
-    p1 = state.get("player.name", "")
-    p2 = state.get("player_2.name", "")
+    """
+    Diagnostický snapshot state.json pro logování.
+    Volej před a po každé operaci která mění state — transfer, load, save.
+    
+    Konvence klíčů: snake_case, žádné tečky, žádné hardcoded jméno.
+    """
+    drivers      = state.get("drivers", [])
+    teams        = state.get("teams", [])
+    names        = [d.get("name") for d in drivers if d.get("name")]
+    counts       = Counter(names)
+    p1           = state.get("player.name", "")
+    p2           = state.get("player_2.name", "")
+
+    player_names = {p1, p2} - {""}
+
     return {
-        "label": label,
-        "player.name": p1,
-        "player_2.name": p2,
+        "label":         label,
+        "player_1_name": p1,
+        "player_2_name": p2,
+
+        # Hráčská auta — základní ověření že jsou v drivers a mají tým
         "players_in_drivers": [
-            {"name": d.get("name"), "team": d.get("team"), "points": d.get("points")}
+            {
+                "name":   d.get("name"),
+                "team":   d.get("team"),
+                "points": d.get("points"),
+            }
             for d in drivers
             if d.get("is_player")
         ],
-        "max_in_drivers": "Max Verstappen" in names,
-        "max_in_teams": any(
-            "Max Verstappen" in t.get("drivers", [])
-            for t in state.get("teams", [])
-        ),
-        "duplicate_driver_names": [n for n, c in counts.items() if c > 1 and n],
-        "teams_mysql": next(
-            (t.get("drivers") for t in state.get("teams", [])
-             if t.get("name") == "MySql AWS Maxim racing team"),
-            None,
-        ),
-        "teams_f10": next(
-            (t.get("drivers") for t in state.get("teams", [])
-             if t.get("name") == "Formula 1.0 racing team"),
-            None,
-        ),
+
+        # Diagnostika duplicit — nejčastější příčina bugů po transferu
+        "duplicate_names": [n for n, c in counts.items() if c > 1],
+
+        # Hráčská jména chybí v drivers listu — kritická chyba
+        "players_missing_from_drivers": [
+            name for name in player_names
+            if not any(d.get("name") == name and d.get("is_player") for d in drivers)
+        ],
+
+        # Jestli jsou hráči správně v týmech
+        "players_in_teams": {
+            name: next(
+                (t.get("name") for t in teams if name in t.get("drivers", [])),
+                None,  # None = hráč není v žádném týmu → bug
+            )
+            for name in player_names
+        },
+
+        # Soupisky všech týmů — generické, neharcodované
+        "team_rosters": {
+            t.get("name"): t.get("drivers", [])
+            for t in teams
+        },
+
         "driver_count": len(drivers),
+        "team_count":   len(teams),
     }
 
 
-def snapshot_cars(cars, init_player, init_player_2) -> dict:
+def snapshot_cars(cars: list, init_player, init_player_2) -> dict:
+    """
+    Diagnostický snapshot in-memory Car objektů.
+    Volej po load_game_objects() — ověř že Python objekty odpovídají state.json.
+
+    id(c) záměrně vynecháno — je platné jen v jednom běhu, v logu k ničemu.
+    """
     return {
-        "init_player_slot": getattr(init_player, "name", None),
-        "init_player_2_slot": getattr(init_player_2, "name", None),
+        # Init sloty — jaké jméno měl hráč při startu init.py
+        "init_slot_player_1": getattr(init_player,   "name", None),
+        "init_slot_player_2": getattr(init_player_2, "name", None),
+
+        # Aktuální hráčská auta po aplikaci state
         "player_cars": [
             {
-                "name": c.name,
-                "team": c.team.name if c.team else None,
+                "name":      c.name,
+                "team":      c.team.name if c.team else None,
                 "is_player": c.is_player,
-                "id": id(c),
+                "pneu":      getattr(c, "pneu", None),
+                "wear":      round(getattr(c, "wear", 0.0), 3),
             }
             for c in cars
             if c.is_player
         ],
-        "no_team": [c.name for c in cars if c.team is None],
-        "shadow_candidates": [
+
+        # Auta bez týmu — vždy bug pokud nejsou shadow duplicates
+        "no_team": [
+            {"name": c.name, "is_player": c.is_player}
+            for c in cars
+            if c.team is None
+        ],
+
+        # Shadow duplicates = AI auto se stejným jménem jako hráč, čeká na odstranění
+        # Měl by být prázdný seznam po _remove_shadow_duplicate_cars()
+        "shadow_duplicates": [
             c.name
             for c in cars
             if c.team is None and not c.is_player
         ],
+
+        "total_cars": len(cars),
     }
