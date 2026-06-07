@@ -1,4 +1,4 @@
-"""Debug log pro transfery a načítání hráčů — soubor engine/transfer_debug.log"""
+"""Debug log pro transfery a načítání hráčů — soubor engine/info.log"""
 import json
 import os
 from collections import Counter
@@ -6,14 +6,17 @@ from datetime import datetime
 
 _LOG_PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)), "info.log")
 
-def infol (**payload) -> dict:
-    entry = log("[INFO]", **payload)
+def dlog (**payload) -> dict:
+    entry = dlog( **payload)
     return entry
-def warningl (**payload) -> dict:
-    entry = log("[WARNING]", **payload)
+def ilog (**payload) -> dict:
+    entry = log("[INFO]" **payload)
     return entry
-def errorl (**payload) -> dict:
-    entry = log("[ERROR]", **payload)
+def wlog (**payload) -> dict:
+    entry = log("[WARNING]" **payload)
+    return entry
+def elog (**payload) -> dict:
+    entry = log("[ERROR]" **payload)
     return entry
 def log(event: str, **payload) -> dict:
     entry = {

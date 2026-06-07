@@ -4,7 +4,7 @@ import os, json, random
 from fastapi.staticfiles import StaticFiles  
 from big_functions import *
 from load_data_json import *
-from log import log as td_log, snapshot_state as td_snapshot_state
+from log import elog, ilog, wlog, dlog, log, snapshot_state as td_snapshot_state
 from log import snapshot_cars as td_snapshot_cars
 app = FastAPI()
 app.add_middleware(CORSMiddleware, allow_origins=["*"], allow_methods=["*"], allow_headers=["*"])
@@ -19,7 +19,7 @@ app.mount("/img", StaticFiles(directory="../img"), name="img")
 # Helpers
 # ---------------------------------------------------------------------------
 def _resolve_driver_car(driver_name, player_by_name, ai_by_name, player_names, is_player_slot):
-    log("[INFO]", function="_resolve_driver_car")
+    ilog( function="_resolve_driver_car")
 
     """Najde správný Car objekt — hráč vs. AI u stejného jména po transferu."""
     if is_player_slot and driver_name in player_by_name:
@@ -34,7 +34,7 @@ def _resolve_driver_car(driver_name, player_by_name, ai_by_name, player_names, i
 
 
 def _remove_shadow_duplicate_cars(cars, player_names):
-    log("[INFO]", function="_remove_shadow_duplicate_cars")
+    ilog( function="_remove_shadow_duplicate_cars")
     """Init má AI jezdce stejného jména jako hráč po transferu — bez týmu a duplicitní."""
     for car in list(cars):
         if car.team is None and not car.is_player and car.name in player_names:
@@ -42,7 +42,7 @@ def _remove_shadow_duplicate_cars(cars, player_names):
 
 
 def apply_teams_from_state(cars, teams, state_teams, state_drivers=None):
-    log("[INFO]", function="apply_teams_from_state")
+    ilog( function="apply_teams_from_state")
     """Synchronizuje in-memory týmy podle state.json. Při neshodě vrátí False."""
     if not state_teams:
         return False
@@ -77,7 +77,7 @@ def apply_teams_from_state(cars, teams, state_teams, state_drivers=None):
                 is_player_slot.get(driver_name, False),
             )
             if car is None or id(car) in used_car_ids:
-                td_log(
+                log(
                     "apply_teams_failed",
                     driver=driver_name,
                     team=st.get("name"),
@@ -90,7 +90,7 @@ def apply_teams_from_state(cars, teams, state_teams, state_drivers=None):
             used_car_ids.add(id(car))
 
     if not assignments:
-        td_log("apply_teams_failed", reason="no_assignments")
+        log("apply_teams_failed", reason="no_assignments")
         return False
 
     for t in teams:
@@ -106,13 +106,13 @@ def apply_teams_from_state(cars, teams, state_teams, state_drivers=None):
             removed.append(car.name)
     _remove_shadow_duplicate_cars(cars, player_names)
     if removed:
-        td_log("shadow_duplicates_removed", names=removed)
-    td_log("apply_teams_ok", assignment_count=len(assignments))
+        log("shadow_duplicates_removed", names=removed)
+    log("apply_teams_ok", assignment_count=len(assignments))
     return True
 
 
 def _apply_driver_dict_to_car(car, d):
-    log("[INFO]", function="_apply_driver_dict_to_car")
+    ilog( function="_apply_driver_dict_to_car")
     car.name      = d["name"]
     car.ratings   = d.get("rating", car.ratings)
     car.time      = d.get("time", 0.0)
@@ -129,7 +129,7 @@ def _apply_driver_dict_to_car(car, d):
 
 
 def _apply_ai_driver_dict_to_car(car, d):
-    log("[INFO]", function="_apply_ai_driver_dict_to_car")
+    ilog( function="_apply_ai_driver_dict_to_car")
     car.name      = d["name"]
     car.ratings   = d.get("rating", car.ratings)
     car.time      = d.get("time", 0.0)
@@ -146,7 +146,7 @@ def _apply_ai_driver_dict_to_car(car, d):
 
 
 def _sync_ai_cars_with_state(cars, state_ai, player_names):
-    log("[INFO]", function="_sync_ai_cars_with_state")
+    ilog( function="_sync_ai_cars_with_state")
     """
     Namapuje AI auta na state AI i když došlo k přejmenování
     (např. Johan -> player, Max -> AI).
@@ -173,18 +173,18 @@ def _sync_ai_cars_with_state(cars, state_ai, player_names):
     free_ai_cars = [c for c in ai_cars if id(c) not in matched_car_ids]
     for d in unmatched_state:
         if not free_ai_cars:
-            td_log("ai_sync_exhausted", missing_name=d["name"])
+            log("ai_sync_exhausted", missing_name=d["name"])
             break
         # Preferuj auto, jehož jméno je teď hráčské (typicky 'Johan' po transferu)
         idx = next((i for i, c in enumerate(free_ai_cars) if c.name in player_names), 0)
         chosen = free_ai_cars.pop(idx)
         old_name = chosen.name
         _apply_ai_driver_dict_to_car(chosen, d)
-        td_log("ai_sync_renamed", old_name=old_name, new_name=d["name"])
+        log("ai_sync_renamed", old_name=old_name, new_name=d["name"])
 
 
 def load_game_objects(apply_state=True):
-    log("[INFO]", function="load_game_objects")
+    ilog( function="load_game_objects")
     from init import cars, teams, championship, tracks, COUNT_CARS, SAFETY_CAR, LAPS_REMAINING
     from init import player as init_player, player_2 as init_player_2
     state = load_state()
@@ -217,21 +217,21 @@ def load_game_objects(apply_state=True):
         slot_map = ((init_player, p1_name), (init_player_2, p2_name))
         for car, expected_name in slot_map:
             if not expected_name:
-                td_log("load_player_skip", slot=car.name, reason="empty player.name key")
+                log("load_player_skip", slot=car.name, reason="empty player.name key")
                 continue
             d = state_players_by_name.get(expected_name)
             if d:
                 before = car.name
                 _apply_driver_dict_to_car(car, d)
                 if before != car.name:
-                    td_log(
+                    log(
                         "load_player_renamed",
                         slot_init=before,
                         expected=expected_name,
                         applied=car.name,
                     )
             else:
-                td_log(
+                log(
                     "load_player_missing",
                     slot_init=car.name,
                     expected=expected_name,
@@ -245,13 +245,13 @@ def load_game_objects(apply_state=True):
             cars, teams, state.get("teams", []), clean_drivers
         )
         if not teams_ok:
-            td_log(
+            log(
                 "apply_teams_skipped",
                 message="keeping init.py teams",
                 snapshot=td_snapshot_state(state, "after_failed_apply"),
             )
 
-        td_log(
+        log(
             "load_game_objects",
             apply_state=True,
             teams_from_state=teams_ok,
@@ -275,23 +275,23 @@ def load_game_objects(apply_state=True):
 
 
 def _load_json(path):
-    log("[INFO]", function="_load_json")
+    ilog( function="_load_json")
     with open(path, encoding="utf-8") as f:
         return json.load(f)
 
 def _state():
-    log("[INFO]", function="_state")
+    ilog( function="_state")
     try:
         with open(f"state.json", "r") as input_file:
             data = json.load(input_file)
-            log("[INFO]", function="succesfully loaded data")
+            ilog( function="succesfully loaded data")
         return data
     except:
-        log("[WARNING]", function="no json found")
+        wlog( function="no json found")
         return {} 
 
 def _clear_user_input():
-    log("[INFO]", function="_clear_user_input")
+    ilog( function="_clear_user_input")
     """Vymaže obsah všech souborů ve složce user_input."""
     folder = os.path.join(_CONFIG, "../engine/user_input")
     for filename in os.listdir(folder):
@@ -307,24 +307,24 @@ def _clear_user_input():
 
 @app.get("/api/get_state")
 async def get_state():
-    log("[INFO]", function="get_state")
+    ilog( function="get_state")
     return _state()
 
 @app.get("/api/get_drivers")
 async def get_drivers():
-    log("[INFO]", function="get_drivers")
+    ilog( function="get_drivers")
     state = _state()
     return state["drivers"]
 
 @app.get("/api/get_teams")
 async def get_teams():
-    log("[INFO]", function="get_teams")
+    ilog( function="get_teams")
     state = _state()
     return state["teams"]
 
 @app.get("/api/get_teams/{team_name}")
 async def get_team(team_name: str):
-    log("[INFO]", function="get_team")
+    ilog( function="get_team")
     state = _state()
     teams = state["teams"]
     for team in teams:
@@ -335,10 +335,10 @@ async def get_team(team_name: str):
 
 @app.post("/api/init_race")
 async def api_init_race():
-    log("[INFO]", function="api_init_race")
+    ilog( function="api_init_race")
     cars, teams, player, player_2, championship, tracks, \
     player.name, player_2.name, COUNT_CARS, SAFETY_CAR, LAPS_REMAINING, b, season_count = load_game_objects(apply_state=False)
-    log("[INFO]", action="loaded game objects")
+    ilog( action="loaded game objects")
 
     speed_bonus, season_count, time_laps, k_speed, k_wear, training_type, \
     WETTINESS, lap, forecast, weather, climax, pneu, speed, PNEU_types, \
@@ -346,7 +346,7 @@ async def api_init_race():
         tracks, championship[b - 1], cars, teams, championship,
         player, player_2, b, season_count
     )
-    log("[INFO]", action="init race")
+    ilog( action="init race")
 
     race = championship[b - 1]
     track = next((t for t in tracks if t.name == race), None)
@@ -359,7 +359,7 @@ async def api_init_race():
                 fallback_laps=67,
                 impact="ALL_LAPS_WILL_BE_67_BUG")
     else:
-        log("[INFO]", action=f"race: {race}, track: {track}, total_laps: {track.laps if track else "Fallback"}")
+        ilog( action=f"race: {race}, track: {track}, total_laps: {track.laps if track else "Fallback"}")
 
     state = _state()
     state["lap"] = 0
@@ -383,7 +383,7 @@ async def api_init_race():
         "k_wear": k_wear,
         "k_speed": k_speed
     }
-    log("[INFO]", action=f"state: {state}")
+    ilog( action=f"state: {state}")
     with open("state.json", "w", encoding="utf-8") as out_file:
         json.dump(state, out_file, indent=4, ensure_ascii=False)
 
@@ -400,37 +400,37 @@ async def api_sim_lap():
     Odsimuluje jedno kolo. Čte vše ze state.json, uloží nový stav.
     Frontend posílá akce hráče přes lap_user_data.json a deal.json před voláním.
     """
-    log("[INFO]", action="Sim lap started, loading state")
+    ilog( action="Sim lap started, loading state")
 
     state = _state()
-    log("[INFO]", state="State loaded: {state}")
+    ilog( state="State loaded: {state}")
 
     race_ctx = state.get("race_state")
     if not race_ctx:
-        log("[ERROR]", detail="Race not initialized. Call /api/init_race first")
+        elog( detail="Race not initialized. Call /api/init_race first")
         raise HTTPException(status_code=400, detail="Race not initialized. Call /api/init_race first.")
 
     lap = state["lap"]
     if lap > race_ctx["total_laps"]:
-        log("[ERROR]", detail="Race already finished. Call /api/post_race.")
+        elog( detail="Race already finished. Call /api/post_race.")
         raise HTTPException(status_code=400, detail="Race already finished. Call /api/post_race.")
-    log("[INFO]", info = "loading objects")
+    ilog( info = "loading objects")
     cars, teams, player, player_2, championship, tracks, \
     player.name, player_2.name, COUNT_CARS, SAFETY_CAR, LAPS_REMAINING, b, season_count = load_game_objects()
 
     # time_laps se čte ze root úrovně state.json (ne z race_ctx)
     if not state.get("time_laps"):
-        log("[WARNING]", content = "time laps not found")
+        wlog( content = "time laps not found")
     if state.get("time_laps") == []:
-        log("[WARNING]", content = "time laps are empty")
+        wlog( content = "time laps are empty")
     time_laps = state.get("time_laps", [])
     race = state.get("race", "Unknown Race")
     if race == "Unknown Race":
-        log("[WARNING]", fallback = "Fallback value in race, state race not found")
+        wlog( fallback = "Fallback value in race, state race not found")
     k_speed = race_ctx.get("k_speed", [1, 1.04, 1.08, 0.6, 0.65])
     if not race_ctx.get("k_speed"):
-        log("[WARNING]", error = "Fallback values used in k_speed, not found in state.json")
-    log("[INFO]", info = "loaded all objects for simming the lap")
+        wlog( error = "Fallback values used in k_speed, not found in state.json")
+    ilog( info = "loaded all objects for simming the lap")
     try:
         lap, cars, teams = sim_the_lap(
         cars, teams, player, player_2, lap,
@@ -454,7 +454,7 @@ async def api_sim_lap():
         )
     except:
         log("ERROR", value = "Internal error in sim the lap function")
-    log("[INFO]", info = "simmed the lap")
+    ilog( info = "simmed the lap")
     new_state = _state()
     return {
         "status": "ok",
@@ -472,7 +472,7 @@ async def api_post_race():
     state = _state()
     race_ctx = state.get("race_state", {})
     if not state.get("race_state"):
-        log("[INFO]", )
+      ilog( )
     cars, teams, player, player_2, championship, tracks, \
     player.name, player_2.name, COUNT_CARS, SAFETY_CAR, LAPS_REMAINING, b, season_count = load_game_objects()
 
@@ -568,7 +568,7 @@ async def api_set_init_config(data: dict):
         json.dump(data, f, indent=2, ensure_ascii=False)
     
     with open(path, "r") as f:
-        log("[DEBUG]", file = f"Verified written: {f.read()}")
+        dlog( file = f"Verified written: {f.read()}")
     
     return {"status": "ok"}
 
@@ -620,7 +620,7 @@ async def api_do_transfer(data: dict):
     if pilot_to_change not in (p1_name, p2_name):
         raise HTTPException(status_code=400, detail=f"'{pilot_to_change}' is not a player driver")
 
-    td_log(
+    log(
         "do_transfer_start",
         request=data,
         before=td_snapshot_state(state, "before_transfer"),
@@ -681,7 +681,7 @@ async def api_do_transfer(data: dict):
             ]
 
     after_snap = td_snapshot_state(state, "after_transfer")
-    td_log(
+    log(
         "do_transfer_done",
         pilot_to_change=pilot_to_change,
         chosen_pilot=chosen_pilot,
