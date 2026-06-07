@@ -419,12 +419,20 @@ async def api_sim_lap():
     player.name, player_2.name, COUNT_CARS, SAFETY_CAR, LAPS_REMAINING, b, season_count = load_game_objects()
 
     # time_laps se čte ze root úrovně state.json (ne z race_ctx)
+    if not state.get("time_laps"):
+        log("[WARNING]", content = "time laps not found")
+    if state.get("time_laps") == []:
+        log("[WARNING]", content = "time laps are empty")
     time_laps = state.get("time_laps", [])
     race = state.get("race", "Unknown Race")
-
+    if race == "Unknown Race":
+        log("[WARNING]", fallback = "Fallback value in race, state race not found")
     k_speed = race_ctx.get("k_speed", [1, 1.04, 1.08, 0.6, 0.65])
+    if not race_ctx.get("k_speed"):
+        log("[WARNING]", error = "Fallback values used in k_speed, not found in state.json")
     log("[INFO]", info = "loaded all objects for simming the lap")
-    lap, cars, teams = sim_the_lap(
+    try:
+        lap, cars, teams = sim_the_lap(
         cars, teams, player, player_2, lap,
         SAFETY_CAR, LAPS_REMAINING,
         race_ctx["wettiness"], race_ctx["forecast"], race_ctx["weather"],
@@ -443,10 +451,11 @@ async def api_sim_lap():
         race_ctx["forecast"][3] if len(race_ctx["forecast"]) > 3 else race_ctx["weather"],
         race_ctx["training_type"], race_ctx["k_wear"], k_speed,
         race_ctx["speed_bonus"], season_count, race, time_laps
-    )
+        )
+    except:
+        log("ERROR", value = "Internal error in sim the lap function")
     log("[INFO]", info = "simmed the lap")
     new_state = _state()
-    log("[INFO]", info = "State loaded")
     return {
         "status": "ok",
         "lap": new_state["lap"],
@@ -462,7 +471,8 @@ async def api_sim_lap():
 async def api_post_race():
     state = _state()
     race_ctx = state.get("race_state", {})
-
+    if not state.get("race_state"):
+        log("[INFO]", )
     cars, teams, player, player_2, championship, tracks, \
     player.name, player_2.name, COUNT_CARS, SAFETY_CAR, LAPS_REMAINING, b, season_count = load_game_objects()
 
