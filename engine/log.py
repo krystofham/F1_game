@@ -6,7 +6,15 @@ from datetime import datetime
 
 _LOG_PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)), "info.log")
 
-
+def infol (**payload) -> dict:
+    entry = log("[INFO]", **payload)
+    return entry
+def warningl (**payload) -> dict:
+    entry = log("[WARNING]", **payload)
+    return entry
+def errorl (**payload) -> dict:
+    entry = log("[ERROR]", **payload)
+    return entry
 def log(event: str, **payload) -> dict:
     entry = {
         "ts": datetime.now().isoformat(timespec="seconds"),
