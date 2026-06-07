@@ -8,7 +8,13 @@ class Team:
     def pridej_jezdce(self, car):
         self.drivers.append(car)
         car.team = self
-
+    def to_log(self) -> dict:
+        return {
+            "name":    self.name,
+            "rating":  round(self.rating, 4),
+            "points":  self.points,
+            "drivers": [d.name for d in self.drivers],
+        }
     def vypocitej_points(self, RANK, COUNT_CARS):
         for jezdec in self.drivers:
             if jezdec.name in RANK:

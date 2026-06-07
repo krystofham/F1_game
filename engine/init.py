@@ -76,7 +76,7 @@ player   = Car("Max Verstappen", random.uniform(5, 6), is_player=True)
 player_2 = Car("Kim Nguen", random.uniform(5, 6), is_player=True)
 cars.append(player)
 cars.append(player_2)
-ilog( cars=cars)
+ilog(cars=[c.to_log() for c in cars])
 _pt = _teams_cfg["player_team"]
 create_team(
     _pt["name"],
@@ -95,4 +95,4 @@ for _t in _teams_cfg["teams"]:
         teams,
         random.uniform(_t["performance_min"], _t["performance_max"]),
     )
-ilog( teams = teams)
+ilog( teams = [t.to_log() for t in teams])

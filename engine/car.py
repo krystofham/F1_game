@@ -250,3 +250,13 @@ class Car:
             for x in range(1, 24):
                 if position == x:                    
                     self.points += dict_points[x]
+    def to_log(self) -> dict:
+        return {
+            "name":      self.name,
+            "team":      self.team.name if self.team else None,
+            "pneu":      self.pneu,
+            "wear":      round(self.wear, 3),
+            "points":    self.points,
+            "dnf":       self.dnf,
+            "is_player": self.is_player,
+        }
