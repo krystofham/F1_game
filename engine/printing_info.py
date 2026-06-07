@@ -2,6 +2,7 @@ import random
 #import matplotlib.pyplot as plt
 #import matplotlib.image as mpimg
 import os, json
+from log import dlog, elog, ilog, wlog
 try:
     from load_data_json import *
     from strategy import strategy
@@ -18,6 +19,9 @@ def pit_player(player, player_2, LAPS, lap, TIME_S1, TIME_S2, TIME_S3, pneu, spe
 
     pick   = d1_data["action"].strip().lower()
     pick_2 = d2_data["action"].strip().lower()
+    dlog(fn="pit_player", msg="lap user data loaded",
+         player_1=player.name, action_1=pick, pneu_1=d1_data.get("new_pneu"),
+         player_2=player_2.name, action_2=pick_2, pneu_2=d2_data.get("new_pneu"))
 
     if not player.dnf:
         if pick == "pneustav":
@@ -30,8 +34,10 @@ def pit_player(player, player_2, LAPS, lap, TIME_S1, TIME_S2, TIME_S3, pneu, spe
         elif pick == "2":
             new = d1_data["new_pneu"].strip().lower()
             if new not in PNEU_types:
+                elog(fn="pit_player", msg="invalid tyre for driver 1", driver=player.name, pneu=new)
                 raise ValueError(f"Driver 1: invalid tyre '{new}'")
             strategy(LAPS - lap, TIME_S1, TIME_S2, TIME_S3, pneu, speed, climax)
+            ilog(fn="pit_player", msg="driver 1 pit stop", driver=player.name, new_pneu=new, lap=lap)
             player.pit_stop(new, SAFETY_CAR)
 
     if not player_2.dnf:
@@ -45,8 +51,10 @@ def pit_player(player, player_2, LAPS, lap, TIME_S1, TIME_S2, TIME_S3, pneu, spe
         elif pick_2 == "2":
             new = d2_data["new_pneu"].strip().lower()
             if new not in PNEU_types:
+                elog(fn="pit_player", msg="invalid tyre for driver 2", driver=player_2.name, pneu=new)
                 raise ValueError(f"Driver 2: invalid tyre '{new}'")
             strategy(LAPS - lap, TIME_S1, TIME_S2, TIME_S3, pneu, speed, climax)
+            ilog(fn="pit_player", msg="driver 2 pit stop", driver=player_2.name, new_pneu=new, lap=lap)
             player_2.pit_stop(new, SAFETY_CAR)
 
     if not (player.dnf or player_2.dnf):
@@ -104,7 +112,11 @@ def pit_player(player, player_2, LAPS, lap, TIME_S1, TIME_S2, TIME_S3, pneu, spe
                 "commands": []
             }, f, indent=2)
     except Exception as e:
+        wlog(fn="pit_player", msg="lap_user_data reset failed", error=str(e))
         print(f"Warning: could not reset lap_user_data: {e}")
+    else:
+        dlog(fn="pit_player", msg="lap_user_data reset to defaults",
+             player_1=player.name, player_2=player_2.name)
 
     return player, player_2
 def info(WETTINESS, forecast, lap, weather, LAPS, climax):
@@ -154,9 +166,13 @@ def post_race_info(time_laps, player, player_2, cars, teams, COUNT_CARS):
     
     # === BEZPEČNOSTNÍ KONTROLA PRO PRÁZDNÉ TIME_LAPS ===
     if not time_laps:
+        elog(fn="post_race_info", msg="no lap times recorded — results incomplete")
         print("⚠️ Warning: No lap times were recorded during this race!")
         print("Fastest lap and fastest sectors cannot be determined.")
     else:
+        ilog(fn="post_race_info", msg="post race processing started",
+             time_laps_count=len(time_laps),
+             fastest_lap_driver=time_laps[0][1] if time_laps else None)
         # Tento blok se spustí POUZE, pokud máme v pole nějaké časy
         time_laps.sort()
         print(f"{time_laps[0][1]} ({time_laps[0][2]}) has fastest lap: {round(time_laps[0][0], 3)}")

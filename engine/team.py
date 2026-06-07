@@ -1,3 +1,6 @@
+from log import dlog
+
+
 class Team:
     def __init__(self, name, rating):
         self.name = name
@@ -16,6 +19,7 @@ class Team:
             "drivers": [d.name for d in self.drivers],
         }
     def vypocitej_points(self, RANK, COUNT_CARS):
+        points_before = self.points
         for jezdec in self.drivers:
             if jezdec.name in RANK:
                 position = RANK.index(jezdec.name) + 1
@@ -67,6 +71,11 @@ class Team:
                 self.points += 1
             elif position == 23:
                 self.points += 1
+        gained = self.points - points_before
+        if gained:
+            dlog(fn="vypocitej_points", msg="team points awarded",
+                 team=self.name, gained=gained, total=self.points,
+                 drivers=[d.name for d in self.drivers])
 
 teams = []
 def create_team(TEAM_PLAYER, player_1, player_2, teams, rating):
@@ -74,4 +83,7 @@ def create_team(TEAM_PLAYER, player_1, player_2, teams, rating):
     team.pridej_jezdce(player_1)
     team.pridej_jezdce(player_2)
     teams.append(team)
+    dlog(fn="create_team", msg="team created",
+         team=TEAM_PLAYER, rating=round(rating, 4),
+         driver_1=player_1.name, driver_2=player_2.name)
     return team

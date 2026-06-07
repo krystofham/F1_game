@@ -1,21 +1,33 @@
 try: from load_data_json import *
 except: from engine.load_data_json import *
+from log import dlog, elog, wlog
+
 def get_length_of_championship() -> int:
-    if load_data("init")["length"] < 0 or  load_data("init")["length"] > 12:
-        raise ValueError("invalid length") 
-    return load_data("init")["length"]
+    data = load_data("init")
+    length = data["length"]
+    if length < 0 or length > 12:
+        elog(fn="get_length_of_championship", msg="invalid championship length", length=length)
+        raise ValueError("invalid length")
+    dlog(fn="get_length_of_championship", msg="championship length loaded", length=length)
+    return length
 
 def get_player_pneu(PNEU_types, current_pneu, driver_key):
     try:
         data = load_data("lap_user_data")
-        # Zkus driver_1/driver_2 i přímý klíč
         if driver_key in data:
             pneu = data[driver_key]["new_pneu"]
         else:
-            # fallback na current_pneu pokud klíč neexistuje
+            wlog(fn="get_player_pneu", msg="driver key missing from lap_user_data, keeping current pneu",
+                 driver_key=driver_key, current_pneu=current_pneu)
             return current_pneu
         if pneu in PNEU_types:
+            dlog(fn="get_player_pneu", msg="pneu loaded from lap_user_data",
+                 driver_key=driver_key, pneu=pneu)
             return pneu
+        wlog(fn="get_player_pneu", msg="invalid pneu in lap_user_data, keeping current",
+             driver_key=driver_key, pneu=pneu, current_pneu=current_pneu)
         return current_pneu
-    except:
+    except Exception as e:
+        wlog(fn="get_player_pneu", msg="lap_user_data read failed, keeping current pneu",
+             driver_key=driver_key, current_pneu=current_pneu, error=str(e))
         return current_pneu

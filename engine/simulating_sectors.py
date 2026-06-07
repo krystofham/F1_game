@@ -1,5 +1,6 @@
 import random
 #import matplotlib.pyplot as plt
+from log import dlog, ilog
 try:
     from load_data_json import *
 except:
@@ -185,6 +186,8 @@ def training(speed, climax, cars):
     stabilizators = None
     suspension = None
     training_mode = ask_for_int()["training_mode"]
+    ilog(fn="training", msg="training session started",
+         training_mode=training_mode, speed=speed, climax=climax)
     print("Settings of the car. You have three attemps")
     for x in range(3):
         print("We are setting front wing. Value 0-11. In lower speed higher number. Lowers understeer. During rain bigger number.")
@@ -314,4 +317,7 @@ def training(speed, climax, cars):
         speed_bonus = True
     else:
         speed_bonus = False
+    ilog(fn="training", msg="training session finished",
+         training_mode=training_mode, speed_bonus=speed_bonus,
+         speed_in_training=speed_in_training, acceleration=acceleration)
     return speed_bonus, training_mode

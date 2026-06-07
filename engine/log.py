@@ -2,23 +2,48 @@
 import json
 import os
 from collections import Counter
+from contextlib import contextmanager
+from contextvars import ContextVar
 from datetime import datetime
 import atexit
 
 _LOG_PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)), "info.log")
 
-def dlog (**payload) -> dict:
-    entry = log("[DEBUG]", **payload)
-    return entry
-def ilog (**payload) -> dict:
-    entry = log("[INFO]", **payload)
-    return entry
-def wlog (**payload) -> dict:
-    entry = log("[WARNING]", **payload)
-    return entry
-def elog (**payload) -> dict:
-    entry = log("[ERROR]",   **payload)
-    return entry
+_fn_ctx: ContextVar[str | None] = ContextVar("log_fn", default=None)
+
+
+def _inject_fn(payload: dict) -> dict:
+    if "fn" not in payload:
+        fn = _fn_ctx.get()
+        if fn:
+            payload["fn"] = fn
+    return payload
+
+
+@contextmanager
+def log_context(fn: str):
+    """Nastaví výchozí fn pro všechny log volání v bloku — stejný styl jako app.py."""
+    token = _fn_ctx.set(fn)
+    try:
+        yield
+    finally:
+        _fn_ctx.reset(token)
+
+
+def dlog(**payload) -> dict:
+    return log("[DEBUG]", **_inject_fn(payload))
+
+
+def ilog(**payload) -> dict:
+    return log("[INFO]", **_inject_fn(payload))
+
+
+def wlog(**payload) -> dict:
+    return log("[WARNING]", **_inject_fn(payload))
+
+
+def elog(**payload) -> dict:
+    return log("[ERROR]", **_inject_fn(payload))
 
 _buffer: list[str] = []
 _FLUSH_EVERY = 20  # zapiš každých 20 záznamů
@@ -178,4 +203,33 @@ def snapshot_cars(cars: list, init_player, init_player_2) -> dict:
         ],
 
         "total_cars": len(cars),
+    }
+
+
+def snapshot_init_config(cfg: dict, label: str) -> dict:
+    """Diagnostický snapshot init.json — ověř že user výběr dorazil do init_race."""
+    return {
+        "label":          label,
+        "pneu_driver_1":  cfg.get("pneu_driver_1"),
+        "pneu_driver_2":  cfg.get("pneu_driver_2"),
+        "training_mode":  cfg.get("training_mode"),
+        "length":         cfg.get("length"),
+        "keys":           sorted(cfg.keys()),
+    }
+
+
+def snapshot_race_ctx(race_ctx: dict, label: str) -> dict:
+    """Diagnostický snapshot race_state z state.json."""
+    return {
+        "label":         label,
+        "weather":       race_ctx.get("weather"),
+        "climax":        race_ctx.get("climax"),
+        "wettiness":     race_ctx.get("wettiness"),
+        "total_laps":    race_ctx.get("total_laps"),
+        "training_type": race_ctx.get("training_type"),
+        "speed_bonus":   race_ctx.get("speed_bonus"),
+        "pneu_type":     race_ctx.get("pneu_type"),
+        "speed_type":    race_ctx.get("speed_type"),
+        "forecast_len":  len(race_ctx.get("forecast", [])),
+        "safety_car":    race_ctx.get("safety_car"),
     }

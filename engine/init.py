@@ -13,21 +13,28 @@ from weather import *
 from engine import *
 #from plot import *
 from get_data import *
-from log import clear_log, ilog, dlog, elog, wlog, log
+from log import clear_log, ilog, dlog, elog, wlog
 clear_log()
-ilog( payload = "succesfull init of everything, init.py run")
+ilog(fn="init", msg="init.py run started")
 _BASE_DIR = os.path.dirname(__file__)
 _CONFIG_DIR = os.path.abspath(os.path.join(_BASE_DIR, "..", "config"))
-ilog( payload = f"Base dir: {_BASE_DIR} | Config dir: {_CONFIG_DIR}")
+ilog(fn="init", msg="directories resolved", base_dir=_BASE_DIR, config_dir=_CONFIG_DIR)
 
-with open(os.path.join(_CONFIG_DIR, "drivers.json"), encoding="utf-8") as f:
-    _drivers_cfg = json.load(f)
+try:
+    with open(os.path.join(_CONFIG_DIR, "drivers.json"), encoding="utf-8") as f:
+        _drivers_cfg = json.load(f)
+    with open(os.path.join(_CONFIG_DIR, "teams.json"), encoding="utf-8") as f:
+        _teams_cfg = json.load(f)
+except OSError as e:
+    elog(fn="init", msg="config json read failed", error=str(e), config_dir=_CONFIG_DIR)
+    raise
+except json.JSONDecodeError as e:
+    elog(fn="init", msg="config json malformed", error=str(e), config_dir=_CONFIG_DIR)
+    raise
 
-with open(os.path.join(_CONFIG_DIR, "teams.json"), encoding="utf-8") as f:
-    _teams_cfg = json.load(f)
-
-ilog( teams = _teams_cfg)
-ilog( drivers = _drivers_cfg)
+dlog(fn="init", msg="config loaded",
+     driver_count=len(_drivers_cfg.get("drivers", [])),
+     team_count=len(_teams_cfg.get("teams", [])))
 
 RANK            = 0
 WETTINESS       = 0
@@ -76,7 +83,7 @@ player   = Car("Max Verstappen", random.uniform(5, 6), is_player=True)
 player_2 = Car("Kim Nguen", random.uniform(5, 6), is_player=True)
 cars.append(player)
 cars.append(player_2)
-ilog(cars=[c.to_log() for c in cars])
+dlog(fn="init", msg="cars created", cars=[c.to_log() for c in cars])
 _pt = _teams_cfg["player_team"]
 create_team(
     _pt["name"],
@@ -95,4 +102,4 @@ for _t in _teams_cfg["teams"]:
         teams,
         random.uniform(_t["performance_min"], _t["performance_max"]),
     )
-ilog( teams = [t.to_log() for t in teams])
+ilog(fn="init", msg="init.py run finished", teams=[t.to_log() for t in teams], car_count=len(cars))

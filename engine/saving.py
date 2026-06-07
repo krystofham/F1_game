@@ -2,6 +2,7 @@ import json
 import os
 import csv
 from datetime import datetime
+from log import dlog, elog, ilog, wlog, snapshot_race_ctx
 
 _STATE_FILE = os.path.join(os.path.dirname(__file__), "state.json")
 
@@ -62,7 +63,7 @@ def _build_standings(cars, teams, time_laps=None):
         "teams":   [_team_to_dict(t, i + 1) for i, t in enumerate(sorted_teams)],
     }
 
-def _save(data: dict):
+def _save(data: dict, caller: str = "_save"):
     if os.path.exists(_STATE_FILE):
         try:
             with open(_STATE_FILE, "r", encoding="utf-8") as f:
@@ -70,10 +71,17 @@ def _save(data: dict):
             for key in ("b", "season_count", "championship_length", "player.name", "player_2.name"):
                 if key in existing and key not in data:
                     data[key] = existing[key]
-        except (json.JSONDecodeError, IOError):
-            pass
-    with open(_STATE_FILE, "w", encoding="utf-8") as f:
-        json.dump(data, f, indent=2, ensure_ascii=False)
+        except (json.JSONDecodeError, IOError) as e:
+            wlog(fn=caller, msg="could not merge existing state keys", error=str(e))
+    try:
+        with open(_STATE_FILE, "w", encoding="utf-8") as f:
+            json.dump(data, f, indent=2, ensure_ascii=False)
+        dlog(fn=caller, msg="state.json written",
+             type=data.get("type"), lap=data.get("lap"), race=data.get("race"),
+             time_laps_count=len(data.get("time_laps", [])))
+    except OSError as e:
+        elog(fn=caller, msg="state.json write failed", error=str(e))
+        raise
 
 # ---------------------------------------------------------------------------
 # Sestavení race_ctx — zavolej jednou před závodem, předávej do save funkcí
@@ -109,20 +117,12 @@ def build_race_ctx(
 # ---------------------------------------------------------------------------
 
 def save_state_end_of_lap(cars, teams, season, race, lap, race_ctx=None, time_laps=None, player_name=None, player_2_name=None):
-    try:
-        from transfer_debug import log as td_log
-        player_cars = [c.name for c in cars if c.is_player]
-        td_log(
-            "save_state_end_of_lap",
-            lap=lap,
-            race=race,
-            player_name_arg=player_name,
-            player_2_name_arg=player_2_name,
-            player_cars_in_memory=player_cars,
-            max_in_memory="Max Verstappen" in player_cars,
-        )
-    except ImportError:
-        pass
+    player_cars = [c.name for c in cars if c.is_player]
+    dlog(fn="save_state_end_of_lap", msg="saving lap state",
+         lap=lap, race=race,
+         player_name_arg=player_name, player_2_name_arg=player_2_name,
+         player_cars_in_memory=player_cars,
+         race_ctx=snapshot_race_ctx(race_ctx, "save_state_end_of_lap") if race_ctx else None)
 
     tl = time_laps
     if tl is None and race_ctx is not None:
@@ -143,9 +143,11 @@ def save_state_end_of_lap(cars, teams, season, race, lap, race_ctx=None, time_la
         data["player.name"] = player_name
     if player_2_name:
         data["player_2.name"] = player_2_name
-    _save(data)
-    
+    _save(data, "save_state_end_of_lap")
+
 def save_state_end_of_race(cars, teams, season, race, time_laps=None):
+    ilog(fn="save_state_end_of_race", msg="saving end-of-race state",
+         race=race, season=season, time_laps_count=len(time_laps or []))
     data = {
         "type":      "race",
         "season":    season,
@@ -162,13 +164,15 @@ def save_state_end_of_race(cars, teams, season, race, time_laps=None):
                 data["race_state"] = existing["race_state"]
         except (json.JSONDecodeError, IOError):
             pass
-    _save(data)
+    _save(data, "save_state_end_of_race")
+
 def save_state_end_of_season(cars, teams, season):
+    ilog(fn="save_state_end_of_season", msg="saving end-of-season state", season=season)
     _save({
         "type":   "season",
         "season": season,
         **_build_standings(cars, teams),
-    })
+    }, "save_state_end_of_season")
 
 def save_season_csv(cars, teams, season_count):
     timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
@@ -224,4 +228,5 @@ def save_season_csv(cars, teams, season_count):
                 "driver_2_points": d[1].points if len(d) > 1 else 0,
             })
 
-    print(f"Uloženo: {drivers_file}, {teams_file}")
+    ilog(fn="save_season_csv", msg="season CSV exported",
+         season=season_count, drivers_file=drivers_file, teams_file=teams_file)

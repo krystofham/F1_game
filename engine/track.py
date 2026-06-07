@@ -1,4 +1,4 @@
-from log import log
+from log import elog, ilog, wlog
 import os
 import random
 import json
@@ -39,11 +39,12 @@ class Track:
                     )
                     tracks_list.append(track)
         except FileNotFoundError:
-            log(f"[ERROR] Soubor s tratěmi nebyl nalezen na adrese: {json_path}")
+            elog(fn="load_all_from_json", msg="tracks.json not found", path=json_path)
             return []
-        except json.JSONDecodeError:
-            log(f"[ERROR] Chyba při čtení JSONu v: {json_path}")
+        except json.JSONDecodeError as e:
+            elog(fn="load_all_from_json", msg="tracks.json malformed JSON", path=json_path, error=str(e))
             return []
+        ilog(fn="load_all_from_json", msg="tracks loaded", count=len(tracks_list), path=json_path)
         random.shuffle(tracks_list)
         return tracks_list
 

@@ -1,12 +1,14 @@
 from init import *
 import os, json as _json
-from log import log
+from log import dlog, elog, ilog, wlog, snapshot_init_config
 def sim_the_lap(cars, teams, player, player_2, lap, SAFETY_CAR, LAPS_REMAINING, WETTINESS, forecast, weather, LAPS, climax, pneu, speed, PNEU_types, weather_1, weather_2, weather_3, weather_4, training_type, k_wear, k_speed,speed_bonus, season_count, race, time_laps):
-    # Načti aktuální stav
     state = load_state()
     race_ctx = state.get("race_state", {})
+    if not race_ctx:
+        wlog(fn="sim_the_lap", msg="race_state missing from state.json", lap=lap, race=race)
+    else:
+        dlog(fn="sim_the_lap", msg="race_state loaded", lap=lap, race=race)
 
-    # Přepiš proměnné ze state pokud existují
     if race_ctx:
         SAFETY_CAR      = race_ctx.get("safety_car", SAFETY_CAR)
         LAPS_REMAINING  = race_ctx.get("safety_car_laps_remaining", LAPS_REMAINING)
@@ -96,12 +98,18 @@ def sim_the_lap(cars, teams, player, player_2, lap, SAFETY_CAR, LAPS_REMAINING, 
 
 def init_race(tracks, race, cars, teams, championship, player, player_2, b, season_count):
     _cfg = {}
+    _p = os.path.join(os.path.dirname(__file__), "user_input/init.json")
     try:
-        _p = os.path.join(os.path.dirname(__file__), "user_input/init.json")
         with open(_p, encoding="utf-8") as _f:
             _cfg = _json.load(_f)
-    except Exception:
-        pass
+        ilog(fn="init_race", msg="init.json loaded",
+             path=_p, config=snapshot_init_config(_cfg, "init_race"))
+    except FileNotFoundError:
+        wlog(fn="init_race", msg="init.json not found, using defaults", path=_p)
+    except _json.JSONDecodeError as e:
+        elog(fn="init_race", msg="init.json malformed, using defaults", path=_p, error=str(e))
+    except OSError as e:
+        elog(fn="init_race", msg="init.json read failed, using defaults", path=_p, error=str(e))
 
     WETTINESS = 0
     climax = random.choice(["transitional","sunny","sunny","sunny"])
@@ -170,13 +178,14 @@ def init_race(tracks, race, cars, teams, championship, player, player_2, b, seas
             elif player_2.name == car.name:
                 car.pneu = player_2.pneu
             else:
-                log(
-                    "[ERROR] BAD CONFIG", 
-                    details=f"The player name is {player.name}, player_2 {player_2.name}, car {car.name} claim to be player like this: {car.is_player}"
-                )  
+                elog(fn="init_race", msg="player car name mismatch",
+                     player_1=player.name, player_2=player_2.name,
+                     car_name=car.name, car_is_player=car.is_player)
                 raise ValueError("bad condfig in players, contact me on github: https://github.com/krystofham/F1_game/")
-    players_list = [player.pneu, player_2.pneu, [car.pneu for car in cars if car.is_player], _cfg.get("pneu_driver_1", "error"), _cfg.get("pneu_driver_2", "hard")]
-    log("[INIT RACE PNEU]", pneu=players_list)
+    ilog(fn="init_race", msg="player pneu applied from init.json",
+         pneu_driver_1=player.pneu, pneu_driver_2=player_2.pneu,
+         cfg_pneu_driver_1=_cfg.get("pneu_driver_1"), cfg_pneu_driver_2=_cfg.get("pneu_driver_2"),
+         training_mode=_cfg.get("training_mode", 1))
     simulation = []
     #Training
     # speed_bonus, training_type = training(speed, climax, cars)]
@@ -193,6 +202,10 @@ def init_race(tracks, race, cars, teams, championship, player, player_2, b, seas
     k_wear=k_wear, k_speed=k_speed, total_laps=LAPS, time_laps=time_laps
     )
     save_state_end_of_lap(cars, teams, season_count, race, lap, race_ctx)
+    ilog(fn="init_race", msg="race initialized",
+         race=race, b=b, season=season_count, laps=LAPS,
+         climax=climax, weather=weather, training_type=training_type,
+         pneu_type=pneu, speed_type=speed)
     return speed_bonus, season_count, time_laps,  k_speed, k_wear,training_type, WETTINESS, lap, forecast, weather, climax, pneu, speed, PNEU_types, weather_1, weather_2, weather_3, weather_4, weather
 
 

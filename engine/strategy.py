@@ -1,3 +1,6 @@
+from log import dlog
+
+
 def strategy(LAPS, TIME_S1, TIME_S2, TIME_S3, pneu, speed, climax):
     count_laps = LAPS
     if count_laps < 2:
@@ -22,6 +25,12 @@ def strategy(LAPS, TIME_S1, TIME_S2, TIME_S3, pneu, speed, climax):
     endurance_w = 60/k_wear[3]*k_speed[3]
     wear = [endurance_h, endurance_m, endurance_s]
     name = ["hard", "medium", "soft"]
+    dlog(fn="strategy", msg="tyre endurance calculated",
+         laps_remaining=LAPS, pneu_type=pneu, speed_type=speed, climax=climax,
+         hard_laps=round(endurance_h, 1), medium_laps=round(endurance_m, 1),
+         soft_laps=round(endurance_s, 1),
+         inter_laps=round(endurance_i, 1) if climax != "sunny" else None,
+         wet_laps=round(endurance_w, 1) if climax != "sunny" else None)
     if climax == "sunny":
         print(f"soft can do {round(endurance_s, 1)} laps, medium {round(endurance_m, 1)} laps, hard {round(endurance_h, 1)} laps")
     else:

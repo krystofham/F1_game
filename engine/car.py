@@ -1,4 +1,7 @@
 import random
+from log import dlog, elog, ilog, wlog
+
+
 class Car:
     def __init__(self, name, rating, is_player=False):
         self.name = name
@@ -41,6 +44,8 @@ class Car:
         
         if self.wear >= 100 and not self.destroy:
             print(f"{self.name} – extreme Wear! ❌")
+            ilog(fn="simuluj_lap", msg="extreme wear DNF", name=self.name, wear=round(self.wear, 2),
+                 is_player=self.is_player)
             self.dnf = True
             self.destroy = True
             SAFETY_CAR = True
@@ -50,11 +55,15 @@ class Car:
         if self.puncture and not self.destroy:
             self.destroy = True
             print(f"{self.name} – puncture! ❌")
+            ilog(fn="simuluj_lap", msg="puncture DNF", name=self.name, wear=round(self.wear, 2),
+                 is_player=self.is_player)
             SAFETY_CAR = True
             LAPS_REMAINING = random.randint(3,6)
             
         if self.wear > 80 and random.random() < 0.55 and not self.destroy:
             print(f"{self.name} – puncture! ❌")
+            wlog(fn="simuluj_lap", msg="high wear puncture", name=self.name, wear=round(self.wear, 2),
+                 is_player=self.is_player)
             self.puncture = True
             self.dnf = True
             self.destroy = True
@@ -91,6 +100,9 @@ class Car:
             s3 = s3+wettiness/2
         lap_time = s1 + s2 + s3
         print("Time of this lap is", lap_time)
+        if self.is_player:
+            dlog(fn="simuluj_lap", msg="player lap completed", name=self.name,
+                 lap_time=round(lap_time, 3), pneu=self.pneu, wear=round(self.wear, 2))
         time_laps.append((lap_time, self.name, self.team.name, s1, s2, s3))
         self.time = self.time + self.wear/8 + lap_time
         self.wear += PNEU_types[self.pneu]["wear"]
@@ -98,6 +110,8 @@ class Car:
         self.wear += prirustek
         return SAFETY_CAR, LAPS_REMAINING
     def pit_stop(self, new_pneu, SAFETY_CAR):
+        dlog(fn="pit_stop", msg="pit stop executed", name=self.name, old_pneu=self.pneu,
+             new_pneu=new_pneu, safety_car=SAFETY_CAR, is_player=self.is_player)
         if not self.dnf:
             self.stints.append((self.last_stint_start, self.time - self.last_stint_start, self.pneu))
         if SAFETY_CAR is True:
@@ -196,6 +210,9 @@ class Car:
         return None
     def drss(self, car_in_front):
         if abs(car_in_front.time - self.time) < 1:
+            dlog(fn="drss", msg="DRS activated", name=self.name,
+                 delta=round(abs(car_in_front.time - self.time), 3),
+                 my_time=round(self.time, 3), front_time=round(car_in_front.time, 3))
             print("difference is:", abs(car_in_front.time - self.time), "which is lower than 1")
             print("My time is:", self.time)
             print("His time is", car_in_front.time)
@@ -208,6 +225,8 @@ class Car:
         if self.is_player is False:
             new_pneu = self.choose_ai(laps, max_laps, forecast, LAPS, lap, k_wear, SAFETY_CAR)
             if new_pneu:
+                dlog(fn="simuluj_ai", msg="AI pit decision", name=self.name, new_pneu=new_pneu,
+                     wear=round(self.wear, 2), lap=laps)
                 self.pit_stop(new_pneu, SAFETY_CAR)
         SAFETY_CAR, LAPS_REMAINING = self.simuluj_lap(weather, training, wettiness, TIME_S1, TIME_S2, TIME_S3, speed_bonus, time_laps, PNEU_types, SAFETY_CAR, LAPS_REMAINING)
         return SAFETY_CAR, LAPS_REMAINING
@@ -248,8 +267,12 @@ class Car:
             }
             position = RANK.index(self.name) + 1
             for x in range(1, 24):
-                if position == x:                    
-                    self.points += dict_points[x]
+                if position == x:
+                    gained = dict_points[x]
+                    self.points += gained
+                    if self.is_player:
+                        ilog(fn="vypocitej_points_jezdec", msg="player points awarded",
+                             name=self.name, position=position, gained=gained, total=self.points)
     def to_log(self) -> dict:
         return {
             "name":      self.name,
