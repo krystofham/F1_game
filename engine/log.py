@@ -1,65 +1,36 @@
-"""Debug log pro transfery a načítání hráčů — soubor engine/info.log"""
 import json
 import os
+import logging
 from collections import Counter
 from contextlib import contextmanager
 from contextvars import ContextVar
 from datetime import datetime
+from logging.handlers import RotatingFileHandler
+from concurrent.futures import ThreadPoolExecutor
+import queue
 import atexit
 
+# --- Konfigurace logování ---
 _LOG_PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)), "info.log")
+logging.basicConfig(
+    level=logging.INFO,
+    format="%(message)s",  # Použijeme vlastní formátování
+    handlers=[
+        RotatingFileHandler(
+            _LOG_PATH,
+            maxBytes=10 * 1024 * 1024,  # 10 MB
+            backupCount=5,
+            encoding="utf-8",
+        )
+    ],
+)
+logger = logging.getLogger("race_engine")
+logger.propagate = False  # Zamezí duplicitnímu logování
 
-_fn_ctx: ContextVar[str | None] = ContextVar("log_fn", default=None)
-
-
-def _inject_fn(payload: dict) -> dict:
-    if "fn" not in payload:
-        fn = _fn_ctx.get()
-        if fn:
-            payload["fn"] = fn
-    return payload
-
-
-@contextmanager
-def log_context(fn: str):
-    """Nastaví výchozí fn pro všechny log volání v bloku — stejný styl jako app.py."""
-    token = _fn_ctx.set(fn)
-    try:
-        yield
-    finally:
-        _fn_ctx.reset(token)
-
-
-def dlog(**payload) -> dict:
-    return log("[DEBUG]", **_inject_fn(payload))
-
-
-def ilog(**payload) -> dict:
-    return log("[INFO]", **_inject_fn(payload))
-
-
-def wlog(**payload) -> dict:
-    return log("[WARNING]", **_inject_fn(payload))
-
-
-def elog(**payload) -> dict:
-    return log("[ERROR]", **_inject_fn(payload))
-
+# --- Buffer a flush ---
 _buffer: list[str] = []
-_FLUSH_EVERY = 20  # zapiš každých 20 záznamů
-DEBUG_MODE = False 
-def log(event: str, **payload) -> dict:
-    entry = {"ts": datetime.now().isoformat(timespec="seconds"), "event": event, **payload}
-    line  = json.dumps(entry, ensure_ascii=False)
-    
-    if DEBUG_MODE:
-        print(line)
-    
-    _buffer.append(line)
-    if len(_buffer) >= _FLUSH_EVERY:
-        _flush()
-    
-    return entry
+_FLUSH_EVERY = 20
+DEBUG_MODE = False
 
 def _flush() -> None:
     if not _buffer:
@@ -71,8 +42,53 @@ def _flush() -> None:
     except OSError:
         pass
 
-atexit.register(_flush)  # při ukončení zapíše zbytek
+atexit.register(_flush)
 
+# --- Kontext pro funkce ---
+_fn_ctx: ContextVar[str | None] = ContextVar("log_fn", default=None)
+
+@contextmanager
+def log_context(fn: str):
+    token = _fn_ctx.set(fn)
+    try:
+        yield
+    finally:
+        _fn_ctx.reset(token)
+
+def _inject_fn(payload: dict) -> dict:
+    if "fn" not in payload:
+        fn = _fn_ctx.get()
+        if fn:
+            payload["fn"] = fn
+    return payload
+
+# --- Logovací funkce (kompatibilní) ---
+def log(event: str, **payload) -> dict:
+    entry = {"ts": datetime.now().isoformat(timespec="seconds"), "event": event, **_inject_fn(payload)}
+    line = json.dumps(entry, ensure_ascii=False)
+
+    if DEBUG_MODE:
+        print(line)
+
+    _buffer.append(line)
+    if len(_buffer) >= _FLUSH_EVERY:
+        _flush()
+
+    return entry
+
+def dlog(**payload) -> dict:
+    return log("[DEBUG]", **payload)
+
+def ilog(**payload) -> dict:
+    return log("[INFO]", **payload)
+
+def wlog(**payload) -> dict:
+    return log("[WARNING]", **payload)
+
+def elog(**payload) -> dict:
+    return log("[ERROR]", **payload)
+
+# --- Čtení a mazání logů ---
 def read_log(max_lines: int = 200) -> list[dict]:
     if not os.path.exists(_LOG_PATH):
         return []
@@ -92,7 +108,6 @@ def read_log(max_lines: int = 200) -> list[dict]:
             out.append({"raw": line})
     return out
 
-
 def clear_log() -> None:
     try:
         with open(_LOG_PATH, "w", encoding="utf-8") as f:
@@ -100,136 +115,99 @@ def clear_log() -> None:
     except OSError:
         pass
 
-
+# --- Snapshoty (původní) ---
 def snapshot_state(state: dict, label: str) -> dict:
-    """
-    Diagnostický snapshot state.json pro logování.
-    Volej před a po každé operaci která mění state — transfer, load, save.
-    
-    Konvence klíčů: snake_case, žádné tečky, žádné hardcoded jméno.
-    """
-    drivers      = state.get("drivers", [])
-    teams        = state.get("teams", [])
-    names        = [d.get("name") for d in drivers if d.get("name")]
-    counts       = Counter(names)
-    p1           = state.get("player.name", "")
-    p2           = state.get("player_2.name", "")
+    drivers = state.get("drivers", [])
+    teams = state.get("teams", [])
+    names = [d.get("name") for d in drivers if d.get("name")]
+    counts = Counter(names)
+    p1 = state.get("player.name", "")
+    p2 = state.get("player_2.name", "")
 
     player_names = {p1, p2} - {""}
 
     return {
-        "label":         label,
+        "label": label,
         "player_1_name": p1,
         "player_2_name": p2,
-
-        # Hráčská auta — základní ověření že jsou v drivers a mají tým
         "players_in_drivers": [
             {
-                "name":   d.get("name"),
-                "team":   d.get("team"),
+                "name": d.get("name"),
+                "team": d.get("team"),
                 "points": d.get("points"),
             }
             for d in drivers
             if d.get("is_player")
         ],
-
-        # Diagnostika duplicit — nejčastější příčina bugů po transferu
         "duplicate_names": [n for n, c in counts.items() if c > 1],
-
-        # Hráčská jména chybí v drivers listu — kritická chyba
         "players_missing_from_drivers": [
             name for name in player_names
             if not any(d.get("name") == name and d.get("is_player") for d in drivers)
         ],
-
-        # Jestli jsou hráči správně v týmech
         "players_in_teams": {
             name: next(
                 (t.get("name") for t in teams if name in t.get("drivers", [])),
-                None,  # None = hráč není v žádném týmu → bug
+                None,
             )
             for name in player_names
         },
-
-        # Soupisky všech týmů — generické, neharcodované
         "team_rosters": {
             t.get("name"): t.get("drivers", [])
             for t in teams
         },
-
         "driver_count": len(drivers),
-        "team_count":   len(teams),
+        "team_count": len(teams),
     }
 
-
 def snapshot_cars(cars: list, init_player, init_player_2) -> dict:
-    """
-    Diagnostický snapshot in-memory Car objektů.
-    Volej po load_game_objects() — ověř že Python objekty odpovídají state.json.
-
-    id(c) záměrně vynecháno — je platné jen v jednom běhu, v logu k ničemu.
-    """
     return {
-        # Init sloty — jaké jméno měl hráč při startu init.py
-        "init_slot_player_1": getattr(init_player,   "name", None),
+        "init_slot_player_1": getattr(init_player, "name", None),
         "init_slot_player_2": getattr(init_player_2, "name", None),
-
-        # Aktuální hráčská auta po aplikaci state
         "player_cars": [
             {
-                "name":      c.name,
-                "team":      c.team.name if c.team else None,
+                "name": c.name,
+                "team": c.team.name if c.team else None,
                 "is_player": c.is_player,
-                "pneu":      getattr(c, "pneu", None),
-                "wear":      round(getattr(c, "wear", 0.0), 3),
+                "pneu": getattr(c, "pneu", None),
+                "wear": round(getattr(c, "wear", 0.0), 3),
             }
             for c in cars
             if c.is_player
         ],
-
-        # Auta bez týmu — vždy bug pokud nejsou shadow duplicates
         "no_team": [
             {"name": c.name, "is_player": c.is_player}
             for c in cars
             if c.team is None
         ],
-
-        # Shadow duplicates = AI auto se stejným jménem jako hráč, čeká na odstranění
-        # Měl by být prázdný seznam po _remove_shadow_duplicate_cars()
         "shadow_duplicates": [
             c.name
             for c in cars
             if c.team is None and not c.is_player
         ],
-
         "total_cars": len(cars),
     }
 
-
 def snapshot_init_config(cfg: dict, label: str) -> dict:
-    """Diagnostický snapshot init.json — ověř že user výběr dorazil do init_race."""
     return {
-        "label":          label,
-        "pneu_driver_1":  cfg.get("pneu_driver_1"),
-        "pneu_driver_2":  cfg.get("pneu_driver_2"),
-        "training_mode":  cfg.get("training_mode"),
-        "length":         cfg.get("length"),
-        "keys":           sorted(cfg.keys()),
+        "label": label,
+        "pneu_driver_1": cfg.get("pneu_driver_1"),
+        "pneu_driver_2": cfg.get("pneu_driver_2"),
+        "training_mode": cfg.get("training_mode"),
+        "length": cfg.get("length"),
+        "keys": sorted(cfg.keys()),
     }
 
-
 def snapshot_race_ctx(race_ctx: dict, label: str) -> dict:
-    """Diagnostický snapshot race_state z state.json."""
     return {
-        "label":         label,
-        "weather":       race_ctx.get("weather"),
-        "climax":        race_ctx.get("climax"),
-        "wettiness":     race_ctx.get("wettiness"),
-        "total_laps":    race_ctx.get("total_laps"),
+        "label": label,
+        "weather": race_ctx.get("weather"),
+        "climax": race_ctx.get("climax"),
+        "wettiness": race_ctx.get("wettiness"),
+        "total_laps": race_ctx.get("total_laps"),
         "training_type": race_ctx.get("training_type"),
-        "speed_bonus":   race_ctx.get("speed_bonus"),
-        "pneu_type":     race_ctx.get("pneu_type"),
-        "speed_type":    race_ctx.get("speed_type"),
-        "forecast_len":  len(race_ctx.get("forecast", [])),
-        "safety_car":    race_ctx.get("safety_car"),
+        "speed_bonus": race_ctx.get("speed_bonus"),
+        "pneu_type": race_ctx.get("pneu_type"),
+        "speed_type": race_ctx.get("speed_type"),
+        "forecast_len": len(race_ctx.get("forecast", [])),
+        "safety_car": race_ctx.get("safety_car"),
     }
