@@ -1,5 +1,5 @@
 v1 Kraken
-v1.0.5.
+v1.0.5. tortuga - log add
 
 Namelist:
 Black Pearl
@@ -15,8 +15,8 @@ Calypso
 Salazar
 Blackbeard
 Bootstrap
+Spearow
 
-Tortuga
 Shipwreck Cove
 Isla de Muerta
 Fiddler's Green

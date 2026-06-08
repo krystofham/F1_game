@@ -23,14 +23,16 @@ function StatBlock({ label, value, unit, importance }) {
   );
 }
 
-export default function TrackPage() {
+export default function TrackPage({ state }) {
+  const { data: tracks, loading: tracksLoading, error: tracksError } = useApi(api.getTracks);
+
+  if (!state || tracksLoading) return <div className="loading">LOADING TRACK</div>;
+  if (tracksError) return <div className="empty">⚠ {tracksError}</div>;
   // 1. Všechny hooky na absolutním topu komponenty
-  const { data: state, loading, error } = useApi(api.getState);
-  const { data: tracks } = useApi(api.getTracks);
 
   // 2. Loading a Error stavy až ZA hooky
-  if (loading) return <div className="loading">LOADING TRACK</div>;
-  if (error) return <div className="empty">⚠ {error}</div>;
+  // if (loading) return <div className="loading">LOADING TRACK</div>;
+  // if (error) return <div className="empty">⚠ {error}</div>;
 
   // 3. Bezpečné vytažení aktuálního jména závodu ze state
   const race = state?.race;

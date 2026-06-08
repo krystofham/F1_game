@@ -3,7 +3,7 @@ import { useApi } from "../hooks/useApi";
 import { api } from "../utils/api";
 import TyreBadge from "../components/TyreBadge";
 import WearBar from "../components/WearBar";
-
+import TrackPage from "./TrackPage";
 const TYRE_OPTS = ["soft", "medium", "hard", "wet", "inter"];
 
 function PitForm({ drivers, onSubmit, disabled }) {
@@ -630,19 +630,20 @@ export default function RacePage() {
               {showTrack ? "HIDE TRACK" : "SHOW TRACK"}
             </button>
             {showTrack && (
-              <iframe
-                src={`http://${window.location.host}/iframe_track?lap=${lap}`}
-                title="Track stats"
-                style={{
-                  position: "fixed",
-                  bottom: 24,
-                  right: 24,
-                  width: 600,
-                  height: 400,
-                  border: "1px solid var(--border)",
-                  zIndex: 100,
-                }}
-              />
+              <div style={{
+                padding: 20,
+                position: "fixed",
+                bottom: 24,
+                right: 24,
+                width: 600,
+                height: 400,
+                border: "1px solid var(--border)",
+                zIndex: 100,
+                background: "var(--bg)",
+                overflow: "auto"
+              }}>
+                <TrackPage state={state} />
+              </div>
             )}
 
           </div>

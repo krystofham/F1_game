@@ -7,6 +7,8 @@ import StandingsPage from "./pages/StandingsPage";
 import GraphsPage from "./pages/GraphsPage";
 import TeamPage from "./pages/TeamPage";
 import TransferMarket from "./pages/TransfersPage";
+import { useApi } from "./hooks/useApi";
+import { api } from "./utils/api"; 
 import "./styles.css";
 
 const NAV_ITEMS = [
@@ -45,14 +47,11 @@ function Sidebar() {
   );
 }
 export default function App() {
+  const { data: state } = useApi(api.getState);
+
   return (
     <BrowserRouter>
       <Routes>
-        <Route path="/iframe_track" element={
-          <div style={{ padding: 24, overflowY: "auto", height: "100vh", boxSizing: "border-box"}}>
-            <TrackPage />
-          </div>
-        } />
         <Route path="/*" element={
           <div className="app-shell">
             <Sidebar />
@@ -62,7 +61,7 @@ export default function App() {
                 <Route path="/race" element={<RacePage />} />
                 <Route path="/teams" element={<TeamsPage />} />
                 <Route path="/drivers" element={<DriversPage />} />
-                <Route path="/track" element={<TrackPage />} />
+                <Route path="/track" element={<TrackPage state={state }/>} />
                 <Route path="/graphs" element={<GraphsPage />} />
                 <Route path="/team/:teamId" element={<TeamPage />} />
                 <Route path="/transfer" element={<TransferMarket />} />
