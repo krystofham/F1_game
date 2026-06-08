@@ -1,4 +1,4 @@
-from log import elog, ilog, wlog
+from log import elog, ilog, wlog, dlog
 import os
 import random
 import json
@@ -46,7 +46,10 @@ class Track:
             return []
         ilog(fn="load_all_from_json", msg="tracks loaded", count=len(tracks_list), path=json_path)
         random.shuffle(tracks_list)
+        dlog(fn="load_all_from_json", msg="tracks shuffled", order=[t.name for t in tracks_list])
         return tracks_list
 
 # Automatické načtení při importu modulu
 tracks = Track.load_all_from_json()
+random.shuffle(tracks)
+dlog(fn="load_all_from_json", msg="tracks shuffled second time", order=[t.name for t in tracks])

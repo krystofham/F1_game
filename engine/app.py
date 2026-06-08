@@ -976,6 +976,8 @@ async def api_sim_until(data: dict):
 def get_tracks_api():
     try:
         loaded_tracks = Track.load_all_from_json()
+        random.shuffle(loaded_tracks)
+        dlog(fn="load_all_from_json", msg="tracks shuffled second time", order=[t.name for t in loaded_tracks])
         if not loaded_tracks:
             elog(fn="get_tracks_api", msg="Track.load_all_from_json returned empty list")
             raise HTTPException(status_code=404, detail="Tracks not loaded")
