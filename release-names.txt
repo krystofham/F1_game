@@ -1,5 +1,10 @@
 v1 Kraken
-v1.0.5. tortuga - log add
+v1.1. tortuga
+	log add
+	electron fix
+	Tracks orded is generated randomly
+	Simulation stops when sth occurs
+	Weather are generated before races, so you know what weather and climax will be
 
 Namelist:
 Black Pearl
