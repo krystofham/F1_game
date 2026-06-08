@@ -333,3 +333,29 @@ def reset_championship(cars, teams):
     for t in teams:
         t.points = 0
     return 0, cars, teams
+
+def happend_something(lap, cars, WETTINESS):
+    DRY = ["soft", "medium", "hard"]
+    WET = ["inter", "wet"]
+    for car in cars:
+        # Stop if player DNFs
+        if car.dnf and car.is_player:
+            wlog(fn="happend_something",
+                 msg=f"Player DNF detected for {car.driver.name} at lap {lap}. Stopping simulation.",
+                 lap=lap, driver=car.driver.name)
+            return True
+
+        # Stop if track is wet and car uses dry tyres
+        if WETTINESS > 50 and car.pneu in DRY:
+            wlog(fn="happend_something",
+                 msg=f"Wet track (wettiness={WETTINESS}) but {car.driver.name} uses dry tyres ({car.pneu}) at lap {lap}. Stopping simulation.",
+                 lap=lap, driver=car.driver.name, pneu=car.pneu, wettiness=WETTINESS)
+            return True
+
+        # Stop if track is dry and car uses wet tyres
+        if WETTINESS < 30 and car.pneu in WET:
+            wlog(fn="happend_something",
+                 msg=f"Dry track (wettiness={WETTINESS}) but {car.driver.name} uses wet tyres ({car.pneu}) at lap {lap}. Stopping simulation.",
+                 lap=lap, driver=car.driver.name, pneu=car.pneu, wettiness=WETTINESS)
+            return True
+    return False

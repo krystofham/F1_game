@@ -854,7 +854,9 @@ async def api_sim_race():
 
         if lap > total_laps:
             break
-
+        smt_occurs = happend_something(lap, cars, teams, race_ctx["wettiness"]) 
+        if smt_occurs:
+            break
     final_state       = _state()
     final_time_laps   = final_state.get("time_laps", [])
 
@@ -950,7 +952,9 @@ async def api_sim_until(data: dict):
         if lap > 0 and len(current_time_laps) == 0:
             elog(fn="api_sim_until", msg="time_laps empty after sim_the_lap",
                  lap=lap, target_lap=target_lap, race=race)
-
+        smt_occurs = happend_something(lap, cars, teams, race_ctx["wettiness"]) 
+        if smt_occurs:
+            break
         lap_snapshots.append({"lap": lap, "drivers": current_state.get("drivers", [])})
 
     final_state = _state()
