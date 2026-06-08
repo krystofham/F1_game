@@ -347,6 +347,7 @@ async def api_init_race():
          race=getattr(race, "name", str(race)), b=b)
 
     state = _state()
+    state["smt_happened"]       = False
     state["lap"]                = 0
     state["time_laps"]          = []   # ← reset při každém novém závodě
     state["race"]               = getattr(race, "name", str(race))
@@ -782,7 +783,7 @@ async def api_do_transfer(data: dict):
 async def api_sim_race():
     state    = _state()
     race_ctx = state.get("race_state")
-
+    smt_happened = state.get("smt_happened", False)
     if not race_ctx:
         elog(fn="api_sim_race", msg="race_state missing, init_race not called")
         raise HTTPException(status_code=400, detail="Race not initialized. Call /api/init_race first.")
@@ -821,7 +822,6 @@ async def api_sim_race():
 
     ilog(fn="api_sim_race", msg="full race sim started",
          race=race, total_laps=total_laps, start_lap=lap, season=season_count)
-
     while lap <= total_laps:
         lap, cars, teams = sim_the_lap(
             cars, teams, player, player_2, lap,
@@ -854,9 +854,17 @@ async def api_sim_race():
 
         if lap > total_laps:
             break
-        smt_occurs = happend_something(lap, cars, teams, race_ctx["wettiness"]) 
-        if smt_occurs:
+        ilog(fn="api_sim_race", msg="something happened function run", lap=lap)
+        smt_occurs = happend_something(lap, cars, race_ctx["wettiness"]) 
+        dlog(fn="api_sim_race", msg="lap simmed", smt_occurs=smt_occurs, smt_happened=smt_happened)
+        if smt_occurs and not smt_happened:
+            smt_happened = True
+            updated = _state()
+            updated["smt_happened"] = True
+            _write_state(updated, "api_sim_race")
+            dlog(fn="api_sim_race", msg="breaking loop", smt_occurs=smt_occurs)
             break
+        
     final_state       = _state()
     final_time_laps   = final_state.get("time_laps", [])
 
@@ -924,7 +932,7 @@ async def api_sim_until(data: dict):
 
     lap           = state.get("lap", 0)
     lap_snapshots = []
-
+    smt_happened  = False
     while lap < target_lap and lap <= total_laps:
         current_race_ctx = _state().get("race_state", race_ctx)
         forecast         = current_race_ctx.get("forecast", race_ctx["forecast"])
@@ -952,8 +960,9 @@ async def api_sim_until(data: dict):
         if lap > 0 and len(current_time_laps) == 0:
             elog(fn="api_sim_until", msg="time_laps empty after sim_the_lap",
                  lap=lap, target_lap=target_lap, race=race)
-        smt_occurs = happend_something(lap, cars, teams, race_ctx["wettiness"]) 
-        if smt_occurs:
+        smt_occurs = happend_something(lap, cars, current_race_ctx["wettiness"]) 
+        if smt_occurs and not smt_happened:
+            smt_happened = True
             break
         lap_snapshots.append({"lap": lap, "drivers": current_state.get("drivers", [])})
 

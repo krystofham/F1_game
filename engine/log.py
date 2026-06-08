@@ -1,31 +1,13 @@
 import json
 import os
-import logging
 from collections import Counter
 from contextlib import contextmanager
 from contextvars import ContextVar
 from datetime import datetime
-from logging.handlers import RotatingFileHandler
-from concurrent.futures import ThreadPoolExecutor
-import queue
 import atexit
 
 # --- Konfigurace logování ---
 _LOG_PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)), "info.log")
-logging.basicConfig(
-    level=logging.INFO,
-    format="%(message)s",  # Použijeme vlastní formátování
-    handlers=[
-        RotatingFileHandler(
-            _LOG_PATH,
-            maxBytes=10 * 1024 * 1024,  # 10 MB
-            backupCount=5,
-            encoding="utf-8",
-        )
-    ],
-)
-logger = logging.getLogger("race_engine")
-logger.propagate = False  # Zamezí duplicitnímu logování
 
 # --- Buffer a flush ---
 _buffer: list[str] = []

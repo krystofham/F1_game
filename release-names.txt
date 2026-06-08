@@ -1,0 +1,30 @@
+v1 Kraken
+v1.0.5.
+
+Namelist:
+Black Pearl
+Flying Dutchman
+Silent Mary
+Queen Anne's Revenge
+Interceptor
+Endeavour
+
+Davy Jones
+Barbossa
+Calypso
+Salazar
+Blackbeard
+Bootstrap
+
+Tortuga
+Shipwreck Cove
+Isla de Muerta
+Fiddler's Green
+World's End
+
+Dead Man's Chest
+Cursed Gold
+Maelstrom
+Kraken
+Locker
+Brethren Court
