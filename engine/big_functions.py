@@ -112,7 +112,11 @@ def init_race(tracks, race, cars, teams, championship, player, player_2, b, seas
         elog(fn="init_race", msg="init.json read failed, using defaults", path=_p, error=str(e))
 
     WETTINESS = 0
-    climax = random.choice(["transitional","sunny","sunny","sunny"])
+        # Loading climax
+    with open("user_input/climax.json", "r", encoding="utf-8") as f:
+        data = json.load(f)
+    climax = data["climax"]
+    weather = data["weather"]
     lap = 0
     for track in tracks:
         if race == track.name:
@@ -150,15 +154,6 @@ def init_race(tracks, race, cars, teams, championship, player, player_2, b, seas
     "wet": {"wear": k_wear[3], "speed": k_speed[3]},
     "inter": {"wear": k_wear[4], "speed": k_speed[4]},
     }
-    if climax == "sunny":
-        weather = "sunny"
-    else:
-        weather = random.choice(WEATHER_TYPES)
-    # Loading climax
-    with open("user_input/climax.json", "r", encoding="utf-8") as f:
-        data = json.load(f)
-    climax = data["climax"]
-    weather = data["weather"]
     if weather in ('rain', 'heavy rain'):
         WETTINESS = 100
     weather_1 = generate_weather(weather, climax)
