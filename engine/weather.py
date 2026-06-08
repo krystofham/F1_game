@@ -25,20 +25,39 @@ def wet_track(weather, wettiness):
     return wettiness
 
 
+WEATHER_TRANSITIONS = {
+    "sunny": {
+        "choices": ["sunny", "transitional"],
+        "weights": [28, 1]  
+    },
+    "transitional": {
+        "choices": ["sunny", "transitional", "rain"],
+        "weights": [1, 3, 1]  
+    },
+    "rain": {
+        "choices": ["transitional", "rain", "heavy rain"],
+        "weights": [1, 9, 1]
+    },
+    "heavy rain": {
+        "choices": ["rain", "heavy rain"],
+        "weights": [2, 8]
+    }
+}
+
 def generate_weather(weather, climax):
     prev = weather
-    if climax == "transitional":
-        if weather == "sunny":
-            weather = random.choice(["sunny", "sunny","sunny","sunny", "sunny", "sunny","sunny","sunny","sunny", "sunny","sunny","sunny", "sunny", "sunny","sunny","sunny","sunny", "sunny","sunny","sunny", "sunny", "sunny","sunny","sunny", "sunny", "sunny","sunny","sunny", "transitional"])
-        elif weather == "transitional":
-            weather = random.choice(["sunny", "transitional", "transitional","transitional","rain"])
-        elif weather == "rain":
-            weather = random.choice(["transitional", "rain", "rain", "rain", "rain", "rain", "rain", "rain", "rain", "rain", "heavy rain"])
-        elif weather == "heavy rain":
-            weather = random.choice(["rain", "rain", "heavy rain", "heavy rain", "heavy rain", "heavy rain", "heavy rain", "heavy rain", "heavy rain", "heavy rain"])
+    
     if climax == "sunny":
         weather = "sunny"
+        
+    elif climax == "transitional":
+        if weather in WEATHER_TRANSITIONS:
+            state_data = WEATHER_TRANSITIONS[weather]
+            weather = random.choices(state_data["choices"], weights=state_data["weights"])[0]
+            
+    # Logování změny stavu
     if weather != prev:
         dlog(fn="generate_weather", msg="weather advanced",
              climax=climax, from_weather=prev, to_weather=weather)
+             
     return weather
