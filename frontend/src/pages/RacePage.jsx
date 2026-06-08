@@ -97,7 +97,7 @@ function PitForm({ drivers, onSubmit, disabled }) {
   );
 }
 
-function InitForm({ onInit, currentClima, currentWeather, AvgPneu }) {
+function InitForm({ onInit, currentClima, currentWeather }) {
   const [cfg, setCfg] = useState({
     // Default values
     length: 2,
@@ -111,7 +111,6 @@ function InitForm({ onInit, currentClima, currentWeather, AvgPneu }) {
     springs: 1,
     clima: currentClima,
     weather: currentWeather,
-    AvgPneu: AvgPneu
   });
   const [loading, setLoading] = useState(false);
   const [err, setErr] = useState(null);
@@ -135,9 +134,8 @@ function InitForm({ onInit, currentClima, currentWeather, AvgPneu }) {
       setLoading(false);
     }
   };
-
   const tyreOpts = ["soft", "medium", "hard", "wet", "inter"];
-      // state?.race_state.climax
+      // state?.race_state.clima
 
   return (
     <div className="card" style={{ maxWidth: 620 }}>
@@ -147,11 +145,9 @@ function InitForm({ onInit, currentClima, currentWeather, AvgPneu }) {
       <div style={{ fontFamily: "var(--font-mono)", fontSize: 12, color: "var(--text-2)", marginBottom: 20 }}>
         Current clima: <span style={{ color: "var(--accent)" }}>{(currentClima ?? "Invalid weather").toUpperCase()}</span>
       </div>
-      { currentWeather != "sunny" && (
+      { currentClima != "sunny" && (
         <div>
           Starting weather: <span style={{ color: "var(--accent)" }}>{(currentWeather ?? "Invalid weather").toUpperCase()}</span>
-          <br></br>
-          AVG pneu: <span style={{ color: "var(--accent)" }}>{(AvgPneu ?? "Invalid data").toUpperCase()}</span>
         </div>
       )}
 
@@ -341,6 +337,8 @@ export default function RacePage() {
   const [pitSaved, setPitSaved] = useState(false);
   const logRef = useRef(null);
   const { data: state, refetch: refetchState } = useApi(api.getState);
+  const { data: weather } = useApi(api.getWeather);
+
   const isLastRace = state?.b != null && state?.championship_length != null
     ? state.b >= state.championship_length
     : false;
@@ -513,9 +511,8 @@ export default function RacePage() {
         */}
         <InitForm 
             onInit={handleInit}
-            currentClima={state?.race_state?.climax}
-            currentWeather={state?.race_state?.weather}
-            AvgPneu={Object.entries(state?.drivers?.reduce((acc, d) => (acc[d.pneu] = (acc[d.pneu] || 0) + 1, acc), {}) || {}).sort((a, b) => b[1] - a[1])[0]?.[0] || "N/A"}          
+            currentClima={weather?.climax}
+            currentWeather={weather?.weather}
         />
         </>
     )}

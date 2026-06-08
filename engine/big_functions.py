@@ -154,6 +154,11 @@ def init_race(tracks, race, cars, teams, championship, player, player_2, b, seas
         weather = "sunny"
     else:
         weather = random.choice(WEATHER_TYPES)
+    # Loading climax
+    with open("user_input/climax.json", "r", encoding="utf-8") as f:
+        data = json.load(f)
+    climax = data["climax"]
+    weather = data["weather"]
     if weather in ('rain', 'heavy rain'):
         WETTINESS = 100
     weather_1 = generate_weather(weather, climax)

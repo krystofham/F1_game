@@ -39,6 +39,7 @@ async function req(method, path, body) {
 
 export const api = {
   getState: () => req("GET", "/api/get_state"),
+  getWeather: () => req("GET", "/api/get_climax"),
   getDrivers: () => req("GET", "/api/get_drivers"),
   getTeams: () => req("GET", "/api/get_teams"),
   getTracks: () => req("GET", "/api/tracks"), 

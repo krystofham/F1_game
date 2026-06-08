@@ -530,13 +530,27 @@ async def api_post_race():
     updated_state["championship_length"] = championship_length
 
     _write_state(updated_state, "api_post_race")
-
+    # Generate climax
+    climax = random.choice(["transitional","sunny","sunny","sunny"])
+    weather = random.choice(WEATHER_TYPES)
+    with open(os.path.join(_CONFIG, "../engine/user_input/climax.json"), "w", encoding="utf-8") as f:
+        json.dump({"climax": climax, "weather": weather}, f, indent=2, ensure_ascii=False)
     if new_b > championship_length:
         ilog(fn="api_post_race", msg="championship finished", season=season_count)
         return {"status": "race_done", "race": race, "championship_finished": True}
-
     return {"status": "race_done", "race": race, "championship_finished": False}
 
+# Get climax
+@app.get("/api/get_climax")
+async def api_get_climax():
+    path = os.path.join(_CONFIG, "../engine/user_input/climax.json")
+    try:
+        with open(path, "r", encoding="utf-8") as f:
+            data = json.load(f)
+    except Exception as e:
+        elog(fn="api_get_climax", msg="failed to read climax.json", error=str(e), path=path)
+        return {"climax": "unknown", "weather": "unknown"}
+    return {"climax": data.get("climax", "unknown"), "weather": data.get("weather", "unknown")}
 
 # ---------------------------------------------------------------------------
 # POST /api/post_championship
