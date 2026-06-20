@@ -9,6 +9,9 @@ import atexit
 # --- Konfigurace logování ---
 _LOG_PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)), "info.log")
 
+# PRODUCTION/DEBUG
+PRODUCTION = "prod" # or deb
+
 # --- Buffer a flush ---
 _buffer: list[str] = []
 _FLUSH_EVERY = 20
@@ -59,9 +62,13 @@ def log(event: str, **payload) -> dict:
     return entry
 
 def dlog(**payload) -> dict:
+    if PRODUCTION == "prod":
+        return
     return log("[DEBUG]", **payload)
 
 def ilog(**payload) -> dict:
+    if PRODUCTION == "prod":
+        return
     return log("[INFO]", **payload)
 
 def wlog(**payload) -> dict:
