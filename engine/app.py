@@ -6,6 +6,8 @@ from big_functions import *
 from load_data_json import *
 from log import elog, ilog, wlog, dlog, log, snapshot_state as td_snapshot_state
 from log import snapshot_cars as td_snapshot_cars
+from saving import save_season_csv, save_race_csv
+
 
 app = FastAPI()
 app.add_middleware(CORSMiddleware, allow_origins=["*"], allow_methods=["*"], allow_headers=["*"])
@@ -508,6 +510,17 @@ async def api_post_race():
 
     teams, cars, time_laps = post_race_info(time_laps, player, player_2, cars, teams, COUNT_CARS)
     save_state_end_of_race(cars, teams, season_count, race, time_laps)
+    
+    state_for_csv = _state()
+    save_race_csv(
+        drivers=state_for_csv.get("drivers", []),
+        race=race,
+        season=season_count,
+        race_ctx=race_ctx,
+    )
+    
+    
+    
     lap, time_laps, SAFETY_CAR, LAPS_REMAINING, weather, forecast, cars, WETTINESS = reset_race(climax, cars)
 
     # Ověř že time_laps byl správně uložen save_state_end_of_race
@@ -595,7 +608,7 @@ async def api_post_championship():
     )
 
     save_state_end_of_season(cars, teams, season_count)
-
+    save_season_csv(cars, teams, season_count)
     WETTINESS, cars, teams = reset_championship(cars, teams)
 
     updated_state = _state()

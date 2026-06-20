@@ -230,3 +230,71 @@ def save_season_csv(cars, teams, season_count):
 
     ilog(fn="save_season_csv", msg="season CSV exported",
          season=season_count, drivers_file=drivers_file, teams_file=teams_file)
+
+# ---------------------------------------------------------------------------
+# CSV helpers — auto-rotation
+# ---------------------------------------------------------------------------
+
+CSV_MAX_BYTES = 50 * 1024 * 1024  # 50 MB
+
+def _rotate_if_needed(filepath: str):
+    if not os.path.exists(filepath):
+        return
+    if os.path.getsize(filepath) < CSV_MAX_BYTES:
+        return
+    with open(filepath, "r", encoding="utf-8") as f:
+        lines = f.readlines()
+    if len(lines) <= 1:
+        return
+    # Zachovej hlavičku + spodní polovinu řádků
+    header = lines[0]
+    keep = lines[len(lines) // 2:]
+    with open(filepath, "w", encoding="utf-8") as f:
+        f.write(header)
+        f.writelines(keep)
+    ilog(fn="_rotate_if_needed", msg="CSV rotated", filepath=filepath, removed_lines=len(lines) - len(keep))
+
+
+def save_race_csv(drivers: list, race: str, season: int, race_ctx: dict):
+    os.makedirs("data", exist_ok=True)
+    filepath = "data/races.csv"
+
+    _rotate_if_needed(filepath)
+
+    fieldnames = [
+        "season", "race", "position", "name", "team",
+        "points", "rating", "is_player", "dnf",
+        "pit_stops", "total_time", "avg_position",
+        "best_position", "worst_position",
+        "stints_count", "weather", "wettiness", "total_laps",
+    ]
+
+    file_exists = os.path.exists(filepath)
+    with open(filepath, "a", newline="", encoding="utf-8") as f:
+        writer = csv.DictWriter(f, fieldnames=fieldnames)
+        if not file_exists:
+            writer.writeheader()
+        for d in drivers:
+            writer.writerow({
+                "season":         season,
+                "race":           race,
+                "position":       d.get("position", ""),
+                "name":           d.get("name", ""),
+                "team":           d.get("team", ""),
+                "points":         d.get("points", 0),
+                "rating":         round(d.get("rating", 0), 4),
+                "is_player":      int(d.get("is_player", False)),
+                "dnf":            int(d.get("dnf", False)),
+                "pit_stops":      d.get("pit_stops", 0),
+                "total_time":     round(d.get("time", 0.0), 4),
+                "avg_position":   d.get("avg_position", ""),
+                "best_position":  d.get("best_position", ""),
+                "worst_position": d.get("worst_position", ""),
+                "stints_count":   len(d.get("stints", [])),
+                "weather":        race_ctx.get("weather", ""),
+                "wettiness":      race_ctx.get("wettiness", ""),
+                "total_laps":     race_ctx.get("total_laps", ""),
+            })
+
+    ilog(fn="save_race_csv", msg="race CSV appended",
+         race=race, season=season, drivers_count=len(drivers))
