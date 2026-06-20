@@ -79,8 +79,10 @@ championship = [
 
 cars = [Car(driver, random.uniform(5, 6)) for driver in drivers]
 
-player   = Car("Max Vershaeren", random.uniform(5, 6), is_player=True)
-player_2 = Car("Kim Nguen", random.uniform(5, 6), is_player=True)
+playersname = _drivers_cfg["player_drivers"]
+
+player   = Car(playersname[0], random.uniform(5, 6), is_player=True)
+player_2 = Car(playersname[1], random.uniform(5, 6), is_player=True)
 cars.append(player)
 cars.append(player_2)
 dlog(fn="init", msg="cars created", cars=[c.to_log() for c in cars])
