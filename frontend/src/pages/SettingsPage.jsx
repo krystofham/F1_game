@@ -64,13 +64,13 @@ function Toast({ msg, type }) {
 // Colour tokens the user can tweak
 // ---------------------------------------------------------------------------
 const DEFAULT_COLORS = {
-  "--accent":  "#e8002d",
-  "--bg":      "#0a0a0a",
-  "--bg-2":    "#111111",
-  "--border":  "#1e1e1e",
-  "--text":    "#f0f0f0",
-  "--text-2":  "#888888",
-  "--text-3":  "#444444",
+  "--accent":  "#8ecae6",
+  "--bg":      "#0D1B2A",
+  "--bg-2":    "#1B263B",
+  "--border":  "#48bfe38f",
+  "--text":    "#f0f0f8",
+  "--text-2":  "#bdbdd1",
+  "--text-3":  "#a1a1b3",
 };
 
 const COLOR_LABELS = {
