@@ -7,6 +7,7 @@ import StandingsPage from "./pages/StandingsPage";
 import GraphsPage from "./pages/GraphsPage";
 import TeamPage from "./pages/TeamPage";
 import TransferMarket from "./pages/TransfersPage";
+import SettingsPage from "./pages/SettingsPage";
 import { useApi } from "./hooks/useApi";
 import { api } from "./utils/api"; 
 import "./styles.css";
@@ -43,6 +44,17 @@ function Sidebar() {
           </NavLink>
         ))}
       </div>
+
+      <div style={{ marginTop: "auto", paddingTop: 12, borderTop: "1px solid var(--border)" }}>
+        <NavLink
+          to="/settings"
+          className={({ isActive }) => `nav-item ${isActive ? "active" : ""}`}
+        >
+          <span className="nav-icon">⚙</span>
+          <span className="nav-label">SETTINGS</span>
+          <span className="nav-indicator" />
+        </NavLink>
+      </div>
     </nav>
   );
 }
@@ -65,6 +77,7 @@ export default function App() {
                 <Route path="/graphs" element={<GraphsPage />} />
                 <Route path="/team/:teamId" element={<TeamPage />} />
                 <Route path="/transfer" element={<TransferMarket />} />
+                <Route path="/settings" element={<SettingsPage />} />
               </Routes>
             </main>
           </div>
