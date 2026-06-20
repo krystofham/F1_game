@@ -188,7 +188,7 @@ def init_race(tracks, race, cars, teams, championship, player, player_2, b, seas
     simulation = []
     #Training
     # speed_bonus, training_type = training(speed, climax, cars)]
-    training_type = str(_cfg.get("training_mode", 1))
+    training_type = 1
     speed_bonus = True
     #Qualification
     simulation = qualification(simulation, cars, TIME_S1, TIME_S2, TIME_S3, training_type)
