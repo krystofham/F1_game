@@ -891,7 +891,14 @@ async def api_sim_race():
         ilog(fn="api_sim_race", msg="something happened function run", lap=lap)
         smt_occurs = happend_something(lap, cars, race_ctx["wettiness"]) 
         dlog(fn="api_sim_race", msg="lap simmed", smt_occurs=smt_occurs, smt_happened=smt_happened)
-        if smt_occurs and not smt_happened:
+        settings_path = os.path.join(_CONFIG, "user_input/settings.json")
+        try:
+            with open(settings_path) as f:
+                settings = json.load(f)
+            stop_on_event = settings.get("stop_on_event", True)
+        except Exception:
+            stop_on_event = True
+        if smt_occurs and not smt_happened and stop_on_event:
             smt_happened = True
             updated = _state()
             updated["smt_happened"] = True
@@ -995,7 +1002,14 @@ async def api_sim_until(data: dict):
             elog(fn="api_sim_until", msg="time_laps empty after sim_the_lap",
                  lap=lap, target_lap=target_lap, race=race)
         smt_occurs = happend_something(lap, cars, current_race_ctx["wettiness"]) 
-        if smt_occurs and not smt_happened:
+        settings_path = os.path.join(_CONFIG, "user_input/settings.json")
+        try:
+            with open(settings_path) as f:
+                settings = json.load(f)
+            stop_on_event = settings.get("stop_on_event", True)
+        except Exception:
+            stop_on_event = True
+        if smt_occurs and not smt_happened and stop_on_event:
             smt_happened = True
             break
         lap_snapshots.append({"lap": lap, "drivers": current_state.get("drivers", [])})
@@ -1049,3 +1063,20 @@ def get_tracks_api():
     except Exception as e:
         elog(fn="get_tracks_api", msg="unexpected error loading tracks", error=str(e))
         raise HTTPException(status_code=500, detail=f"Interní chyba serveru: {str(e)}")
+
+
+@app.get("/api/settings")
+async def get_settings():
+    path = os.path.join(_CONFIG, "user_input/settings.json")
+    try:
+        with open(path, encoding="utf-8") as f:
+            return json.load(f)
+    except Exception:
+        return {"stop_on_event": True, "show_logs": False}
+
+@app.post("/api/settings")
+async def post_settings(data: dict):
+    path = os.path.join(_CONFIG, "user_input/settings.json")
+    with open(path, "w", encoding="utf-8") as f:
+        json.dump(data, f, indent=2)
+    return {"status": "ok"}

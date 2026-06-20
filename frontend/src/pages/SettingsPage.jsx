@@ -157,6 +157,11 @@ export default function SettingsPage() {
 
   // Save everything
   const handleSave = async () => {
+    await fetch("http://localhost:8000/api/settings", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ stop_on_event: stopOnEvent, show_logs: showLogs }),
+    });
     setSaving(true);
     try {
       // Persist colours + misc to localStorage
