@@ -1,111 +1,60 @@
-{"ts": "2026-06-20T11:20:49", "event": "[WARNING]", "fn": "_state", "msg": "state.json not found, returning empty dict"}
-{"ts": "2026-06-20T11:20:49", "event": "[WARNING]", "fn": "_state", "msg": "state.json not found, returning empty dict"}
-{"ts": "2026-06-20T11:20:49", "event": "[WARNING]", "fn": "_state", "msg": "state.json not found, returning empty dict"}
-{"ts": "2026-06-20T11:20:49", "event": "[WARNING]", "fn": "_state", "msg": "state.json not found, returning empty dict"}
-{"ts": "2026-06-20T11:20:49", "event": "[WARNING]", "fn": "_state", "msg": "state.json not found, returning empty dict"}
-{"ts": "2026-06-20T11:20:50", "event": "[WARNING]", "fn": "_state", "msg": "state.json not found, returning empty dict"}
-{"ts": "2026-06-20T11:20:57", "event": "[WARNING]", "fn": "_state", "msg": "state.json not found, returning empty dict"}
-{"ts": "2026-06-20T11:20:57", "event": "[WARNING]", "fn": "_state", "msg": "state.json not found, returning empty dict"}
-{"ts": "2026-06-20T11:21:01", "event": "[WARNING]", "fn": "load_state", "msg": "state.json not found, returning empty dict"}
-{"ts": "2026-06-20T11:21:01", "event": "[WARNING]", "fn": "get_player_pneu", "msg": "driver key missing from lap_user_data, keeping current pneu", "driver_key": "driver_1", "current_pneu": "medium"}
-{"ts": "2026-06-20T11:21:01", "event": "[WARNING]", "fn": "get_player_pneu", "msg": "driver key missing from lap_user_data, keeping current pneu", "driver_key": "driver_2", "current_pneu": "medium"}
-{"ts": "2026-06-20T11:22:11", "event": "[ERROR]", "fn": "api_sim_lap", "msg": "time_laps still empty after sim_the_lap — sim did not write state", "lap": 1, "race": "AWS Grand Prix de Espana"}
-{"ts": "2026-06-20T11:23:10", "event": "[ERROR]", "fn": "api_sim_lap", "msg": "time_laps is empty but lap > 0 — data loss suspected", "lap": 1, "total_laps": 51}
-{"ts": "2026-06-20T11:23:10", "event": "[ERROR]", "fn": "api_sim_lap", "msg": "time_laps still empty after sim_the_lap — sim did not write state", "lap": 2, "race": "AWS Grand Prix de Espana"}
-{"ts": "2026-06-20T11:23:10", "event": "[ERROR]", "fn": "api_sim_lap", "msg": "time_laps is empty but lap > 0 — data loss suspected", "lap": 2, "total_laps": 51}
-{"ts": "2026-06-20T11:23:10", "event": "[ERROR]", "fn": "api_sim_lap", "msg": "time_laps still empty after sim_the_lap — sim did not write state", "lap": 3, "race": "AWS Grand Prix de Espana"}
-{"ts": "2026-06-20T11:23:11", "event": "[ERROR]", "fn": "api_sim_lap", "msg": "time_laps is empty but lap > 0 — data loss suspected", "lap": 3, "total_laps": 51}
-{"ts": "2026-06-20T11:23:11", "event": "[ERROR]", "fn": "api_sim_lap", "msg": "time_laps still empty after sim_the_lap — sim did not write state", "lap": 4, "race": "AWS Grand Prix de Espana"}
-{"ts": "2026-06-20T11:23:11", "event": "[ERROR]", "fn": "api_sim_lap", "msg": "time_laps is empty but lap > 0 — data loss suspected", "lap": 4, "total_laps": 51}
-{"ts": "2026-06-20T11:23:11", "event": "[ERROR]", "fn": "api_sim_lap", "msg": "time_laps still empty after sim_the_lap — sim did not write state", "lap": 5, "race": "AWS Grand Prix de Espana"}
-{"ts": "2026-06-20T11:23:35", "event": "[ERROR]", "fn": "api_sim_lap", "msg": "time_laps is empty but lap > 0 — data loss suspected", "lap": 5, "total_laps": 51}
-{"ts": "2026-06-20T11:23:35", "event": "[ERROR]", "fn": "api_sim_lap", "msg": "time_laps still empty after sim_the_lap — sim did not write state", "lap": 6, "race": "AWS Grand Prix de Espana"}
-{"ts": "2026-06-20T11:23:35", "event": "[ERROR]", "fn": "api_sim_lap", "msg": "time_laps is empty but lap > 0 — data loss suspected", "lap": 6, "total_laps": 51}
-{"ts": "2026-06-20T11:23:35", "event": "[ERROR]", "fn": "api_sim_lap", "msg": "time_laps still empty after sim_the_lap — sim did not write state", "lap": 7, "race": "AWS Grand Prix de Espana"}
-{"ts": "2026-06-20T11:23:36", "event": "[ERROR]", "fn": "api_sim_lap", "msg": "time_laps is empty but lap > 0 — data loss suspected", "lap": 7, "total_laps": 51}
-{"ts": "2026-06-20T11:23:36", "event": "[ERROR]", "fn": "api_sim_lap", "msg": "time_laps still empty after sim_the_lap — sim did not write state", "lap": 8, "race": "AWS Grand Prix de Espana"}
-{"ts": "2026-06-20T11:23:36", "event": "[ERROR]", "fn": "api_sim_lap", "msg": "time_laps is empty but lap > 0 — data loss suspected", "lap": 8, "total_laps": 51}
-{"ts": "2026-06-20T11:23:36", "event": "[ERROR]", "fn": "api_sim_lap", "msg": "time_laps still empty after sim_the_lap — sim did not write state", "lap": 9, "race": "AWS Grand Prix de Espana"}
-{"ts": "2026-06-20T11:23:36", "event": "[ERROR]", "fn": "api_sim_lap", "msg": "time_laps is empty but lap > 0 — data loss suspected", "lap": 9, "total_laps": 51}
-{"ts": "2026-06-20T11:23:36", "event": "[ERROR]", "fn": "api_sim_lap", "msg": "time_laps still empty after sim_the_lap — sim did not write state", "lap": 10, "race": "AWS Grand Prix de Espana"}
-{"ts": "2026-06-20T11:23:41", "event": "[ERROR]", "fn": "api_sim_lap", "msg": "time_laps is empty but lap > 0 — data loss suspected", "lap": 10, "total_laps": 51}
-{"ts": "2026-06-20T11:23:41", "event": "[ERROR]", "fn": "api_sim_lap", "msg": "time_laps still empty after sim_the_lap — sim did not write state", "lap": 11, "race": "AWS Grand Prix de Espana"}
-{"ts": "2026-06-20T11:23:51", "event": "[ERROR]", "fn": "api_sim_lap", "msg": "time_laps is empty but lap > 0 — data loss suspected", "lap": 11, "total_laps": 51}
-{"ts": "2026-06-20T11:23:51", "event": "[ERROR]", "fn": "api_sim_lap", "msg": "time_laps still empty after sim_the_lap — sim did not write state", "lap": 12, "race": "AWS Grand Prix de Espana"}
-{"ts": "2026-06-20T11:23:52", "event": "[ERROR]", "fn": "api_sim_lap", "msg": "time_laps is empty but lap > 0 — data loss suspected", "lap": 12, "total_laps": 51}
-{"ts": "2026-06-20T11:23:52", "event": "[ERROR]", "fn": "api_sim_lap", "msg": "time_laps still empty after sim_the_lap — sim did not write state", "lap": 13, "race": "AWS Grand Prix de Espana"}
-{"ts": "2026-06-20T11:23:53", "event": "[ERROR]", "fn": "api_sim_lap", "msg": "time_laps is empty but lap > 0 — data loss suspected", "lap": 13, "total_laps": 51}
-{"ts": "2026-06-20T11:23:53", "event": "[ERROR]", "fn": "api_sim_lap", "msg": "time_laps still empty after sim_the_lap — sim did not write state", "lap": 14, "race": "AWS Grand Prix de Espana"}
-{"ts": "2026-06-20T11:23:53", "event": "[ERROR]", "fn": "api_sim_lap", "msg": "time_laps is empty but lap > 0 — data loss suspected", "lap": 14, "total_laps": 51}
-{"ts": "2026-06-20T11:23:53", "event": "[ERROR]", "fn": "api_sim_lap", "msg": "time_laps still empty after sim_the_lap — sim did not write state", "lap": 15, "race": "AWS Grand Prix de Espana"}
-{"ts": "2026-06-20T11:23:54", "event": "[ERROR]", "fn": "api_sim_lap", "msg": "time_laps is empty but lap > 0 — data loss suspected", "lap": 15, "total_laps": 51}
-{"ts": "2026-06-20T11:23:54", "event": "[ERROR]", "fn": "api_sim_lap", "msg": "time_laps still empty after sim_the_lap — sim did not write state", "lap": 16, "race": "AWS Grand Prix de Espana"}
-{"ts": "2026-06-20T11:23:54", "event": "[ERROR]", "fn": "api_sim_lap", "msg": "time_laps is empty but lap > 0 — data loss suspected", "lap": 16, "total_laps": 51}
-{"ts": "2026-06-20T11:23:54", "event": "[ERROR]", "fn": "api_sim_lap", "msg": "time_laps still empty after sim_the_lap — sim did not write state", "lap": 17, "race": "AWS Grand Prix de Espana"}
-{"ts": "2026-06-20T11:23:54", "event": "[ERROR]", "fn": "api_sim_lap", "msg": "time_laps is empty but lap > 0 — data loss suspected", "lap": 17, "total_laps": 51}
-{"ts": "2026-06-20T11:23:54", "event": "[ERROR]", "fn": "api_sim_lap", "msg": "time_laps still empty after sim_the_lap — sim did not write state", "lap": 18, "race": "AWS Grand Prix de Espana"}
-{"ts": "2026-06-20T11:23:55", "event": "[ERROR]", "fn": "api_sim_lap", "msg": "time_laps is empty but lap > 0 — data loss suspected", "lap": 18, "total_laps": 51}
-{"ts": "2026-06-20T11:23:55", "event": "[ERROR]", "fn": "api_sim_lap", "msg": "time_laps still empty after sim_the_lap — sim did not write state", "lap": 19, "race": "AWS Grand Prix de Espana"}
-{"ts": "2026-06-20T11:23:56", "event": "[ERROR]", "fn": "api_sim_lap", "msg": "time_laps is empty but lap > 0 — data loss suspected", "lap": 19, "total_laps": 51}
-{"ts": "2026-06-20T11:23:56", "event": "[ERROR]", "fn": "api_sim_lap", "msg": "time_laps still empty after sim_the_lap — sim did not write state", "lap": 20, "race": "AWS Grand Prix de Espana"}
-{"ts": "2026-06-20T11:23:56", "event": "[ERROR]", "fn": "api_sim_lap", "msg": "time_laps is empty but lap > 0 — data loss suspected", "lap": 20, "total_laps": 51}
-{"ts": "2026-06-20T11:23:56", "event": "[ERROR]", "fn": "api_sim_lap", "msg": "time_laps still empty after sim_the_lap — sim did not write state", "lap": 21, "race": "AWS Grand Prix de Espana"}
-{"ts": "2026-06-20T11:23:57", "event": "[ERROR]", "fn": "api_sim_lap", "msg": "time_laps is empty but lap > 0 — data loss suspected", "lap": 21, "total_laps": 51}
-{"ts": "2026-06-20T11:23:57", "event": "[ERROR]", "fn": "api_sim_lap", "msg": "time_laps still empty after sim_the_lap — sim did not write state", "lap": 22, "race": "AWS Grand Prix de Espana"}
-{"ts": "2026-06-20T11:23:57", "event": "[ERROR]", "fn": "api_sim_lap", "msg": "time_laps is empty but lap > 0 — data loss suspected", "lap": 22, "total_laps": 51}
-{"ts": "2026-06-20T11:23:57", "event": "[ERROR]", "fn": "api_sim_lap", "msg": "time_laps still empty after sim_the_lap — sim did not write state", "lap": 23, "race": "AWS Grand Prix de Espana"}
-{"ts": "2026-06-20T11:23:57", "event": "[ERROR]", "fn": "api_sim_lap", "msg": "time_laps is empty but lap > 0 — data loss suspected", "lap": 23, "total_laps": 51}
-{"ts": "2026-06-20T11:23:57", "event": "[ERROR]", "fn": "api_sim_lap", "msg": "time_laps still empty after sim_the_lap — sim did not write state", "lap": 24, "race": "AWS Grand Prix de Espana"}
-{"ts": "2026-06-20T11:23:58", "event": "[ERROR]", "fn": "api_sim_lap", "msg": "time_laps is empty but lap > 0 — data loss suspected", "lap": 24, "total_laps": 51}
-{"ts": "2026-06-20T11:23:58", "event": "[ERROR]", "fn": "api_sim_lap", "msg": "time_laps still empty after sim_the_lap — sim did not write state", "lap": 25, "race": "AWS Grand Prix de Espana"}
-{"ts": "2026-06-20T11:23:58", "event": "[ERROR]", "fn": "api_sim_lap", "msg": "time_laps is empty but lap > 0 — data loss suspected", "lap": 25, "total_laps": 51}
-{"ts": "2026-06-20T11:23:58", "event": "[ERROR]", "fn": "api_sim_lap", "msg": "time_laps still empty after sim_the_lap — sim did not write state", "lap": 26, "race": "AWS Grand Prix de Espana"}
-{"ts": "2026-06-20T11:24:08", "event": "[ERROR]", "fn": "api_sim_lap", "msg": "time_laps is empty but lap > 0 — data loss suspected", "lap": 26, "total_laps": 51}
-{"ts": "2026-06-20T11:24:08", "event": "[ERROR]", "fn": "api_sim_lap", "msg": "time_laps still empty after sim_the_lap — sim did not write state", "lap": 27, "race": "AWS Grand Prix de Espana"}
-{"ts": "2026-06-20T11:24:15", "event": "[ERROR]", "fn": "api_sim_lap", "msg": "time_laps is empty but lap > 0 — data loss suspected", "lap": 27, "total_laps": 51}
-{"ts": "2026-06-20T11:24:15", "event": "[ERROR]", "fn": "api_sim_lap", "msg": "time_laps still empty after sim_the_lap — sim did not write state", "lap": 28, "race": "AWS Grand Prix de Espana"}
-{"ts": "2026-06-20T11:24:15", "event": "[ERROR]", "fn": "api_sim_lap", "msg": "time_laps is empty but lap > 0 — data loss suspected", "lap": 28, "total_laps": 51}
-{"ts": "2026-06-20T11:24:15", "event": "[ERROR]", "fn": "api_sim_lap", "msg": "time_laps still empty after sim_the_lap — sim did not write state", "lap": 29, "race": "AWS Grand Prix de Espana"}
-{"ts": "2026-06-20T11:24:16", "event": "[ERROR]", "fn": "api_sim_lap", "msg": "time_laps is empty but lap > 0 — data loss suspected", "lap": 29, "total_laps": 51}
-{"ts": "2026-06-20T11:24:16", "event": "[ERROR]", "fn": "api_sim_lap", "msg": "time_laps still empty after sim_the_lap — sim did not write state", "lap": 30, "race": "AWS Grand Prix de Espana"}
-{"ts": "2026-06-20T11:24:16", "event": "[ERROR]", "fn": "api_sim_lap", "msg": "time_laps is empty but lap > 0 — data loss suspected", "lap": 30, "total_laps": 51}
-{"ts": "2026-06-20T11:24:16", "event": "[ERROR]", "fn": "api_sim_lap", "msg": "time_laps still empty after sim_the_lap — sim did not write state", "lap": 31, "race": "AWS Grand Prix de Espana"}
-{"ts": "2026-06-20T11:24:21", "event": "[ERROR]", "fn": "api_sim_lap", "msg": "time_laps is empty but lap > 0 — data loss suspected", "lap": 31, "total_laps": 51}
-{"ts": "2026-06-20T11:24:21", "event": "[ERROR]", "fn": "api_sim_lap", "msg": "time_laps still empty after sim_the_lap — sim did not write state", "lap": 32, "race": "AWS Grand Prix de Espana"}
-{"ts": "2026-06-20T11:24:22", "event": "[ERROR]", "fn": "api_sim_lap", "msg": "time_laps is empty but lap > 0 — data loss suspected", "lap": 32, "total_laps": 51}
-{"ts": "2026-06-20T11:24:22", "event": "[ERROR]", "fn": "api_sim_lap", "msg": "time_laps still empty after sim_the_lap — sim did not write state", "lap": 33, "race": "AWS Grand Prix de Espana"}
-{"ts": "2026-06-20T11:24:22", "event": "[ERROR]", "fn": "api_sim_lap", "msg": "time_laps is empty but lap > 0 — data loss suspected", "lap": 33, "total_laps": 51}
-{"ts": "2026-06-20T11:24:22", "event": "[ERROR]", "fn": "api_sim_lap", "msg": "time_laps still empty after sim_the_lap — sim did not write state", "lap": 34, "race": "AWS Grand Prix de Espana"}
-{"ts": "2026-06-20T11:24:22", "event": "[ERROR]", "fn": "api_sim_lap", "msg": "time_laps is empty but lap > 0 — data loss suspected", "lap": 34, "total_laps": 51}
-{"ts": "2026-06-20T11:24:22", "event": "[ERROR]", "fn": "api_sim_lap", "msg": "time_laps still empty after sim_the_lap — sim did not write state", "lap": 35, "race": "AWS Grand Prix de Espana"}
-{"ts": "2026-06-20T11:24:23", "event": "[ERROR]", "fn": "api_sim_lap", "msg": "time_laps is empty but lap > 0 — data loss suspected", "lap": 35, "total_laps": 51}
-{"ts": "2026-06-20T11:24:23", "event": "[ERROR]", "fn": "api_sim_lap", "msg": "time_laps still empty after sim_the_lap — sim did not write state", "lap": 36, "race": "AWS Grand Prix de Espana"}
-{"ts": "2026-06-20T11:24:27", "event": "[ERROR]", "fn": "api_sim_lap", "msg": "time_laps is empty but lap > 0 — data loss suspected", "lap": 36, "total_laps": 51}
-{"ts": "2026-06-20T11:24:27", "event": "[ERROR]", "fn": "api_sim_lap", "msg": "time_laps still empty after sim_the_lap — sim did not write state", "lap": 37, "race": "AWS Grand Prix de Espana"}
-{"ts": "2026-06-20T11:24:28", "event": "[ERROR]", "fn": "api_sim_lap", "msg": "time_laps is empty but lap > 0 — data loss suspected", "lap": 37, "total_laps": 51}
-{"ts": "2026-06-20T11:24:28", "event": "[ERROR]", "fn": "api_sim_lap", "msg": "time_laps still empty after sim_the_lap — sim did not write state", "lap": 38, "race": "AWS Grand Prix de Espana"}
-{"ts": "2026-06-20T11:24:28", "event": "[ERROR]", "fn": "api_sim_lap", "msg": "time_laps is empty but lap > 0 — data loss suspected", "lap": 38, "total_laps": 51}
-{"ts": "2026-06-20T11:24:28", "event": "[ERROR]", "fn": "api_sim_lap", "msg": "time_laps still empty after sim_the_lap — sim did not write state", "lap": 39, "race": "AWS Grand Prix de Espana"}
-{"ts": "2026-06-20T11:24:28", "event": "[ERROR]", "fn": "api_sim_lap", "msg": "time_laps is empty but lap > 0 — data loss suspected", "lap": 39, "total_laps": 51}
-{"ts": "2026-06-20T11:24:28", "event": "[ERROR]", "fn": "api_sim_lap", "msg": "time_laps still empty after sim_the_lap — sim did not write state", "lap": 40, "race": "AWS Grand Prix de Espana"}
-{"ts": "2026-06-20T11:24:28", "event": "[ERROR]", "fn": "api_sim_lap", "msg": "time_laps is empty but lap > 0 — data loss suspected", "lap": 40, "total_laps": 51}
-{"ts": "2026-06-20T11:24:28", "event": "[ERROR]", "fn": "api_sim_lap", "msg": "time_laps still empty after sim_the_lap — sim did not write state", "lap": 41, "race": "AWS Grand Prix de Espana"}
-{"ts": "2026-06-20T11:24:29", "event": "[ERROR]", "fn": "api_sim_lap", "msg": "time_laps is empty but lap > 0 — data loss suspected", "lap": 41, "total_laps": 51}
-{"ts": "2026-06-20T11:24:29", "event": "[ERROR]", "fn": "api_sim_lap", "msg": "time_laps still empty after sim_the_lap — sim did not write state", "lap": 42, "race": "AWS Grand Prix de Espana"}
-{"ts": "2026-06-20T11:24:29", "event": "[ERROR]", "fn": "api_sim_lap", "msg": "time_laps is empty but lap > 0 — data loss suspected", "lap": 42, "total_laps": 51}
-{"ts": "2026-06-20T11:24:29", "event": "[ERROR]", "fn": "api_sim_lap", "msg": "time_laps still empty after sim_the_lap — sim did not write state", "lap": 43, "race": "AWS Grand Prix de Espana"}
-{"ts": "2026-06-20T11:24:30", "event": "[ERROR]", "fn": "api_sim_lap", "msg": "time_laps is empty but lap > 0 — data loss suspected", "lap": 43, "total_laps": 51}
-{"ts": "2026-06-20T11:24:30", "event": "[ERROR]", "fn": "api_sim_lap", "msg": "time_laps still empty after sim_the_lap — sim did not write state", "lap": 44, "race": "AWS Grand Prix de Espana"}
-{"ts": "2026-06-20T11:24:30", "event": "[ERROR]", "fn": "api_sim_lap", "msg": "time_laps is empty but lap > 0 — data loss suspected", "lap": 44, "total_laps": 51}
-{"ts": "2026-06-20T11:24:30", "event": "[ERROR]", "fn": "api_sim_lap", "msg": "time_laps still empty after sim_the_lap — sim did not write state", "lap": 45, "race": "AWS Grand Prix de Espana"}
-{"ts": "2026-06-20T11:24:31", "event": "[ERROR]", "fn": "api_sim_lap", "msg": "time_laps is empty but lap > 0 — data loss suspected", "lap": 45, "total_laps": 51}
-{"ts": "2026-06-20T11:24:31", "event": "[WARNING]", "fn": "simuluj_lap", "msg": "high wear puncture", "name": "Aiden Falk", "wear": 84.21, "is_player": false}
-{"ts": "2026-06-20T11:24:31", "event": "[ERROR]", "fn": "api_sim_lap", "msg": "time_laps still empty after sim_the_lap — sim did not write state", "lap": 46, "race": "AWS Grand Prix de Espana"}
-{"ts": "2026-06-20T11:24:38", "event": "[ERROR]", "fn": "api_sim_lap", "msg": "time_laps is empty but lap > 0 — data loss suspected", "lap": 46, "total_laps": 51}
-{"ts": "2026-06-20T11:24:38", "event": "[ERROR]", "fn": "api_sim_lap", "msg": "time_laps still empty after sim_the_lap — sim did not write state", "lap": 47, "race": "AWS Grand Prix de Espana"}
-{"ts": "2026-06-20T11:24:46", "event": "[ERROR]", "fn": "api_sim_lap", "msg": "time_laps is empty but lap > 0 — data loss suspected", "lap": 47, "total_laps": 51}
-{"ts": "2026-06-20T11:24:46", "event": "[ERROR]", "fn": "api_sim_lap", "msg": "time_laps still empty after sim_the_lap — sim did not write state", "lap": 48, "race": "AWS Grand Prix de Espana"}
-{"ts": "2026-06-20T11:24:46", "event": "[ERROR]", "fn": "api_sim_lap", "msg": "time_laps is empty but lap > 0 — data loss suspected", "lap": 48, "total_laps": 51}
-{"ts": "2026-06-20T11:24:46", "event": "[ERROR]", "fn": "api_sim_lap", "msg": "time_laps still empty after sim_the_lap — sim did not write state", "lap": 49, "race": "AWS Grand Prix de Espana"}
-{"ts": "2026-06-20T11:24:47", "event": "[ERROR]", "fn": "api_sim_lap", "msg": "time_laps is empty but lap > 0 — data loss suspected", "lap": 49, "total_laps": 51}
-{"ts": "2026-06-20T11:24:47", "event": "[ERROR]", "fn": "api_sim_lap", "msg": "time_laps still empty after sim_the_lap — sim did not write state", "lap": 50, "race": "AWS Grand Prix de Espana"}
+{"ts": "2026-06-20T11:34:12", "event": "[ERROR]", "fn": "api_sim_lap", "msg": "time_laps is empty but lap > 0 — data loss suspected", "lap": 50, "total_laps": 51}
+{"ts": "2026-06-20T11:34:12", "event": "[ERROR]", "fn": "api_sim_lap", "msg": "time_laps still empty after sim_the_lap — sim did not write state", "lap": 51, "race": "AWS Grand Prix de Espana"}
+{"ts": "2026-06-20T11:34:13", "event": "[ERROR]", "fn": "api_post_race", "msg": "time_laps is empty at post_race — race results will be incomplete", "race": "AWS Grand Prix de Espana", "season": 1, "total_laps": 51, "current_lap": 51}
+{"ts": "2026-06-20T11:34:13", "event": "[ERROR]", "fn": "post_race_info", "msg": "no lap times recorded — results incomplete"}
+{"ts": "2026-06-20T11:34:15", "event": "[WARNING]", "fn": "get_player_pneu", "msg": "driver key missing from lap_user_data, keeping current pneu", "driver_key": "driver_1", "current_pneu": "medium"}
+{"ts": "2026-06-20T11:34:15", "event": "[WARNING]", "fn": "get_player_pneu", "msg": "driver key missing from lap_user_data, keeping current pneu", "driver_key": "driver_2", "current_pneu": "hard"}
+{"ts": "2026-06-20T11:34:19", "event": "[ERROR]", "fn": "api_sim_race", "msg": "time_laps empty after sim_the_lap — sim not writing state", "lap": 1, "race": "AirBNB Prague GP"}
+{"ts": "2026-06-20T11:34:19", "event": "[ERROR]", "fn": "api_sim_race", "msg": "time_laps empty after sim_the_lap — sim not writing state", "lap": 2, "race": "AirBNB Prague GP"}
+{"ts": "2026-06-20T11:34:19", "event": "[WARNING]", "fn": "safety_car", "msg": "driver mistake penalty", "name": "Sebastian Krell", "penalty": 37, "lap": 2, "weather": "sunny"}
+{"ts": "2026-06-20T11:34:19", "event": "[ERROR]", "fn": "api_sim_race", "msg": "time_laps empty after sim_the_lap — sim not writing state", "lap": 3, "race": "AirBNB Prague GP"}
+{"ts": "2026-06-20T11:34:19", "event": "[ERROR]", "fn": "api_sim_race", "msg": "time_laps empty after sim_the_lap — sim not writing state", "lap": 4, "race": "AirBNB Prague GP"}
+{"ts": "2026-06-20T11:34:19", "event": "[ERROR]", "fn": "api_sim_race", "msg": "time_laps empty after sim_the_lap — sim not writing state", "lap": 5, "race": "AirBNB Prague GP"}
+{"ts": "2026-06-20T11:34:19", "event": "[ERROR]", "fn": "api_sim_race", "msg": "time_laps empty after sim_the_lap — sim not writing state", "lap": 6, "race": "AirBNB Prague GP"}
+{"ts": "2026-06-20T11:34:19", "event": "[ERROR]", "fn": "api_sim_race", "msg": "time_laps empty after sim_the_lap — sim not writing state", "lap": 7, "race": "AirBNB Prague GP"}
+{"ts": "2026-06-20T11:34:19", "event": "[ERROR]", "fn": "api_sim_race", "msg": "time_laps empty after sim_the_lap — sim not writing state", "lap": 8, "race": "AirBNB Prague GP"}
+{"ts": "2026-06-20T11:34:19", "event": "[ERROR]", "fn": "api_sim_race", "msg": "time_laps empty after sim_the_lap — sim not writing state", "lap": 9, "race": "AirBNB Prague GP"}
+{"ts": "2026-06-20T11:34:19", "event": "[ERROR]", "fn": "api_sim_race", "msg": "time_laps empty after sim_the_lap — sim not writing state", "lap": 10, "race": "AirBNB Prague GP"}
+{"ts": "2026-06-20T11:34:19", "event": "[ERROR]", "fn": "api_sim_race", "msg": "time_laps empty after sim_the_lap — sim not writing state", "lap": 11, "race": "AirBNB Prague GP"}
+{"ts": "2026-06-20T11:34:19", "event": "[ERROR]", "fn": "api_sim_race", "msg": "time_laps empty after sim_the_lap — sim not writing state", "lap": 12, "race": "AirBNB Prague GP"}
+{"ts": "2026-06-20T11:34:19", "event": "[ERROR]", "fn": "api_sim_race", "msg": "time_laps empty after sim_the_lap — sim not writing state", "lap": 13, "race": "AirBNB Prague GP"}
+{"ts": "2026-06-20T11:34:19", "event": "[ERROR]", "fn": "api_sim_race", "msg": "time_laps empty after sim_the_lap — sim not writing state", "lap": 14, "race": "AirBNB Prague GP"}
+{"ts": "2026-06-20T11:34:19", "event": "[ERROR]", "fn": "api_sim_race", "msg": "time_laps empty after sim_the_lap — sim not writing state", "lap": 15, "race": "AirBNB Prague GP"}
+{"ts": "2026-06-20T11:34:19", "event": "[ERROR]", "fn": "api_sim_race", "msg": "time_laps empty after sim_the_lap — sim not writing state", "lap": 16, "race": "AirBNB Prague GP"}
+{"ts": "2026-06-20T11:34:19", "event": "[ERROR]", "fn": "api_sim_race", "msg": "time_laps empty after sim_the_lap — sim not writing state", "lap": 17, "race": "AirBNB Prague GP"}
+{"ts": "2026-06-20T11:34:19", "event": "[WARNING]", "fn": "happend_something", "msg": "Dry track (wettiness=0) but Enzo DaCosta uses wet tyres (inter) at lap 17. Stopping simulation.", "lap": 17, "driver": "Enzo DaCosta", "pneu": "inter", "wettiness": 0}
+{"ts": "2026-06-20T11:34:19", "event": "[ERROR]", "fn": "api_sim_race", "msg": "time_laps empty after full race — results will be broken at post_race", "race": "AirBNB Prague GP", "total_laps": 42}
+{"ts": "2026-06-20T11:34:30", "event": "[ERROR]", "fn": "api_sim_lap", "msg": "time_laps is empty but lap > 0 — data loss suspected", "lap": 17, "total_laps": 42}
+{"ts": "2026-06-20T11:34:30", "event": "[ERROR]", "fn": "api_sim_lap", "msg": "time_laps still empty after sim_the_lap — sim did not write state", "lap": 18, "race": "AirBNB Prague GP"}
+{"ts": "2026-06-20T11:34:30", "event": "[ERROR]", "fn": "api_sim_lap", "msg": "time_laps is empty but lap > 0 — data loss suspected", "lap": 18, "total_laps": 42}
+{"ts": "2026-06-20T11:34:30", "event": "[ERROR]", "fn": "api_sim_lap", "msg": "time_laps still empty after sim_the_lap — sim did not write state", "lap": 19, "race": "AirBNB Prague GP"}
+{"ts": "2026-06-20T11:34:30", "event": "[ERROR]", "fn": "api_sim_lap", "msg": "time_laps is empty but lap > 0 — data loss suspected", "lap": 19, "total_laps": 42}
+{"ts": "2026-06-20T11:34:30", "event": "[ERROR]", "fn": "api_sim_lap", "msg": "time_laps still empty after sim_the_lap — sim did not write state", "lap": 20, "race": "AirBNB Prague GP"}
+{"ts": "2026-06-20T11:34:31", "event": "[ERROR]", "fn": "api_sim_race", "msg": "time_laps empty after sim_the_lap — sim not writing state", "lap": 21, "race": "AirBNB Prague GP"}
+{"ts": "2026-06-20T11:34:31", "event": "[ERROR]", "fn": "api_sim_race", "msg": "time_laps empty after sim_the_lap — sim not writing state", "lap": 22, "race": "AirBNB Prague GP"}
+{"ts": "2026-06-20T11:34:31", "event": "[ERROR]", "fn": "api_sim_race", "msg": "time_laps empty after sim_the_lap — sim not writing state", "lap": 23, "race": "AirBNB Prague GP"}
+{"ts": "2026-06-20T11:34:31", "event": "[ERROR]", "fn": "api_sim_race", "msg": "time_laps empty after sim_the_lap — sim not writing state", "lap": 24, "race": "AirBNB Prague GP"}
+{"ts": "2026-06-20T11:34:31", "event": "[ERROR]", "fn": "api_sim_race", "msg": "time_laps empty after sim_the_lap — sim not writing state", "lap": 25, "race": "AirBNB Prague GP"}
+{"ts": "2026-06-20T11:34:31", "event": "[ERROR]", "fn": "api_sim_race", "msg": "time_laps empty after sim_the_lap — sim not writing state", "lap": 26, "race": "AirBNB Prague GP"}
+{"ts": "2026-06-20T11:34:31", "event": "[ERROR]", "fn": "api_sim_race", "msg": "time_laps empty after sim_the_lap — sim not writing state", "lap": 27, "race": "AirBNB Prague GP"}
+{"ts": "2026-06-20T11:34:31", "event": "[ERROR]", "fn": "api_sim_race", "msg": "time_laps empty after sim_the_lap — sim not writing state", "lap": 28, "race": "AirBNB Prague GP"}
+{"ts": "2026-06-20T11:34:31", "event": "[ERROR]", "fn": "api_sim_race", "msg": "time_laps empty after sim_the_lap — sim not writing state", "lap": 29, "race": "AirBNB Prague GP"}
+{"ts": "2026-06-20T11:34:31", "event": "[ERROR]", "fn": "api_sim_race", "msg": "time_laps empty after sim_the_lap — sim not writing state", "lap": 30, "race": "AirBNB Prague GP"}
+{"ts": "2026-06-20T11:34:31", "event": "[ERROR]", "fn": "api_sim_race", "msg": "time_laps empty after sim_the_lap — sim not writing state", "lap": 31, "race": "AirBNB Prague GP"}
+{"ts": "2026-06-20T11:34:31", "event": "[ERROR]", "fn": "api_sim_race", "msg": "time_laps empty after sim_the_lap — sim not writing state", "lap": 32, "race": "AirBNB Prague GP"}
+{"ts": "2026-06-20T11:34:31", "event": "[ERROR]", "fn": "api_sim_race", "msg": "time_laps empty after sim_the_lap — sim not writing state", "lap": 33, "race": "AirBNB Prague GP"}
+{"ts": "2026-06-20T11:34:31", "event": "[ERROR]", "fn": "api_sim_race", "msg": "time_laps empty after sim_the_lap — sim not writing state", "lap": 34, "race": "AirBNB Prague GP"}
+{"ts": "2026-06-20T11:34:31", "event": "[WARNING]", "fn": "simuluj_lap", "msg": "high wear puncture", "name": "Max Verstappen", "wear": 81.94, "is_player": true}
+{"ts": "2026-06-20T11:34:31", "event": "[ERROR]", "fn": "api_sim_race", "msg": "time_laps empty after sim_the_lap — sim not writing state", "lap": 35, "race": "AirBNB Prague GP"}
+{"ts": "2026-06-20T11:34:31", "event": "[WARNING]", "fn": "happend_something", "msg": "Player DNF detected for Max Verstappen at lap 35. Stopping simulation.", "lap": 35, "driver": "Max Verstappen"}
+{"ts": "2026-06-20T11:34:31", "event": "[ERROR]", "fn": "api_sim_race", "msg": "time_laps empty after full race — results will be broken at post_race", "race": "AirBNB Prague GP", "total_laps": 42}
+{"ts": "2026-06-20T11:34:36", "event": "[WARNING]", "fn": "simuluj_lap", "msg": "high wear puncture", "name": "Kim Nguen", "wear": 84.71, "is_player": true}
+{"ts": "2026-06-20T11:34:36", "event": "[ERROR]", "fn": "api_sim_race", "msg": "time_laps empty after sim_the_lap — sim not writing state", "lap": 36, "race": "AirBNB Prague GP"}
+{"ts": "2026-06-20T11:34:36", "event": "[WARNING]", "fn": "happend_something", "msg": "Wet track (wettiness=100) but Lukas Rennhardt uses dry tyres (hard) at lap 36. Stopping simulation.", "lap": 36, "driver": "Lukas Rennhardt", "pneu": "hard", "wettiness": 100}
+{"ts": "2026-06-20T11:34:36", "event": "[ERROR]", "fn": "api_sim_race", "msg": "time_laps empty after sim_the_lap — sim not writing state", "lap": 37, "race": "AirBNB Prague GP"}
+{"ts": "2026-06-20T11:34:36", "event": "[WARNING]", "fn": "happend_something", "msg": "Wet track (wettiness=100) but Lukas Rennhardt uses dry tyres (hard) at lap 37. Stopping simulation.", "lap": 37, "driver": "Lukas Rennhardt", "pneu": "hard", "wettiness": 100}
+{"ts": "2026-06-20T11:34:36", "event": "[ERROR]", "fn": "api_sim_race", "msg": "time_laps empty after sim_the_lap — sim not writing state", "lap": 38, "race": "AirBNB Prague GP"}
+{"ts": "2026-06-20T11:34:36", "event": "[WARNING]", "fn": "happend_something", "msg": "Wet track (wettiness=100) but Lukas Rennhardt uses dry tyres (hard) at lap 38. Stopping simulation.", "lap": 38, "driver": "Lukas Rennhardt", "pneu": "hard", "wettiness": 100}
+{"ts": "2026-06-20T11:34:36", "event": "[ERROR]", "fn": "api_sim_race", "msg": "time_laps empty after sim_the_lap — sim not writing state", "lap": 39, "race": "AirBNB Prague GP"}
+{"ts": "2026-06-20T11:34:36", "event": "[WARNING]", "fn": "happend_something", "msg": "Wet track (wettiness=100) but Lukas Rennhardt uses dry tyres (hard) at lap 39. Stopping simulation.", "lap": 39, "driver": "Lukas Rennhardt", "pneu": "hard", "wettiness": 100}
+{"ts": "2026-06-20T11:34:36", "event": "[ERROR]", "fn": "api_sim_race", "msg": "time_laps empty after sim_the_lap — sim not writing state", "lap": 40, "race": "AirBNB Prague GP"}
