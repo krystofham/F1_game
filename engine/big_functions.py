@@ -92,8 +92,7 @@ def sim_the_lap(cars, teams, player, player_2, lap, SAFETY_CAR, LAPS_REMAINING, 
         k_wear=k_wear, k_speed=k_speed,  # k_speed předej pokud ho máš v scope
         total_laps=LAPS, time_laps=time_laps
     )
-    save_state_end_of_lap(cars, teams, season_count, race, lap, race_ctx)
-
+    save_state_end_of_lap(cars, teams, season_count, race, lap, race_ctx, time_laps=time_laps, player_name=player, player_2_name=player_2)
     return lap, cars, teams
 
 def init_race(tracks, race, cars, teams, championship, player, player_2, b, season_count):

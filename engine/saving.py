@@ -298,3 +298,50 @@ def save_race_csv(drivers: list, race: str, season: int, race_ctx: dict):
 
     ilog(fn="save_race_csv", msg="race CSV appended",
          race=race, season=season, drivers_count=len(drivers))
+
+RECORDS_FILE = "data/track_records.csv"
+_RECORDS_FIELDS = ["track", "driver", "team", "lap_time", "season", "race"]
+
+def _load_records() -> dict:
+    if not os.path.exists(RECORDS_FILE):
+        return {}
+    records = {}
+    with open(RECORDS_FILE, "r", encoding="utf-8") as f:
+        for row in csv.DictReader(f):
+            records[row["track"]] = row
+    return records
+
+def _write_records(records: dict):
+    os.makedirs("data", exist_ok=True)
+    with open(RECORDS_FILE, "w", newline="", encoding="utf-8") as f:
+        writer = csv.DictWriter(f, fieldnames=_RECORDS_FIELDS)
+        writer.writeheader()
+        writer.writerows(records.values())
+
+def update_track_record(time_laps: list, track: str, season: int) -> bool:
+    if not time_laps:
+        return False
+
+    # Nejrychlejší kolo závodu
+    best = min(time_laps, key=lambda x: x[0])
+    best_time, best_driver, best_team = best[0], best[1], best[2]
+
+    records = _load_records()
+    current = records.get(track)
+
+    if current is None or best_time < float(current["lap_time"]):
+        records[track] = {
+            "track":    track,
+            "driver":   best_driver,
+            "team":     best_team,
+            "lap_time": round(best_time, 4),
+            "season":   season,
+            "race":     track,
+        }
+        _write_records(records)
+        ilog(fn="update_track_record", msg="track record broken",
+             track=track, driver=best_driver, lap_time=round(best_time, 4),
+             season=season, previous=current["lap_time"] if current else "none")
+        return True
+
+    return False

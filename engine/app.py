@@ -6,7 +6,7 @@ from big_functions import *
 from load_data_json import *
 from log import elog, ilog, wlog, dlog, log, snapshot_state as td_snapshot_state
 from log import snapshot_cars as td_snapshot_cars
-from saving import save_season_csv, save_race_csv
+from saving import save_season_csv, save_race_csv, update_track_record
 
 
 app = FastAPI()
@@ -518,6 +518,14 @@ async def api_post_race():
         season=season_count,
         race_ctx=race_ctx,
     )
+
+    record_broken = update_track_record(
+        time_laps=state.get("time_laps", []),
+        track=race,
+        season=season_count,
+    )
+    if record_broken:
+        ilog(fn="api_post_race", msg="new track record set", race=race)
     
     
     
