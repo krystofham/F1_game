@@ -1,6 +1,6 @@
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
-import os, json, random
+import os, json, random, traceback
 from fastapi.staticfiles import StaticFiles  
 from big_functions import *
 from load_data_json import *
@@ -449,8 +449,7 @@ async def api_sim_lap():
         )
     except Exception as e:
         elog(fn="api_sim_lap", msg="sim_the_lap raised exception", error=str(e), lap=lap, race=race)
-        raise HTTPException(status_code=500, detail="Chyba v simulaci kola.")
-
+        raise HTTPException(status_code=500, detail=traceback.format_exc())
     new_state  = _state()
     new_time_laps = new_state.get("time_laps", [])
 

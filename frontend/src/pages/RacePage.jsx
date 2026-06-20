@@ -9,18 +9,24 @@ const TYRE_OPTS = ["soft", "medium", "hard", "wet", "inter"];
 function PitForm({ drivers, onSubmit, disabled }) {
   const playerDrivers = useMemo(
     () => (drivers || []).filter((d) => d.is_player).sort((a, b) => a.name.localeCompare(b.name)),
-    []
+    [drivers]  // ← přidej drivers do deps
   );
 
   const buildDefault = (list) => {
     const init = {};
     list.forEach((d) => {
-      init[d.name] = { action: "1", new_pneu: "medium" };
+      init[d.name] = { action: "1", new_pneu: "medium", pace: "normal" };    
     });
     return init;
   };
 
-  const [actions, setActions] = useState(() => buildDefault(playerDrivers));
+  const [actions, setActions] = useState({});
+
+  useEffect(() => {
+    if (playerDrivers.length > 0 && Object.keys(actions).length === 0) {
+      setActions(buildDefault(playerDrivers));
+    }
+  }, [playerDrivers]);
 
   const setField = (name, field, value) =>
     setActions((prev) => ({ ...prev, [name]: { ...prev[name], [field]: value } }));
@@ -28,10 +34,21 @@ function PitForm({ drivers, onSubmit, disabled }) {
   const handleSubmit = () => {
       const payload = { commands: [] };
       playerDrivers.forEach((d) => {
-          payload[d.name] = actions[d.name] ?? { action: "1", new_pneu: "medium" };
+          payload[d.name] = actions[d.name] ?? { action: "1", new_pneu: "medium", pace: "normal" };
       });
       onSubmit(payload);
-      setActions(buildDefault(playerDrivers));
+      // Reset jen action a new_pneu, pace zachovej
+      setActions((prev) => {
+          const next = {};
+          playerDrivers.forEach((d) => {
+              next[d.name] = {
+                  action: "1",
+                  new_pneu: "medium",
+                  pace: prev[d.name]?.pace ?? "normal",
+              };
+          });
+          return next;
+      });
   };
 
   if (playerDrivers.length === 0) return null;
@@ -40,7 +57,7 @@ function PitForm({ drivers, onSubmit, disabled }) {
     <div className="card" style={{ marginBottom: 24 }}>
       <div style={{ display: "flex", gap: 16, flexWrap: "wrap" }}>
         {playerDrivers.map((d) => {
-          const act = actions[d.name] ?? { action: "1", new_pneu: "medium" };
+          const act = actions[d.name] ?? { action: "1", new_pneu: "medium", pace: "normal" };
           const isPit = act.action === "2";
 
           return (
@@ -79,6 +96,22 @@ function PitForm({ drivers, onSubmit, disabled }) {
                 >
                   {TYRE_OPTS.map((t) => <option key={t} value={t}>{t.toUpperCase()}</option>)}
                 </select>
+              </div>
+              <div style={{ marginTop: 8 }}>
+                <div style={{ fontSize: 9, color: "var(--text-3)", marginBottom: 4 }}>PACE MODE</div>
+                <div style={{ display: "flex", gap: 4 }}>
+                  {["slower", "normal", "faster"].map((p) => (
+                    <button
+                      key={p}
+                      className={`btn${act.pace === p ? " btn-primary" : ""}`}
+                      style={{ flex: 1, fontSize: 9, padding: "5px 0" }}
+                      onClick={() => setField(d.name, "pace", p)}
+                      disabled={disabled}
+                    >
+                      {p.toUpperCase()}
+                    </button>
+                  ))}
+                </div>
               </div>
             </div>
           );

@@ -1,6 +1,7 @@
 import random
 from log import dlog, elog, ilog, wlog
-
+import os, json as _json
+_fuel_path = os.path.join(os.path.dirname(__file__), "user_input/lap_user_data.json")
 
 class Car:
     def __init__(self, name, rating, is_player=False):
@@ -41,74 +42,84 @@ class Car:
     def simuluj_lap(self, weather, training, wettiness, TIME_S1, TIME_S2, TIME_S3, speed_bonus, time_laps, PNEU_types, SAFETY_CAR, LAPS_REMAINING):
         if not SAFETY_CAR:
             LAPS_REMAINING = 0
-        
+
+        # Pace mode
+        if self.is_player:
+            try:
+                with open(_fuel_path, encoding="utf-8") as _f:
+                    _ud = _json.load(_f)
+                pace = _ud.get(self.name, {}).get("pace", "normal")
+            except Exception:
+                pace = "normal"
+        else:
+            pace = "normal"
+
+        PACE_MODS = {
+            "slower": {"time": +1.5, "wear": 0.7},
+            "normal": {"time":  0.0, "wear": 1.0},
+            "faster": {"time": -1.5, "wear": 1.4},
+        }
+        mod = PACE_MODS.get(pace, PACE_MODS["normal"])
+
         if self.wear >= 100 and not self.destroy:
-            print(f"{self.name} – extreme Wear! ❌")
-            ilog(fn="simuluj_lap", msg="extreme wear DNF", name=self.name, wear=round(self.wear, 2),
-                 is_player=self.is_player)
             self.dnf = True
             self.destroy = True
             SAFETY_CAR = True
-            LAPS_REMAINING = random.randint(3,6)
+            LAPS_REMAINING = random.randint(3, 6)
             self.puncture = True
 
         if self.puncture and not self.destroy:
             self.destroy = True
-            print(f"{self.name} – puncture! ❌")
-            ilog(fn="simuluj_lap", msg="puncture DNF", name=self.name, wear=round(self.wear, 2),
-                 is_player=self.is_player)
             SAFETY_CAR = True
-            LAPS_REMAINING = random.randint(3,6)
-            
+            LAPS_REMAINING = random.randint(3, 6)
+
         if self.wear > 80 and random.random() < 0.55 and not self.destroy:
-            print(f"{self.name} – puncture! ❌")
-            wlog(fn="simuluj_lap", msg="high wear puncture", name=self.name, wear=round(self.wear, 2),
-                 is_player=self.is_player)
             self.puncture = True
             self.dnf = True
             self.destroy = True
             SAFETY_CAR = True
-            LAPS_REMAINING = random.randint(3,6)
+            LAPS_REMAINING = random.randint(3, 6)
 
         speed = self.efectivity_pneu(weather, PNEU_types)
-        s1 = (TIME_S1*random.uniform(0.99, 1.01)+self.ratings/2+self.team.rating/2)/ speed
-        s2 = (TIME_S2*random.uniform(0.99, 1.01)+self.ratings/2+self.team.rating/2)/ speed
-        s3 = (TIME_S3*random.uniform(0.99, 1.01)+self.ratings/2+self.team.rating/2)/ speed
+        s1 = (TIME_S1 * random.uniform(0.99, 1.01) + self.ratings/2 + self.team.rating/2) / speed
+        s2 = (TIME_S2 * random.uniform(0.99, 1.01) + self.ratings/2 + self.team.rating/2) / speed
+        s3 = (TIME_S3 * random.uniform(0.99, 1.01) + self.ratings/2 + self.team.rating/2) / speed
+
         if SAFETY_CAR:
-            s1 = s1*2.5
-            s2 = s2*2.5
-            s3 = s3*2.5
+            s1 *= 2.5; s2 *= 2.5; s3 *= 2.5
         if self.drs:
-            s1 = s1 - random.uniform(0.5, 0.7)
-            s2 = s2 - random.uniform(0.5, 0.7)
-            s3 = s3 - random.uniform(0.5, 0.7)
+            s1 -= random.uniform(0.5, 0.7)
+            s2 -= random.uniform(0.5, 0.7)
+            s3 -= random.uniform(0.5, 0.7)
         if training == "1":
-            s1 = s1 - random.uniform(0.1, 0.3)
-            s2 = s2 - random.uniform(0.1, 0.3)
-            s3 = s3 - random.uniform(0.1, 0.3)
+            s1 -= random.uniform(0.1, 0.3)
+            s2 -= random.uniform(0.1, 0.3)
+            s3 -= random.uniform(0.1, 0.3)
         if speed_bonus:
-            s1 = s1 - random.uniform(0.3, 0.5)
-            s2 = s2 - random.uniform(0.3, 0.5)
-            s3 = s3 - random.uniform(0.3, 0.5)
+            s1 -= random.uniform(0.3, 0.5)
+            s2 -= random.uniform(0.3, 0.5)
+            s3 -= random.uniform(0.3, 0.5)
         if wettiness < 30 and self.pneu not in ["soft", "medium", "hard"]:
-            s1 = s1+wettiness/2
-            s2 = s2+wettiness/2
-            s3 = s3+wettiness/2
-        if wettiness > 55 and self.pneu not in ["wet" , "inter"]:
-            s1 = s1+wettiness/2
-            s2 = s2+wettiness/2
-            s3 = s3+wettiness/2
-        lap_time = s1 + s2 + s3
-        print("Time of this lap is", lap_time)
+            s1 += wettiness/2; s2 += wettiness/2; s3 += wettiness/2
+        if wettiness > 55 and self.pneu not in ["wet", "inter"]:
+            s1 += wettiness/2; s2 += wettiness/2; s3 += wettiness/2
+
+        lap_time = s1 + s2 + s3 + mod["time"]
+
         if self.is_player:
             dlog(fn="simuluj_lap", msg="player lap completed", name=self.name,
-                 lap_time=round(lap_time, 3), pneu=self.pneu, wear=round(self.wear, 2))
+                lap_time=round(lap_time, 3), pneu=self.pneu, wear=round(self.wear, 2), pace=pace)
+
         time_laps.append((lap_time, self.name, self.team.name, s1, s2, s3))
-        self.time = self.time + self.wear/8 + lap_time
-        self.wear += PNEU_types[self.pneu]["wear"]
-        prirustek = PNEU_types[self.pneu]["wear"] * random.uniform(0, 0.4)
-        self.wear += prirustek
+        self.time += self.wear/5 + lap_time
+        self.wear += PNEU_types[self.pneu]["wear"] * random.uniform(0.9, 1.1) * mod["wear"]
+
         return SAFETY_CAR, LAPS_REMAINING
+
+
+
+
+
     def pit_stop(self, new_pneu, SAFETY_CAR):
         dlog(fn="pit_stop", msg="pit stop executed", name=self.name, old_pneu=self.pneu,
              new_pneu=new_pneu, safety_car=SAFETY_CAR, is_player=self.is_player)
