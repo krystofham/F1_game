@@ -1080,3 +1080,21 @@ async def post_settings(data: dict):
     with open(path, "w", encoding="utf-8") as f:
         json.dump(data, f, indent=2)
     return {"status": "ok"}
+@app.post("/api/patch_state")
+async def patch_state(data: dict):
+    state = _state()
+    if "drivers" in data:
+        patched = data["drivers"]
+        state_drivers = state.get("drivers", [])
+        for i, patch in enumerate(patched):
+            if i < len(state_drivers):
+                state_drivers[i]["name"]   = patch.get("name", state_drivers[i]["name"])
+                state_drivers[i]["rating"] = patch.get("rating", state_drivers[i]["rating"])
+    if "teams" in data:
+        patched = data["teams"]
+        state_teams = state.get("teams", [])
+        for i, patch in enumerate(patched):
+            if i < len(state_teams):
+                state_teams[i]["name"] = patch.get("name", state_teams[i]["name"])
+    _write_state(state, "patch_state")
+    return {"status": "ok"}

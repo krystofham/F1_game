@@ -157,20 +157,19 @@ export default function SettingsPage() {
 
   // Save everything
   const handleSave = async () => {
-    await fetch("http://localhost:8000/api/settings", {
+    setSaving(true);
+    try {
+      await fetch("http://localhost:8000/api/patch_state", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ drivers, teams }),
+      });
+      await fetch("http://localhost:8000/api/settings", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ stop_on_event: stopOnEvent, show_logs: showLogs }),
-    });
-    setSaving(true);
-    try {
-      // Persist colours + misc to localStorage
+      });
       localStorage.setItem("mmr_settings", JSON.stringify({ apiUrl, stopOnEvent, showLogs, colors }));
-
-      // Push driver/team edits to backend via state patch
-      // We use existing set_lap_user_data style — direct state.json patch endpoint
-      // For now: POST to a generic settings endpoint if it exists, else skip
-      // (backend endpoint /api/patch_state needs to be added separately)
       showToast("SETTINGS SAVED");
     } catch (e) {
       showToast("SAVE FAILED", "err");
@@ -271,32 +270,36 @@ export default function SettingsPage() {
             No player drivers found. Start a race first.
           </div>
         )}
-        {playerDrivers.map((d) => (
-          <Field key={d.name} label={`Driver — ${d.name}`} hint={`rating ${d.rating}`}>
+      {playerDrivers.map((d) => {
+        const globalIdx = drivers.findIndex((x) => x === d);
+        return (
+          <Field key={globalIdx} label={`Driver — ${d.name}`} hint={`rating ${d.rating}`}>
             <div style={{ display: "flex", gap: 8 }}>
               <input
                 type="text"
                 value={d.name}
-                onChange={(e) => setDrivers((prev) =>
-                  prev.map((x) => x.name === d.name ? { ...x, name: e.target.value } : x)
-                )}
+                onChange={(e) => setDrivers((prev) => {
+                  const next = [...prev];
+                  next[globalIdx] = { ...next[globalIdx], name: e.target.value };
+                  return next;
+                })}
                 style={{ flex: 2, fontFamily: "var(--font-mono)", fontSize: 11 }}
-                placeholder="Name"
               />
               <input
                 type="number"
                 value={d.rating}
-                step={0.01}
-                min={1} max={10}
-                onChange={(e) => setDrivers((prev) =>
-                  prev.map((x) => x.name === d.name ? { ...x, rating: parseFloat(e.target.value) } : x)
-                )}
+                step={0.01} min={1} max={10}
+                onChange={(e) => setDrivers((prev) => {
+                  const next = [...prev];
+                  next[globalIdx] = { ...next[globalIdx], rating: parseFloat(e.target.value) };
+                  return next;
+                })}
                 style={{ flex: 1, fontFamily: "var(--font-mono)", fontSize: 11 }}
-                placeholder="Rating"
               />
             </div>
           </Field>
-        ))}
+        );
+      })}
       </Section>
 
       {/* ── ALL DRIVERS ── */}
@@ -338,14 +341,16 @@ export default function SettingsPage() {
 
       {/* ── TEAMS ── */}
       <Section title="Teams">
-        {teams.map((t) => (
-          <Field key={t.name} label={t.name} hint={`rating ${t.rating}`}>
+        {teams.map((t, idx) => (
+          <Field key={idx} label={t.name} hint={`rating ${t.rating}`}>
             <input
               type="text"
               value={t.name}
-              onChange={(e) => setTeams((prev) =>
-                prev.map((x) => x.name === t.name ? { ...x, name: e.target.value } : x)
-              )}
+              onChange={(e) => setTeams((prev) => {
+                const next = [...prev];
+                next[idx] = { ...next[idx], name: e.target.value };
+                return next;
+              })}
               style={{ width: "100%", fontFamily: "var(--font-mono)", fontSize: 11 }}
             />
           </Field>
