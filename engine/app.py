@@ -70,7 +70,12 @@ def apply_teams_from_state(cars, teams, state_teams, state_drivers=None):
     for st in state_teams:
         team = team_by_name.get(st.get("name"))
         if not team:
-            continue
+            st_idx = state_teams.index(st)
+            if st_idx < len(teams):
+                team = teams[st_idx]
+            else:
+                wlog(fn="apply_teams_from_state", msg="team not found and no fallback", team=st.get("name"))
+                continue
         for driver_name in st.get("drivers", []):
             car = _resolve_driver_car(
                 driver_name, player_by_name, ai_by_name, player_names,
@@ -111,6 +116,9 @@ def apply_teams_from_state(cars, teams, state_teams, state_drivers=None):
         wlog(fn="apply_teams_from_state", msg="shadow duplicates removed after apply", names=removed)
 
     ilog(fn="apply_teams_from_state", msg="teams applied ok", assignment_count=len(assignments))
+    if car is None or id(car) in used_car_ids:
+        print(f"FAILED: driver={driver_name}, team={st.get('name')}, car={car}, reason={'no_car' if car is None else 'duplicate'}")
+        return False
     return True
 
 
@@ -449,6 +457,7 @@ async def api_sim_lap():
         )
     except Exception as e:
         elog(fn="api_sim_lap", msg="sim_the_lap raised exception", error=str(e), lap=lap, race=race)
+        traceback.print_exc()
         raise HTTPException(status_code=500, detail=traceback.format_exc())
     new_state  = _state()
     new_time_laps = new_state.get("time_laps", [])
@@ -891,7 +900,14 @@ async def api_sim_race():
         ilog(fn="api_sim_race", msg="something happened function run", lap=lap)
         smt_occurs = happend_something(lap, cars, race_ctx["wettiness"]) 
         dlog(fn="api_sim_race", msg="lap simmed", smt_occurs=smt_occurs, smt_happened=smt_happened)
-        if smt_occurs and not smt_happened:
+        settings_path = os.path.join(_CONFIG, "user_input/settings.json")
+        try:
+            with open(settings_path) as f:
+                settings = json.load(f)
+            stop_on_event = settings.get("stop_on_event", True)
+        except Exception:
+            stop_on_event = True
+        if smt_occurs and not smt_happened and stop_on_event:
             smt_happened = True
             updated = _state()
             updated["smt_happened"] = True
@@ -995,7 +1011,14 @@ async def api_sim_until(data: dict):
             elog(fn="api_sim_until", msg="time_laps empty after sim_the_lap",
                  lap=lap, target_lap=target_lap, race=race)
         smt_occurs = happend_something(lap, cars, current_race_ctx["wettiness"]) 
-        if smt_occurs and not smt_happened:
+        settings_path = os.path.join(_CONFIG, "user_input/settings.json")
+        try:
+            with open(settings_path) as f:
+                settings = json.load(f)
+            stop_on_event = settings.get("stop_on_event", True)
+        except Exception:
+            stop_on_event = True
+        if smt_occurs and not smt_happened and stop_on_event:
             smt_happened = True
             break
         lap_snapshots.append({"lap": lap, "drivers": current_state.get("drivers", [])})
@@ -1049,3 +1072,89 @@ def get_tracks_api():
     except Exception as e:
         elog(fn="get_tracks_api", msg="unexpected error loading tracks", error=str(e))
         raise HTTPException(status_code=500, detail=f"Interní chyba serveru: {str(e)}")
+
+
+@app.get("/api/settings")
+async def get_settings():
+    path = os.path.join(_CONFIG, "user_input/settings.json")
+    try:
+        with open(path, encoding="utf-8") as f:
+            return json.load(f)
+    except Exception:
+        return {"stop_on_event": True, "show_logs": False}
+
+@app.post("/api/settings")
+async def post_settings(data: dict):
+    path = os.path.join(_CONFIG, "user_input/settings.json")
+    with open(path, "w", encoding="utf-8") as f:
+        json.dump(data, f, indent=2)
+    return {"status": "ok"}
+@app.post("/api/patch_state")
+async def patch_state(data: dict):
+    state = _state()
+
+    if "teams" in data:
+        state_teams = state.get("teams", [])
+        for i, patch in enumerate(data["teams"]):
+            if i < len(state_teams):
+                old_name = state_teams[i]["name"]
+                new_name = patch.get("name", old_name)
+                if old_name != new_name:
+                    for driver in state.get("drivers", []):
+                        if driver.get("team") == old_name:
+                            driver["team"] = new_name
+                state_teams[i]["name"] = new_name
+
+    if "drivers" in data:
+        state_drivers = state.get("drivers", [])
+        p1_name = state.get("player.name", "")
+        p2_name = state.get("player_2.name", "")
+
+        for i, patch in enumerate(data["drivers"]):
+            if i < len(state_drivers):
+                old_name = state_drivers[i]["name"]
+                new_name = patch.get("name", old_name)
+                new_rating = patch.get("rating", state_drivers[i]["rating"])
+
+                # Aktualizuj player.name / player_2.name pokud se jméno mění
+                if old_name == p1_name and old_name != new_name:
+                    state["player.name"] = new_name
+                if old_name == p2_name and old_name != new_name:
+                    state["player_2.name"] = new_name
+
+                # Aktualizuj jméno v teams.drivers listu
+                for team in state.get("teams", []):
+                    team["drivers"] = [
+                        new_name if d == old_name else d
+                        for d in team.get("drivers", [])
+                    ]
+
+                state_drivers[i]["name"]   = new_name
+                state_drivers[i]["rating"] = new_rating
+
+    _write_state(state, "patch_state")
+    return {"status": "ok"}
+    state = _state()
+    
+    if "teams" in data:
+        state_teams = state.get("teams", [])
+        for i, patch in enumerate(data["teams"]):
+            if i < len(state_teams):
+                old_name = state_teams[i]["name"]
+                new_name = patch.get("name", old_name)
+                if old_name != new_name:
+                    # Aktualizuj název týmu u všech jezdců
+                    for driver in state.get("drivers", []):
+                        if driver.get("team") == old_name:
+                            driver["team"] = new_name
+                state_teams[i]["name"] = new_name
+
+    if "drivers" in data:
+        state_drivers = state.get("drivers", [])
+        for i, patch in enumerate(data["drivers"]):
+            if i < len(state_drivers):
+                state_drivers[i]["name"]   = patch.get("name", state_drivers[i]["name"])
+                state_drivers[i]["rating"] = patch.get("rating", state_drivers[i]["rating"])
+
+    _write_state(state, "patch_state")
+    return {"status": "ok"}

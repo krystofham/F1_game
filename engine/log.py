@@ -14,7 +14,9 @@ PRODUCTION = "prod" # or deb
 
 # --- Buffer a flush ---
 _buffer: list[str] = []
-_FLUSH_EVERY = 20
+_FLUSH_EVERY = 1
+# _FLUSH_EVERY = 5 # uncomment in prod
+
 DEBUG_MODE = False
 
 def _flush() -> None:
@@ -61,13 +63,21 @@ def log(event: str, **payload) -> dict:
 
     return entry
 
+def _is_prod() -> bool:
+    try:
+        path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "user_input/settings.json")
+        with open(path) as f:
+            return not json.load(f).get("show_logs", False)
+    except Exception:
+        return True
+
 def dlog(**payload) -> dict:
-    if PRODUCTION == "prod":
+    if _is_prod():
         return
     return log("[DEBUG]", **payload)
 
 def ilog(**payload) -> dict:
-    if PRODUCTION == "prod":
+    if _is_prod():
         return
     return log("[INFO]", **payload)
 
