@@ -302,30 +302,37 @@ export default function SettingsPage() {
       {/* ── ALL DRIVERS ── */}
       <Section title={`All Drivers (${aiDrivers.length} AI)`}>
         <div style={{ maxHeight: 300, overflowY: "auto", paddingRight: 4 }}>
-          {aiDrivers.map((d) => (
-            <div key={d.name} style={{ display: "flex", gap: 8, marginBottom: 8 }}>
+        {aiDrivers.map((d, idx) => {
+          const globalIdx = drivers.indexOf(d);
+          return (
+            <div key={globalIdx} style={{ display: "flex", gap: 8, marginBottom: 8 }}>
               <input
                 type="text"
                 value={d.name}
-                onChange={(e) => setDrivers((prev) =>
-                  prev.map((x) => x.name === d.name ? { ...x, name: e.target.value } : x)
-                )}
+                onChange={(e) => setDrivers((prev) => {
+                  const next = [...prev];
+                  next[globalIdx] = { ...next[globalIdx], name: e.target.value };
+                  return next;
+                })}
                 style={{ flex: 2, fontFamily: "var(--font-mono)", fontSize: 10 }}
               />
               <input
                 type="number"
                 value={d.rating}
                 step={0.01} min={1} max={10}
-                onChange={(e) => setDrivers((prev) =>
-                  prev.map((x) => x.name === d.name ? { ...x, rating: parseFloat(e.target.value) } : x)
-                )}
+                onChange={(e) => setDrivers((prev) => {
+                  const next = [...prev];
+                  next[globalIdx] = { ...next[globalIdx], rating: parseFloat(e.target.value) };
+                  return next;
+                })}
                 style={{ flex: 1, fontFamily: "var(--font-mono)", fontSize: 10 }}
               />
               <span style={{ fontFamily: "var(--font-mono)", fontSize: 9, color: "var(--text-3)", alignSelf: "center", minWidth: 80 }}>
                 {d.team}
               </span>
             </div>
-          ))}
+          );
+        })}
         </div>
       </Section>
 

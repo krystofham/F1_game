@@ -61,13 +61,21 @@ def log(event: str, **payload) -> dict:
 
     return entry
 
+def _is_prod() -> bool:
+    try:
+        path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "user_input/settings.json")
+        with open(path) as f:
+            return not json.load(f).get("show_logs", False)
+    except Exception:
+        return True
+
 def dlog(**payload) -> dict:
-    if PRODUCTION == "prod":
+    if _is_prod():
         return
     return log("[DEBUG]", **payload)
 
 def ilog(**payload) -> dict:
-    if PRODUCTION == "prod":
+    if _is_prod():
         return
     return log("[INFO]", **payload)
 
