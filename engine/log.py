@@ -14,7 +14,9 @@ PRODUCTION = "prod" # or deb
 
 # --- Buffer a flush ---
 _buffer: list[str] = []
-_FLUSH_EVERY = 20
+_FLUSH_EVERY = 1
+# _FLUSH_EVERY = 5 # uncomment in prod
+
 DEBUG_MODE = False
 
 def _flush() -> None:

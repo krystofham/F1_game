@@ -14,7 +14,7 @@ from engine import *
 #from plot import *
 from get_data import *
 from log import clear_log, ilog, dlog, elog, wlog
-clear_log()
+# clear_log()
 ilog(fn="init", msg="init.py run started")
 _BASE_DIR = os.path.dirname(__file__)
 _CONFIG_DIR = os.path.abspath(os.path.join(_BASE_DIR, "..", "config"))

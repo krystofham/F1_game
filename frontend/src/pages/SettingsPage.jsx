@@ -188,7 +188,7 @@ export default function SettingsPage() {
   );
 
   return (
-    <div style={{ maxWidth: 720, padding: "0 0 80px 0" }}>
+    <div style={{ maxWidth: 1020, padding: "0 0 80px 0" }}>
       <div className="page-header">
         <div className="page-eyebrow">CONFIGURATION</div>
         <div className="page-title">SETTINGS</div>
