@@ -267,12 +267,7 @@ function RaceTable({ drivers }) {
     return driver.position || 99;
   };
 
-  const playerDrivers = (drivers || []).filter(d => d.is_player);
-  const otherDrivers = (drivers || []).filter(d => !d.is_player);
-
-  const sortedPlayers = [...playerDrivers].sort((a, b) => getCurrentRacePos(a) - getCurrentRacePos(b));
-  const sortedOthers = [...otherDrivers].sort((a, b) => getCurrentRacePos(a) - getCurrentRacePos(b));
-  const sorted = [...sortedPlayers, ...sortedOthers];
+  const sorted = [...(drivers || [])].sort((a, b) => getCurrentRacePos(a) - getCurrentRacePos(b));
 
   return (
     <table className="data-table">
@@ -308,7 +303,7 @@ function RaceTable({ drivers }) {
                 </span>
               </td>
               <td>
-                <span style={{ fontFamily: "var(--font-display)", fontWeight: 700, color: d.is_player ? "var(--text)" : "var(--text-2)" }}>
+                <span style={{ fontFamily: "var(--font-display)", fontWeight: 700, color: d.is_player ? "var(--accent)" : "var(--text-2)" }}>
                   {d.name}
                 </span>
                 {d.is_player && <span className="badge badge-ok" style={{ marginLeft: 6, fontSize: 7 }}>YOU</span>}
