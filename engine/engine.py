@@ -340,21 +340,21 @@ def happend_something(lap, cars, WETTINESS):
     for car in cars:
         # Stop if player DNFs
         if car.dnf and car.is_player:
-            wlog(fn="happend_something",
+            dlog(fn="happend_something",
                  msg=f"Player DNF detected for {car.name} at lap {lap}. Stopping simulation.",
                  lap=lap, driver=car.name)
             return True
 
         # Stop if track is wet and car uses dry tyres
         if WETTINESS > 50 and car.pneu in DRY and car.is_player:
-            wlog(fn="happend_something",
+            dlog(fn="happend_something",
                  msg=f"Wet track (wettiness={WETTINESS}) but {car.name} uses dry tyres ({car.pneu}) at lap {lap}. Stopping simulation.",
                  lap=lap, driver=car.name, pneu=car.pneu, wettiness=WETTINESS)
             return True
 
         # Stop if track is dry and car uses wet tyres
         if WETTINESS < 30 and car.pneu in WET and car.is_player:
-            wlog(fn="happend_something",
+            dlog(fn="happend_something",
                  msg=f"Dry track (wettiness={WETTINESS}) but {car.name} uses wet tyres ({car.pneu}) at lap {lap}. Stopping simulation.",
                  lap=lap, driver=car.name, pneu=car.pneu, wettiness=WETTINESS)
             return True
