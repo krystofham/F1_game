@@ -1,10 +1,8 @@
 import random
 #import matplotlib.pyplot as plt
 from log import dlog, ilog
-try:
-    from load_data_json import *
-except:
-    from engine.load_data_json import *
+from load_data_json import *
+
 
 def ask_for_int():
     return load_data(init)

@@ -32,8 +32,10 @@ def strategy(LAPS, TIME_S1, TIME_S2, TIME_S3, pneu, speed, climax):
          inter_laps=round(endurance_i, 1) if climax != "sunny" else None,
          wet_laps=round(endurance_w, 1) if climax != "sunny" else None)
     if climax == "sunny":
+        pass
         #print(f"soft can do {round(endurance_s, 1)} laps, medium {round(endurance_m, 1)} laps, hard {round(endurance_h, 1)} laps")
     else:
+        pass
         #print(f"soft can do {round(endurance_s, 1)} laps, medium {round(endurance_m, 1)} laps, hard {round(endurance_h, 1)} laps, inter {round(endurance_i, 1)}, wet {round(endurance_w, 1)}")
     box_time = (100/60)
     if count_laps == 0:
@@ -55,6 +57,7 @@ def strategy(LAPS, TIME_S1, TIME_S2, TIME_S3, pneu, speed, climax):
             average_speed = (k_speed[i]*wear[i] + countlapsendurance2*k_speed[0])/count_laps
             time = round(((lap_time*LAPS)/average_speed) + box_time, 2)
             if countlapsendurance2 > 0:
+                pass
                 #print(f"Possible strategy - {round(wear[i] + wear[0],0)} laps - {time} minutes - {name[i]}, {name[0]}")
         if count_laps + 4 < wear[i] + wear[1]  < count_laps +20:
             remain = wear[i] + wear[1]- count_laps
@@ -62,6 +65,7 @@ def strategy(LAPS, TIME_S1, TIME_S2, TIME_S3, pneu, speed, climax):
             average_speed = (k_speed[i]*wear[i] + countlapsendurance2*k_speed[1])/count_laps
             time = round(((lap_time*LAPS)/average_speed) + box_time, 2)
             if countlapsendurance2 > 0:
+                pass
                 #print(f"Possible strategy - {round(wear[i] + wear[1],0)} laps - {time} minutes - {name[i]}, {name[1]}")
         if count_laps + 4 < wear[i] + wear[2]  < count_laps +20:
             remain = wear[i]+ wear[2] - count_laps
@@ -69,6 +73,7 @@ def strategy(LAPS, TIME_S1, TIME_S2, TIME_S3, pneu, speed, climax):
             average_speed = (k_speed[i]*wear[i] + countlapsendurance2*k_speed[2])/count_laps
             time = round(((lap_time*LAPS)/average_speed) + box_time, 2)
             if countlapsendurance2 > 0:
+                pass
                 #print(f"Possible strategy - {round(wear[i] + wear[2], 0)} laps - {time} minutes - {name[i]}, {name[2]}")
     for i in range(len(wear)):
         for j in range(len(wear)):
@@ -78,6 +83,7 @@ def strategy(LAPS, TIME_S1, TIME_S2, TIME_S3, pneu, speed, climax):
                 average_speed = (k_speed[i]*wear[i] + k_speed[j]*wear[j]+ countlapsendurance2*k_speed[0])/count_laps
                 time = round((lap_time*LAPS/average_speed) + box_time*2, 2)
                 if countlapsendurance2 > 0:
+                    pass
                     #print(f"Possible strategy - {round(wear[i] + wear[j] + wear[0], 0)} laps - {round(lap_time*(wear[i] + wear[j]+wear[0]) + box_time*2, 0)} minutes - {name[i]}, {name[j]}, {name[0]}")
             if count_laps + 4 <wear[i] + wear[j] + wear[1]  < count_laps +20:
                 remain = wear[i] + wear[j]  + wear[1]- count_laps
@@ -85,6 +91,7 @@ def strategy(LAPS, TIME_S1, TIME_S2, TIME_S3, pneu, speed, climax):
                 average_speed = (k_speed[i]*wear[i] + k_speed[j]*wear[j]+ countlapsendurance2*k_speed[1])/count_laps
                 time = round(((lap_time*LAPS)/average_speed) + box_time*2, 2)
                 if countlapsendurance2 > 0:
+                    pass
                     #print(f"Possible strategy - {round(wear[i] + wear[j] + wear[1], 0)} laps - {round(lap_time*(wear[i] + wear[j]+wear[1]) + box_time*2, 0)} minutes - {name[i]}, {name[j]}, {name[1]}")
             if count_laps + 4 <wear[i] + wear[j] + wear[2]  < count_laps +20:
                 remain = wear[i] + wear[j] + wear[2]- count_laps
@@ -92,4 +99,5 @@ def strategy(LAPS, TIME_S1, TIME_S2, TIME_S3, pneu, speed, climax):
                 average_speed = (k_speed[i]*wear[i] + k_speed[j]*wear[j]+ countlapsendurance2*k_speed[2])/count_laps
                 time =  round(((lap_time*LAPS)/average_speed) + box_time*2, 2)
                 if countlapsendurance2 > 0:
+                    pass
                     #print(f"Possible strategy - {round(wear[i] + wear[j] + wear[2], 0)} laps - {time} minutes - {name[i]}, {name[j]}, {name[2]}")

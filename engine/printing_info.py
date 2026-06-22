@@ -3,14 +3,9 @@ import random
 #import matplotlib.image as mpimg
 import os, json
 from log import dlog, elog, ilog, wlog
-try:
-    from load_data_json import *
-    from strategy import strategy
-    from weather import generate_weather
-except:
-    from engine.load_data_json import *
-    from engine.strategy import strategy
-    from engine.weather import generate_weather
+from load_data_json import *
+from strategy import strategy
+from weather import generate_weather
 def pit_player(player, player_2, LAPS, lap, TIME_S1, TIME_S2, TIME_S3, pneu, speed, PNEU_types, SAFETY_CAR, climax):
     data = load_data("lap_user_data")
 
@@ -59,48 +54,16 @@ def pit_player(player, player_2, LAPS, lap, TIME_S1, TIME_S2, TIME_S3, pneu, spe
 
     if not (player.dnf or player_2.dnf):
         if pick == "2" and pick_2 == "2":
-            #print(random.choice([
-                "Box now, double stack. Maintain gap, all planned.",
-                "Box, box, double stack! Close gap, no mistakes!",
-                "Box this lap, we're double stacking. Maintain delta, we've got margin.",
-                "Plan B, box now. You'll be second in the stack, minimal delay expected.",
-                "Box this lap for double stack. First car in now, stand by for release.",
-                "Box this lap, we are double stacking. Pit crew is prepped for both."
-            ]))
-            #print(random.choice([
-                "Copy. Keeping gap, I'm right za.",
-                "Understood. Staying tight.",
-                "Copy. I'm ready.",
-                "Confirmed. I'll hit my marks."
-            ]))
+            #print(random.choice([                "Box now, double stack. Maintain gap, all planned.",                "Box, box, double stack! Close gap, no mistakes!",                "Box this lap, we're double stacking. Maintain delta, we've got margin.",                "Plan B, box now. You'll be second in the stack, minimal delay expected.",                "Box this lap for double stack. First car in now, stand by for release.",                "Box this lap, we are double stacking. Pit crew is prepped for both."]))
+            #print(random.choice(["Copy. Keeping gap, I'm right za.","Understood. Staying tight.","Copy. I'm ready.","Confirmed. I'll hit my marks."]))
             player.time   += 3
             player_2.time += 3
         elif pick_2 == "2" and pick != "2":
-            #print(random.choice([
-                "Box, box. Box this lap. Tyres ready, confirm entry.",
-                "Pit window is open. Box this lap for new weathers.",
-                "Box now. Hitting your marks is critical.",
-                "Box, box. Tyre temps look good — execute clean entry.",
-                "Pit this lap. We're switching compound."
-            ]))
-            #print(random.choice([
-                "Copy. In this lap.", "Understood. Coming in.",
-                "On my way in.", "Copy. Box, box",
-                "Copy, box this lap.", "Copy, confirmed."
-            ]))
+            print(random.choice(["Box, box. Box this lap. Tyres ready, confirm entry.", "Pit window is open. Box this lap for new weathers.", "Box now. Hitting your marks is critical.", "Box, box. Tyre temps look good — execute clean entry.", "Pit this lap. We're switching compound."]))
+            print(random.choice(["Copy. In this lap.", "Understood. Coming in.", "On my way in.", "Copy. Box, box", "Copy, box this lap.", "Copy, confirmed."]))
         elif pick == "2" and pick_2 != "2":
-            #print(random.choice([
-                "Box, box. Box this lap. Tyres ready, confirm entry.",
-                "Pit window is open. Box this lap for new weathers.",
-                "Box now. Hitting your marks is critical.",
-                "Box, box. Tyre temps look good — execute clean entry.",
-                "Pit this lap. We're switching compound."
-            ]))
-            #print(random.choice([
-                "Copy. In this lap.", "Understood. Coming in.",
-                "On my way in.", "Copy. Box, box",
-                "Copy, box this lap.", "Copy, confirmed."
-            ]))
+            print(random.choice(["Box, box. Box this lap. Tyres ready, confirm entry.", "Pit window is open. Box this lap for new weathers.", "Box now. Hitting your marks is critical.", "Box, box. Tyre temps look good — execute clean entry.", "Pit this lap. We're switching compound."]))
+            print(random.choice(["Copy. In this lap.", "Understood. Coming in.", "On my way in.", "Copy. Box, box", "Copy, box this lap.", "Copy, confirmed."]))
 
     # Reset po přečtení — aby se pitstop neopakoval
     try:
@@ -124,15 +87,19 @@ def info(WETTINESS, forecast, lap, weather, LAPS, climax):
     weather_2 = forecast[1]
     weather_3 = forecast[2]
     weather_4 = forecast[3]
-    if lap == 0:
+    #if lap == 0:
         #print(f"Qualification | Actual weather: {weather}")
-    else:
+    #else:
+        
         #print(f"\n🌤️  lap {lap}/{LAPS} | Actual weather: {weather}")
     if WETTINESS > 0:
+        pass
         #print(f"Wet track {WETTINESS}%")
     if random.randint(1, 10) < 8:
+        pass
         #print(f"🔮 Forecast: {', '.join(forecast)}")
         if weather_1 == "sunny" and weather_4 in ["rain", "heavy rain"]:
+            pass
             #print(random.choice(["We’re monitoring the weather, expect rain in 3 laps.", "Rain is coming in now, you should start thinking about wet tires soon.", "Rain intensity increasing, we expect full wet conditions in the next 3 laps."]))
             #print(random.choice(["Copy that, adjusting my pace.", "Understood, I’m keeping an eye on it.","OK"]))
     else:
@@ -141,6 +108,7 @@ def info(WETTINESS, forecast, lap, weather, LAPS, climax):
         if fake[0] == "sunny" and fake[3] in ["rain", "heavy rain"]:
             #print(random.choice(["We’re monitoring the weather, expect rain in 3 laps.", "Rain is coming in now, you should start thinking about wet tires soon.", "Rain intensity increasing, we expect full wet conditions in the next 3 laps."]))
             #print(random.choice(["Copy that, adjusting my pace.", "Understood, I’m keeping an eye on it.","OK"]))
+            pass
     return forecast
 def drivers_table(cars, COUNT_CARS):
     for i, a in enumerate(cars[:6], 1):

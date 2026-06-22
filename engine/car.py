@@ -176,9 +176,12 @@ class Car:
             if SAFETY_CAR is True:
                 #print(random.choice(["Still safety car", "Still spinning slowly lap by lap."]))
                 if self.wear > 60:
+                    pass
                     #print(random.choice(["Why didn’t we pit? We’ve just thrown away the race.", "I had no grip even before the safety car!", "Come on! These weathers are dead — what are we doing?!", "Are we sure about staying out? Tyres are cooked."]))
             #print(f"\n🚗 Your car {self.name}")
+                
             if self.drs:
+                pass
                 #print("DRS active")
             RANK = [a.name for a in cars if not a.dnf]     
             if player.name == self.name:
@@ -217,6 +220,7 @@ class Car:
                 pred_team = car_pred.team.name if car_pred.team else "?"
                 #print(f"Delta in front: {round(difference, 3)}s ({pred_team})")
             if self.wear >= 70:
+                pass
                 #print(random.choice(["The tyres are pretty done now.", "I don´t know what are you doing there, but I am boxing. Or at least I wish.", "The tyres are ***!", "Please, take me out from this hell." "Please box, please."]))
         return None
     def drss(self, car_in_front):
