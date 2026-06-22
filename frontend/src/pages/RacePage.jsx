@@ -267,7 +267,13 @@ function RaceTable({ drivers }) {
     return driver.position || 99;
   };
 
-  const sorted = [...(drivers || [])].sort((a, b) => getCurrentRacePos(a) - getCurrentRacePos(b));
+  const leader = (drivers || []).find((d) => getCurrentRacePos(d) === 1);
+
+  const sorted = [...(drivers || [])].sort((a, b) => {
+    if (a.is_player && !b.is_player) return -1;
+    if (!a.is_player && b.is_player) return 1;
+    return getCurrentRacePos(a) - getCurrentRacePos(b);
+  });
 
   return (
     <table className="data-table">
@@ -277,22 +283,22 @@ function RaceTable({ drivers }) {
           <th>DRIVER</th>
           <th>TYRE</th>
           <th>WEAR</th>
-          <th>GAP</th>
+          <th>GAP TO LEADER</th>
           <th>PITS</th>
         </tr>
       </thead>
       <tbody>
-        {sorted.map((d, index) => {
+        {sorted.map((d) => {
           const currentPos = getCurrentRacePos(d);
-
           let gapDisplay = "—";
 
-          if (index > 0) {
-            const previousDriver = sorted[index - 1];
-            if (d.time != null && previousDriver.time != null) {
-              const gap = d.time - previousDriver.time;
+          if (leader && d.name !== leader.name) {
+            if (d.time != null && leader.time != null) {
+              const gap = d.time - leader.time;
               gapDisplay = `+${Math.max(0, gap).toFixed(3)}`;
             }
+          } else if (leader && d.name === leader.name) {
+            gapDisplay = "LEADER";
           }
 
           return (
