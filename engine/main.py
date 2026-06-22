@@ -9,7 +9,7 @@ season_count = 1
 b = 1
 
 
-print(f"Season {season_count}")
+#print(f"Season {season_count}")
 
 time_laps = [] 
 for race in championship:
@@ -30,7 +30,7 @@ for race in championship:
     b+=1
 #post chamiponship
 save_state_end_of_season(cars, teams, season_count)
-print("\n🏁 Drivers at the end of championship:")
+#print("\n🏁 Drivers at the end of championship:")
 best, worst = simulate_season_mmr2(list_drivers_mmr2)
 season_count +=1
 for mmr2_driver in list_drivers_mmr2:
@@ -40,11 +40,11 @@ random_name = random.choice(names_free_drivers)
 worst.name, worst.rating = random_name, random.uniform(0.95,1.05)
 cars.sort(key=lambda x: x.points, reverse=True)
 for i, a in enumerate(cars, 1):
-    print(f"{i}. {a.name} – {a.points} points ({a.team.name})")
+    #print(f"{i}. {a.name} – {a.points} points ({a.team.name})")
     if i == len(cars):
         new = best.name
         rating = best.rating
-        print(f"Breaking!!!\n{new} changes {a.name} ({a.team.name})\nBreaking!!!")
+        #print(f"Breaking!!!\n{new} changes {a.name} ({a.team.name})\nBreaking!!!")
         if a.is_player:
             if player.name == a.name:
                 player.name = new

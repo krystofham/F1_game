@@ -242,7 +242,7 @@ def safety_car(car, weather, lap, SAFETY_CAR, LAPS_REMAINING, LAPS):
             car.time += penalty
             wlog(fn="safety_car", msg="driver mistake penalty", name=car.name,
                  penalty=penalty, lap=lap, weather=weather)
-            print("Mistake from driver")
+            #print("Mistake from driver")
         if random.randint(1, int(car.safety_car_probability)) == 1:
             if lap >= 3:
                 car.dnf = True
@@ -250,13 +250,8 @@ def safety_car(car, weather, lap, SAFETY_CAR, LAPS_REMAINING, LAPS):
                 LAPS_REMAINING = random.randint(3, 6)
                 ilog(fn="safety_car", msg="crash DNF safety car deployed",
                      name=car.name, lap=lap, weather=weather, sc_laps=LAPS_REMAINING)
-                print(f"{car.name} recieved DNF")
-                print(random.choice([
-                    "Radio: Crash ahead, safety car is out!",
-                    "Radio: We’ve got yellow flags – full course yellow!",
-                    "Radio: Big crash, bring the delta in check.",
-                    "Radio: Watch the debris – SC deployed!"
-                ]))
+                #print(f"{car.name} recieved DNF")
+                #print(random.choice(["Radio: Crash ahead, safety car is out!","Radio: We’ve got yellow flags – full course yellow!","Radio: Big crash, bring the delta in check.","Radio: Watch the debris – SC deployed!"]))
     else:
         if car.safety_car_probability < 1:
             car.safety_car_probability = int(sc_prob / 2)
@@ -267,13 +262,8 @@ def safety_car(car, weather, lap, SAFETY_CAR, LAPS_REMAINING, LAPS):
                 LAPS_REMAINING = random.randint(3, 6)
                 ilog(fn="safety_car", msg="wet crash DNF safety car deployed",
                      name=car.name, lap=lap, weather=weather, sc_laps=LAPS_REMAINING)
-                print(f"{car.name} recieved DNF")
-                print(random.choice([
-                    "Radio: Crash ahead, safety car is out!",
-                    "Radio: We’ve got yellow flags – full course yellow!",
-                    "Radio: Big crash, bring the delta in check.",
-                    "Radio: Watch the debris – SC deployed!"
-                ]))
+                #print(f"{car.name} recieved DNF")
+                #print(random.choice(["Radio: Crash ahead, safety car is out!","Radio: We’ve got yellow flags – full course yellow!","Radio: Big crash, bring the delta in check.","Radio: Watch the debris – SC deployed!"]))
                 
     if car.dnf != True: 
         car.dnf = False

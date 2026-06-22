@@ -188,9 +188,9 @@ def training(speed, climax, cars):
     training_mode = ask_for_int()["training_mode"]
     ilog(fn="training", msg="training session started",
          training_mode=training_mode, speed=speed, climax=climax)
-    print("Settings of the car. You have three attemps")
+    #print("Settings of the car. You have three attemps")
     for x in range(3):
-        print("We are setting front wing. Value 0-11. In lower speed higher number. Lowers understeer. During rain bigger number.")
+        #print("We are setting front wing. Value 0-11. In lower speed higher number. Lowers understeer. During rain bigger number.")
         user_input = ask_for_int()["front_wing"]
         if speed == "quick":
             front_wing_ideal = random.randint(0, 4)
@@ -210,7 +210,7 @@ def training(speed, climax, cars):
         understeer_in_traning -= diff
         acceleration += diff
         grip += diff
-        print("We are setting rear wing.")
+        #print("We are setting rear wing.")
         user_input = ask_for_int()["rear_wing"]
         rear_wing = user_input
         if speed == "quick":
@@ -232,7 +232,7 @@ def training(speed, climax, cars):
         understeer_in_traning -= diff
         acceleration += diff
         grip += diff
-        print("We are setting brakes.")
+        #print("We are setting brakes.")
         user_input =ask_for_int()["brakes"]
         brakes = user_input
         brakes__ideal = random.randint (50, 60)
@@ -255,7 +255,7 @@ def training(speed, climax, cars):
             acceleration -=2
 
 
-        print("We are setting springs.")
+        #print("We are setting springs.")
         user_input = ask_for_int()["springs"]
         if suspension == 1:
             acceleration += 2

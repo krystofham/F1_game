@@ -37,15 +37,15 @@ def plot_graph(RANK, teams, cars, player, player_2, climax):
         position_1 = 'DNF'    
     if position_2 == None: 
         position_2 = 'DNF'
-    print("\n🏁 Final Position:")
-    print(f"{player.name}: {position_1}. position")
-    print(f"{player_2.name}: {position_2}. position")
+    #print("\n🏁 Final Position:")
+    #print(f"{player.name}: {position_1}. position")
+    #print(f"{player_2.name}: {position_2}. position")
     #time.sleep(4)
     # Results
     cars.sort(key=lambda x: (x.dnf, x.time))
     for i, a in enumerate(cars, 1):
         stav = "DNF" if a.dnf else f"{round(a.time, 2)}s"
-        print(f"{i}. {a.name} ({a.team.name}) {a.points} points ({round(a.ratings+ random.uniform(0,4) - random.uniform(0,4), 2)} rating)")
+        #print(f"{i}. {a.name} ({a.team.name}) {a.points} points ({round(a.ratings+ random.uniform(0,4) - random.uniform(0,4), 2)} rating)")
     teams.sort(key=lambda team: team.points, reverse=True)
     #time.sleep(8)
     for i, team in enumerate(teams,1):

@@ -47,8 +47,8 @@ def sim_the_lap(cars, teams, player, player_2, lap, SAFETY_CAR, LAPS_REMAINING, 
     position_2 = RANK.index(player_2.name) + 1 if player_2.name in RANK else COUNT_CARS
 
     WETTINESS = wet_track(weather_1, WETTINESS)
-    print(f"\n📊 Leaderboard {player.name}: {position}. position from {len(RANK)}")
-    print(f"\n📊 Leaderboard {player_2.name}: {position_2}. position from {len(RANK)}")
+    #print(f"\n📊 Leaderboard {player.name}: {position}. position from {len(RANK)}")
+    #print(f"\n📊 Leaderboard {player_2.name}: {position_2}. position from {len(RANK)}")
     drivers_table(cars, COUNT_CARS)
 
     for car in cars:
@@ -66,7 +66,8 @@ def sim_the_lap(cars, teams, player, player_2, lap, SAFETY_CAR, LAPS_REMAINING, 
             boxy_po_teamu[a.team] = boxy_po_teamu.get(a.team, 0) + 1
     for team, count in boxy_po_teamu.items():
         if count >= 2:
-            print(f"{team.name} is going to double stack.")
+            #print(f"{team.name} is going to double stack.")
+            continue
 
     cars.sort(key=lambda x: (x.dnf, x.time))
     RANK_OBJ = [a for a in cars if not a.dnf]
@@ -126,11 +127,11 @@ def init_race(tracks, race, cars, teams, championship, player, player_2, b, seas
             TIME_S3 = track.TIME_S3
             LAPS = track.laps
             dnf_probability = track.dnf_probability
-            print(f"závod {race} má {LAPS}")
+            #print(f"závod {race} má {LAPS}")
     for x in cars:
         x.safety_car_probability = dnf_probability
-    print(f"Actual race {race} {b}/{len(championship)}")
-    print(f"Track is known for {pneu} pneu and {speed} speed. Has {LAPS} laps")
+    #print(f"Actual race {race} {b}/{len(championship)}")
+    #print(f"Track is known for {pneu} pneu and {speed} speed. Has {LAPS} laps")
     strategy(LAPS, TIME_S1, TIME_S2, TIME_S3, pneu, speed, climax)
 
     if pneu == "medium":
@@ -160,7 +161,7 @@ def init_race(tracks, race, cars, teams, championship, player, player_2, b, seas
     weather_3 = generate_weather(weather_2, climax)
     weather_4 = generate_weather(weather_3, climax)
     forecast = [weather_1, weather_2, weather_3, weather_4]
-    print(f"Will be {climax}")
+    #print(f"Will be {climax}")
     for weather in forecast:
         print (f"weather: 🌤️ ☁️  {weather}")
     for car in cars:
@@ -222,8 +223,8 @@ def sim_the_race(cars, teams, player, player_2, lap, SAFETY_CAR, LAPS_REMAINING,
             dnf_probability = track.dnf_probability
     for x in cars:
         x.safety_car_probability = dnf_probability
-    print(f"Actual race {race} {b}/{len(championship)}")
-    print(f"Track is known for {pneu} pneu and {speed} speed. Has {LAPS} laps")
+    #print(f"Actual race {race} {b}/{len(championship)}")
+    #print(f"Track is known for {pneu} pneu and {speed} speed. Has {LAPS} laps")
     strategy(LAPS, TIME_S1, TIME_S2, TIME_S3, pneu, speed, climax)
 
     if pneu == "medium":
@@ -257,7 +258,7 @@ def sim_the_race(cars, teams, player, player_2, lap, SAFETY_CAR, LAPS_REMAINING,
     weather_3 = generate_weather(weather_2, climax)
     weather_4 = generate_weather(weather_3, climax)
     forecast = [weather_1, weather_2, weather_3, weather_4]
-    print(f"Will be {climax}")
+    #print(f"Will be {climax}")
     for weather in forecast:
         print (f"weather: 🌤️ ☁️  {weather}")
     for car in cars:
