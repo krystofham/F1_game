@@ -46,3 +46,4 @@ __pycache__/
 !.vscode/settings.json
 !.vscode/extensions.jsondocs/
 engine/data/
+engine/user_input/

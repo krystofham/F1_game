@@ -562,7 +562,7 @@ export default function RacePage() {
             </div>
 
             <div className="flex" style={{ gap: 10, alignItems: "center", flexWrap: "wrap" }}>
-              {!finished && (
+              {!finished && !postDone && (
                 <>
                   <button className="btn btn-primary" onClick={handleSimOne} disabled={running}>
                     {running ? "SIMMING" : "SIM LAP"}
