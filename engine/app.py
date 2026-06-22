@@ -561,7 +561,7 @@ async def api_post_race():
     _write_state(updated_state, "api_post_race")
     # Generate climax
     climax = random.choice(["transitional","sunny","sunny","sunny"])
-    weather = random.choice(WEATHER_TYPES)
+    weather = generate_weather("sunny", climax)
     with open(os.path.join(_CONFIG, "../engine/user_input/climax.json"), "w", encoding="utf-8") as f:
         json.dump({"climax": climax, "weather": weather}, f, indent=2, ensure_ascii=False)
     if new_b > championship_length:
