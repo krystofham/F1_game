@@ -52,4 +52,6 @@ export const api = {
   postRace: () => req("POST", "/api/post_race"),
   postChampionship: () => req("POST", "/api/post_championship"),
   setLapUserData: (payload) => req("POST", "/api/set_lap_user_data", payload),
+  getTrackRecords: () => req("GET", "/api/stats/track_records"),
+  getBiggestLaps: () => req("GET", "/api/stats/biggest_laps"),
 };

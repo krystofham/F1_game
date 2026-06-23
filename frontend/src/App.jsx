@@ -8,18 +8,20 @@ import GraphsPage from "./pages/GraphsPage";
 import TeamPage from "./pages/TeamPage";
 import TransferMarket from "./pages/TransfersPage";
 import SettingsPage from "./pages/SettingsPage";
+import StatsPage from "./pages/StatsPage";
 import { useApi } from "./hooks/useApi";
 import { api } from "./utils/api"; 
 import "./styles.css";
 
 const NAV_ITEMS = [
-  { to: "/", label: "STANDINGS", icon: "▲" },
-  { to: "/race", label: "RACE CONTROL", icon: "◉" },
-  { to: "/teams", label: "TEAMS", icon: "◈" },
-  { to: "/drivers", label: "DRIVERS", icon: "◆" },
-  { to: "/track", label: "TRACK", icon: "◎" },
-  { to: "/graphs", label: "TELEMETRY", icon: "∿" },
-  { to: "/transfer", label: "TRANSFERS", icon: "⇄" },
+  { to: "/", label: "STANDINGS", icon: "" },
+  { to: "/race", label: "RACE CONTROL", icon: "" },
+  { to: "/teams", label: "TEAMS", icon: "" },
+  { to: "/drivers", label: "DRIVERS", icon: "" },
+  { to: "/track", label: "TRACK", icon: "" },
+  { to: "/graphs", label: "TELEMETRY", icon: "" },
+  { to: "/stats", label: "STATS", icon: "" },
+  { to: "/transfer", label: "TRANSFERS", icon: "" },
 ];
 
 function Sidebar() {
@@ -77,6 +79,7 @@ export default function App() {
                 <Route path="/graphs" element={<GraphsPage />} />
                 <Route path="/team/:teamId" element={<TeamPage />} />
                 <Route path="/transfer" element={<TransferMarket />} />
+                <Route path="/stats" element={<StatsPage />} />
                 <Route path="/settings" element={<SettingsPage />} />
               </Routes>
             </main>

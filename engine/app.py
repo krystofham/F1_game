@@ -1,6 +1,6 @@
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
-import os, json, random, traceback
+import os, json, random, traceback, csv
 from fastapi.staticfiles import StaticFiles  
 from big_functions import *
 from load_data_json import *
@@ -1158,3 +1158,45 @@ async def patch_state(data: dict):
 
     _write_state(state, "patch_state")
     return {"status": "ok"}
+
+@app.get("/api/stats/track_records")
+async def get_track_records():
+    path = os.path.join(_CONFIG, "data", "track_records.csv")
+    if not os.path.exists(path):
+        return []
+    records = []
+    try:
+        with open(path, mode="r", encoding="utf-8") as f:
+            reader = csv.DictReader(f)  # Má hlavičku: track,driver,team,lap_time,season,race
+            for row in reader:
+                records.append(row)
+    except Exception as e:
+        elog(fn="get_track_records", msg=str(e))
+    return records
+
+@app.get("/api/stats/biggest_laps")
+async def get_biggest_laps():
+    path = os.path.join(_CONFIG, "data", "races.csv")
+    if not os.path.exists(path):
+        return []
+    laps_history = []
+    try:
+        with open(path, mode="r", encoding="utf-8") as f:
+            reader = csv.reader(f)
+            for row in reader:
+                if not row or len(row) < 11:
+                    continue
+                # Struktura dle ukázky: season, race, pos, driver, team, points, time/gap...
+                laps_history.append({
+                    "season": row[0],
+                    "race": row[1],
+                    "position": row[2],
+                    "driver": row[3],
+                    "team": row[4],
+                    "points": row[5],
+                    "total_time": row[10],
+                    "weather": row[15] if len(row) > 15 else "sunny"
+                })
+    except Exception as e:
+        elog(fn="get_biggest_laps", msg=str(e))
+    return laps_history
