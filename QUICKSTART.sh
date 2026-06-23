@@ -3,7 +3,7 @@
 git clone https://github.com/krystofham/F1_game
 cd F1_game
 
-pip install -r requirements.txt
+pip install -r requirements.txt --break-system-packages
 
 cd engine
 uvicorn app:app --port 8000 &
