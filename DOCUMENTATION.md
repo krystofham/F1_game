@@ -1,3 +1,10 @@
+# Docs
+
+**AI usage**
+- logos of teams in png
+- hints to rebuilt the code
+- docs (partially)
+- names generation
 ## Architecture
 
 ```
@@ -30,6 +37,7 @@ F1_game/
 │   │   │   ├── TeamsPage.jsx / TeamPage.jsx
 │   │   │   ├── TrackPage.jsx    # Also rendered as iframe inside RacePage
 │   │   │   ├── GraphsPage.jsx   # Telemetry / recharts
+│   │   │   ├── StatsPage.jsx   # Stats from csv
 │   │   │   └── TransfersPage.jsx
 │   │   ├── utils/api.js         # fetch wrapper → http://localhost:8000
 │   │   └── hooks/useApi.js      # useApi / useAction hooks
@@ -42,7 +50,7 @@ F1_game/
 │   ├── teams.json
 │   └── tracks.json
 │
-└── img/             # Team logo PNGs (served by FastAPI at /img/*)
+└── img/             # Team logo PNGs (served by FastAPI at /img/*), ai generated
 ```
 
 
