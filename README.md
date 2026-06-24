@@ -4,7 +4,11 @@ This readme is partially done with AI.
 
 # MMRAC1NG
 
-> Formula 1 career management simulator
+MMRAC1NG is a motorsport career management simulator.
+You manage two drivers across a full season - setting tyre strategies,
+deciding pit stops lap by lap, and competing against 26 AI rivals across 14 teams.
+
+Win the championship. Then try to keep it next season.
 
 ![Platform](https://img.shields.io/badge/platform-Windows%20%7C%20Linux%20%7C%20macOS-blue)
 
