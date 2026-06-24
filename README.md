@@ -15,6 +15,12 @@ This readme is partially done with AI.
 ---
 
 ## Installation
+> **The FastAPI engine must be running on `localhost:8000`** before launching the desktop app, currently.
+
+Make sure you have installed 
+[Python](https://www.python.org/downloads/)
+[NPM](https://nodejs.org/en/download)
+[Git](https://git-scm.com/install/) - for quickstart needed
 
 ### Quickstart MAC + Linux
 
@@ -33,18 +39,31 @@ Set-ExecutionPolicy RemoteSigned -Scope Process
 
 ./QUICKSTART.ps1
 ```
-### Requirements
+### if it does not work
 
-- Python 3.10+
-- Node.js 20+
-- git
-- npm
+if you dont want to use quickstart or it does not work (if so, contact me in the issues section, please and make sure everything in instalation is installed). You dont need git installed to this, but you need python and npm.
+1) Install the repo (green button code -> install zip)
+2) Unzip it
+3) go to the engine directory
+4) run `pip install -r requirements.txt`
+5) run fastapi dev app.py (in terminal or anywhere else)
+
+EASIEST
+
+6) Download latest stable (not beta or alpha) binary from [Releases page](https://github.com/krystofham/F1_game/releases)
+
+OR
+
+6) go to the frontend folder (not subfolder in engine, but equal to)
+7) run `npm install` - this may take some this
+8) run `npm run desktop:dev` - this should make a popup window
+
 
 ### Engine
 
 ```bash
 cd engine
-pip install requirements.txt
+pip install -r requirements.txt
 uvicorn app:app --reload --port 8000
 ```
 
@@ -62,16 +81,6 @@ npm run dev          # Vite on port (ussually :5173)
 cd frontend
 npm run desktop:dev  # Electron + Vite concurrently
 ```
-
----
-
-## Download
-
-Pre-built binaries are available on the [Releases page](https://github.com/krystofham/F1_game/releases):
-
-
-
-> **The FastAPI engine must be running on `localhost:8000`** before launching the desktop app, currently.
 
 ---
 
@@ -102,6 +111,11 @@ Launch the downloaded binary or run `npm run desktop:dev`.
 - After all races: **END SEASON** → MMR2 promotion/relegation, AI transfers, points reset
 
 ---
+
+## Common errors
+
+1) You start the binary but not the fastapi server - the game seem broken and not working, this may cause that the game crashes or there is no navigation or layout
+2) The game writes could not fetch resources - this is due to state.json is not inicialized, you need go to RACE CONTROL panel and hit init race
 
 ## License
 
