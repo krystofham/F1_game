@@ -71,7 +71,7 @@ function DriverDetail({ driver }) {
       {history.length > 0 && (
         <div>
           <div className="card-label" style={{ marginBottom: 6 }}>
-            Lap History ({history.length} laps)
+            Position History ({history.length} laps)
           </div>
           <div
             style={{

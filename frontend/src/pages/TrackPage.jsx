@@ -52,7 +52,7 @@ export default function TrackPage({ state }) {
   const dnfProb = 100 * 28 * totalLaps / scProb;
 
   // Bezpečný stav pro safety car bez globálních mutací
-  const isSafetyCarOut = state?.race_state?.safety_car !== false;
+  const isSafetyCarOut = state?.race_state?.safety_car === true;
 
   const flag = guessFlag(currentTrackName);
 

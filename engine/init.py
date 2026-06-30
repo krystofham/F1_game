@@ -64,17 +64,17 @@ drivers             = _drivers_cfg["drivers"]
 names_free_drivers  = _drivers_cfg["free_drivers"]
 
 championship = [
-    "AWS Grand Prix de Espana",
-    "AirBNB Prague GP",
-    "eBay Skyline Turkey GP",
-    "Java airlines Monza IBM Italy GP",
-    "HP Bulgarian GP",
-    "Python circuit Bahamas",
-    "Ostrava Apple GP",
-    "META China Grand Prix",
-    "Sony Varsava Grand Prix",
-    "LG TV Grand Prix du France",
-    "Huawei GP SPA",
+    "Grand Prix de Espana",
+    "Prague Grand Prix",
+    "Skyline Turkey Grand Prix",
+    "Monza Italy Grand Prix",
+    "Bulgarian Grand Prix",
+    "Bahamas Circuit",
+    "Ostrava Grand Prix",
+    "China Grand Prix",
+    "Warsaw Grand Prix",
+    "Grand Prix de France",
+    "Grand Prix of Spa",
 ]
 
 cars = [Car(driver, random.uniform(5, 6)) for driver in drivers]

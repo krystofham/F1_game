@@ -10,7 +10,7 @@ def qualification(simulation, cars, TIME_S1, TIME_S2, TIME_S3, training):
     ilog(fn="qualification", msg="qualification started", training=training, car_count=len(cars))
     for car in cars:
             sim_time = TIME_S1 * random.uniform(0.9, 1.1) + TIME_S2 * random.uniform(0.9, 1.1) + TIME_S3 * random.uniform(0.9, 1.1)
-            if car.is_player and training == "2":
+            if car.is_player and str(training) == "2":
                 sim_time = sim_time/1.5 
             simulation.append((car, sim_time))
     simulation.sort(key=lambda x: x[1])

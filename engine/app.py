@@ -116,9 +116,6 @@ def apply_teams_from_state(cars, teams, state_teams, state_drivers=None):
         wlog(fn="apply_teams_from_state", msg="shadow duplicates removed after apply", names=removed)
 
     ilog(fn="apply_teams_from_state", msg="teams applied ok", assignment_count=len(assignments))
-    if car is None or id(car) in used_car_ids:
-        print(f"FAILED: driver={driver_name}, team={st.get('name')}, car={car}, reason={'no_car' if car is None else 'duplicate'}")
-        return False
     return True
 
 

@@ -21,8 +21,7 @@ function resolveBaseUrl() {
   return "http://127.0.0.1:8000";
 
 }
-// const BASE = resolveBaseUrl();
-const BASE = "http://localhost:8000";
+const BASE = resolveBaseUrl();
 
 async function req(method, path, body) {
   const res = await fetch(`${BASE}${path}`, {

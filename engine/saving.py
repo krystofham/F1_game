@@ -16,13 +16,13 @@ POINTS_TABLE = {
 
 def _car_to_dict(car, position, time_laps=None):
     positions = [p for p in car.position if p > 0]
-    # Extrahuj per-driver lap times z globálního time_laps listu
-    # time_laps je list of lists: [[name, lap_time], ...] nebo [[name, lap, time], ...]
+    # time_laps entries: (lap_time, driver_name, team_name, s1, s2, s3)
     driver_lap_times = []
     if time_laps:
         for entry in time_laps:
-            if entry and entry[0] == car.name:
-                driver_lap_times.append(float(entry[-1]))
+            # (lap_time, driver_name, team_name, s1, s2, s3)
+            if entry and len(entry) >= 3 and entry[1] == car.name:
+                driver_lap_times.append(float(entry[0]))
     return {
         "position":         position,
         "name":             car.name,

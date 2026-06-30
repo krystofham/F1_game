@@ -91,7 +91,7 @@ class Car:
             s1 -= random.uniform(0.5, 0.7)
             s2 -= random.uniform(0.5, 0.7)
             s3 -= random.uniform(0.5, 0.7)
-        if training == "1":
+        if str(training) == "1":
             s1 -= random.uniform(0.1, 0.3)
             s2 -= random.uniform(0.1, 0.3)
             s3 -= random.uniform(0.1, 0.3)
