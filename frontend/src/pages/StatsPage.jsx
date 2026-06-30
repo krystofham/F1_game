@@ -1,9 +1,10 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import {
   BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip,
   ResponsiveContainer, Cell,
 } from "recharts";
 import { api } from "../utils/api";
+import { exportElementAsPdf, exportElementAsPng } from "../utils/exportStats";
 
 const WEATHER_COLORS = {
   sunny: "#ffd600",
@@ -189,6 +190,8 @@ export default function StatsPage() {
   const [records, setRecords] = useState([]);
   const [raceHistory, setRaceHistory] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [exportBusy, setExportBusy] = useState(false);
+  const exportRef = useRef(null);
 
   useEffect(() => {
     Promise.all([api.getTrackRecords(), api.getBiggestLaps()])
@@ -214,11 +217,49 @@ export default function StatsPage() {
   return (
     <div className="main-content">
       <div className="page-header">
-        <div className="page-eyebrow">Database Records</div>
-        <h1 className="page-title">
-          Game <span>Statistics</span>
-        </h1>
+        <div>
+          <div className="page-eyebrow">Database Records</div>
+          <h1 className="page-title">
+            Game <span>Statistics</span>
+          </h1>
+        </div>
+        <div className="export-row">
+          <button
+            type="button"
+            className="export-btn"
+            disabled={exportBusy}
+            onClick={async () => {
+              if (!exportRef.current) return;
+              setExportBusy(true);
+              try {
+                await exportElementAsPng(exportRef.current, `stats-${Date.now()}.png`);
+              } finally {
+                setExportBusy(false);
+              }
+            }}
+          >
+            Export PNG
+          </button>
+          <button
+            type="button"
+            className="export-btn"
+            disabled={exportBusy}
+            onClick={async () => {
+              if (!exportRef.current) return;
+              setExportBusy(true);
+              try {
+                await exportElementAsPdf(exportRef.current, `stats-${Date.now()}.pdf`);
+              } finally {
+                setExportBusy(false);
+              }
+            }}
+          >
+            Export PDF
+          </button>
+        </div>
       </div>
+
+      <div ref={exportRef}>
 
       <StatSummary records={records} raceHistory={raceHistory} />
 
@@ -291,6 +332,7 @@ export default function StatsPage() {
             ))}
           </tbody>
         </table>
+      </div>
       </div>
     </div>
   );

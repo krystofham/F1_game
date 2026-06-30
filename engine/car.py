@@ -111,7 +111,7 @@ class Car:
                 lap_time=round(lap_time, 3), pneu=self.pneu, wear=round(self.wear, 2), pace=pace)
 
         time_laps.append((lap_time, self.name, self.team.name, s1, s2, s3))
-        self.time += self.wear/5 + lap_time
+        self.time += self.wear/10 + lap_time
         self.wear += PNEU_types[self.pneu]["wear"] * random.uniform(0.9, 1.1) * mod["wear"]
 
         return SAFETY_CAR, LAPS_REMAINING

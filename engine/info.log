@@ -1,0 +1,4 @@
+{"ts": "2026-06-30T20:34:14", "event": "[WARNING]", "fn": "safety_car", "msg": "driver mistake penalty", "name": "Hiro Tanaka", "penalty": 25, "lap": 14, "weather": "sunny"}
+{"ts": "2026-06-30T20:34:14", "event": "[WARNING]", "fn": "safety_car", "msg": "driver mistake penalty", "name": "Renzo Morandi", "penalty": 16, "lap": 18, "weather": "sunny"}
+{"ts": "2026-06-30T20:34:14", "event": "[WARNING]", "fn": "safety_car", "msg": "driver mistake penalty", "name": "Riku Yamashita", "penalty": 13, "lap": 48, "weather": "sunny"}
+{"ts": "2026-06-30T20:34:15", "event": "[WARNING]", "fn": "safety_car", "msg": "driver mistake penalty", "name": "Carlos Navarro", "penalty": 53, "lap": 49, "weather": "sunny"}

@@ -7,6 +7,14 @@ from load_data_json import *
 from log import elog, ilog, wlog, dlog, log, snapshot_state as td_snapshot_state
 from log import snapshot_cars as td_snapshot_cars
 from saving import save_season_csv, save_race_csv, update_track_record
+from models import (
+    InitConfigPayload,
+    LapUserDataPayload,
+    PatchStatePayload,
+    SettingsPayload,
+    SimUntilPayload,
+    TransferPayload,
+)
 
 
 app = FastAPI()
@@ -644,29 +652,31 @@ async def api_post_championship():
 # ---------------------------------------------------------------------------
 
 @app.post("/api/set_lap_user_data")
-async def api_set_lap_user_data(data: dict):
+async def api_set_lap_user_data(data: LapUserDataPayload):
+    payload = data.model_dump()
     path = os.path.join(_CONFIG, "../engine/user_input/lap_user_data.json")
     with open(path, "w", encoding="utf-8") as f:
-        json.dump(data, f, indent=2, ensure_ascii=False)
-    dlog(fn="api_set_lap_user_data", msg="lap user data written", data=data)
+        json.dump(payload, f, indent=2, ensure_ascii=False)
+    dlog(fn="api_set_lap_user_data", msg="lap user data written", data=payload)
     return {"status": "ok"}
 
 
 @app.post("/api/set_init_config")
-async def api_set_init_config(data: dict):
+async def api_set_init_config(data: InitConfigPayload):
+    payload = data.model_dump()
     path = os.path.join(_CONFIG, "../engine/user_input/init.json")
     with open(path, "w", encoding="utf-8") as f:
-        json.dump(data, f, indent=2, ensure_ascii=False)
+        json.dump(payload, f, indent=2, ensure_ascii=False)
 
     # Ověř zápis — init.json je kritický pro init_race, každý problém tady = bug v závodě
     try:
         with open(path, "r") as f:
             written = json.load(f)
-        if written != data:
+        if written != payload:
             elog(fn="api_set_init_config", msg="init.json write verify failed — written content differs",
-                 expected=data, got=written)
+                 expected=payload, got=written)
         else:
-            dlog(fn="api_set_init_config", msg="init.json written and verified", payload=data)
+            dlog(fn="api_set_init_config", msg="init.json written and verified", payload=payload)
     except Exception as e:
         elog(fn="api_set_init_config", msg="init.json verify read failed", error=str(e), path=path)
 
@@ -715,10 +725,10 @@ async def api_get_transfer_offers():
 
 
 @app.post("/api/do_transfer")
-async def api_do_transfer(data: dict):
-    pilot_to_change = data.get("pilot_to_change")
-    chosen_pilot    = data.get("chosen_pilot")
-    new_rating      = data.get("rating", None)
+async def api_do_transfer(data: TransferPayload):
+    pilot_to_change = data.pilot_to_change
+    chosen_pilot    = data.chosen_pilot
+    new_rating      = data.rating
 
     if not pilot_to_change or not chosen_pilot:
         elog(fn="api_do_transfer", msg="missing pilot name(s) in request",
@@ -936,8 +946,8 @@ async def api_sim_race():
 # ---------------------------------------------------------------------------
 
 @app.post("/api/sim_until")
-async def api_sim_until(data: dict):
-    target_lap = data.get("lap", 1)
+async def api_sim_until(data: SimUntilPayload):
+    target_lap = data.lap
     state      = _state()
     race_ctx   = state.get("race_state")
 
@@ -1081,18 +1091,21 @@ async def get_settings():
         return {"stop_on_event": True, "show_logs": False}
 
 @app.post("/api/settings")
-async def post_settings(data: dict):
+async def post_settings(data: SettingsPayload):
+    payload = data.model_dump()
     path = os.path.join(_CONFIG, "user_input/settings.json")
     with open(path, "w", encoding="utf-8") as f:
-        json.dump(data, f, indent=2)
+        json.dump(payload, f, indent=2)
     return {"status": "ok"}
+
 @app.post("/api/patch_state")
-async def patch_state(data: dict):
+async def patch_state(data: PatchStatePayload):
+    payload = data.model_dump(exclude_none=True)
     state = _state()
 
-    if "teams" in data:
+    if "teams" in payload:
         state_teams = state.get("teams", [])
-        for i, patch in enumerate(data["teams"]):
+        for i, patch in enumerate(payload["teams"]):
             if i < len(state_teams):
                 old_name = state_teams[i]["name"]
                 new_name = patch.get("name", old_name)
@@ -1102,12 +1115,12 @@ async def patch_state(data: dict):
                             driver["team"] = new_name
                 state_teams[i]["name"] = new_name
 
-    if "drivers" in data:
+    if "drivers" in payload:
         state_drivers = state.get("drivers", [])
         p1_name = state.get("player.name", "")
         p2_name = state.get("player_2.name", "")
 
-        for i, patch in enumerate(data["drivers"]):
+        for i, patch in enumerate(payload["drivers"]):
             if i < len(state_drivers):
                 old_name = state_drivers[i]["name"]
                 new_name = patch.get("name", old_name)
@@ -1128,30 +1141,6 @@ async def patch_state(data: dict):
 
                 state_drivers[i]["name"]   = new_name
                 state_drivers[i]["rating"] = new_rating
-
-    _write_state(state, "patch_state")
-    return {"status": "ok"}
-    state = _state()
-    
-    if "teams" in data:
-        state_teams = state.get("teams", [])
-        for i, patch in enumerate(data["teams"]):
-            if i < len(state_teams):
-                old_name = state_teams[i]["name"]
-                new_name = patch.get("name", old_name)
-                if old_name != new_name:
-                    # Aktualizuj název týmu u všech jezdců
-                    for driver in state.get("drivers", []):
-                        if driver.get("team") == old_name:
-                            driver["team"] = new_name
-                state_teams[i]["name"] = new_name
-
-    if "drivers" in data:
-        state_drivers = state.get("drivers", [])
-        for i, patch in enumerate(data["drivers"]):
-            if i < len(state_drivers):
-                state_drivers[i]["name"]   = patch.get("name", state_drivers[i]["name"])
-                state_drivers[i]["rating"] = patch.get("rating", state_drivers[i]["rating"])
 
     _write_state(state, "patch_state")
     return {"status": "ok"}
