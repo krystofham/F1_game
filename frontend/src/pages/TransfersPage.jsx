@@ -1,6 +1,7 @@
 import { useState } from "react";
-
-const API = "http://localhost:8000/api";
+import { api } from "../utils/api";
+import { formatApiError } from "../utils/errors";
+import ErrorMessage from "../components/ErrorMessage";
 
 export default function TransferMarket() {
   const [offers, setOffers] = useState(null);
@@ -15,11 +16,9 @@ export default function TransferMarket() {
     setResult(null);
     setSelected({ driver: null, pilot: null, league: "MMR1" });
     try {
-      const res = await fetch(`${API}/get_transfer_offers`);
-      if (!res.ok) throw new Error(await res.text());
-      setOffers(await res.json());
+      setOffers(await api.getTransferOffers());
     } catch (e) {
-      setError(e.message);
+      setError(formatApiError(e));
     } finally {
       setLoading(false);
     }
@@ -44,16 +43,10 @@ async function doTransfer() {
         chosen_pilot: selected.pilot,
         rating: found?.rating ?? null,
       };
-      const res = await fetch(`${API}/do_transfer`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(body),
-      });
-      if (!res.ok) throw new Error(await res.text());
-      setResult(await res.json());
+      setResult(await api.doTransfer(body));
       setOffers(null);
     } catch (e) {
-      setError(e.message);
+      setError(formatApiError(e));
     } finally {
       setLoading(false);
     }
@@ -86,21 +79,7 @@ async function doTransfer() {
 
       <div style={{ padding: "28px 32px" }}>
         {/* Error */}
-        {error && (
-          <div
-            className="mb-4"
-            style={{
-              padding: "14px 20px",
-              border: "1px solid var(--accent)",
-              background: "rgba(232,0,45,0.07)",
-              fontFamily: "var(--font-mono)",
-              fontSize: "12px",
-            }}
-          >
-            <span className="text-accent">⚠ ERROR:</span>{" "}
-            <span style={{ color: "var(--text-2)" }}>{error}</span>
-          </div>
-        )}
+        {error && <ErrorMessage error={error} compact />}
 
         {/* Success */}
         {result && (

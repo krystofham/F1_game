@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useApi } from "../hooks/useApi";
 import { api } from "../utils/api";
+import ErrorMessage from "../components/ErrorMessage";
 import TyreBadge from "../components/TyreBadge";
 import WearBar from "../components/WearBar";
 
@@ -168,7 +169,7 @@ export default function DriversPage() {
       </div>
 
       {driversLoading && <div className="loading">FETCHING DRIVERS</div>}
-      {driversError && <div className="empty">⚠ {driversError}</div>}
+      {driversError && <ErrorMessage error={driversError} context="drivers" />}
 
       <div style={{ display: "flex", flexDirection: "column", gap: 2 }}>
         {processedDrivers.map((d, i) => {

@@ -1,3 +1,5 @@
+import { formatApiError } from "./errors";
+
 function resolveBaseUrl() {
   const runtimeDesktopBase =
     typeof window !== "undefined" &&
@@ -23,15 +25,38 @@ function resolveBaseUrl() {
 }
 const BASE = resolveBaseUrl();
 
-async function req(method, path, body) {
-  const res = await fetch(`${BASE}${path}`, {
-    method,
-    headers: { "Content-Type": "application/json" },
-    body: body ? JSON.stringify(body) : undefined,
+export function getApiBaseUrl() {
+  return BASE || (typeof window !== "undefined" ? window.location.origin : "");
+}
+
+/** Lightweight probe used by the startup blocker screen. */
+export async function checkEngine() {
+  const res = await fetch(`${BASE}/api/get_state`, {
+    method: "GET",
+    headers: { Accept: "application/json" },
   });
   if (!res.ok) {
+    throw new Error(`HTTP ${res.status}`);
+  }
+  return res.json();
+}
+
+async function req(method, path, body) {
+  let res;
+  try {
+    res = await fetch(`${BASE}${path}`, {
+      method,
+      headers: { "Content-Type": "application/json" },
+      body: body ? JSON.stringify(body) : undefined,
+    });
+  } catch (e) {
+    throw new Error(formatApiError(e));
+  }
+
+  if (!res.ok) {
     const err = await res.json().catch(() => ({}));
-    throw new Error(err.detail || `HTTP ${res.status}`);
+    const detail = err.detail || `HTTP ${res.status}`;
+    throw new Error(formatApiError(detail));
   }
   return res.json();
 }
@@ -53,4 +78,6 @@ export const api = {
   setLapUserData: (payload) => req("POST", "/api/set_lap_user_data", payload),
   getTrackRecords: () => req("GET", "/api/stats/track_records"),
   getBiggestLaps: () => req("GET", "/api/stats/biggest_laps"),
+  getTransferOffers: () => req("GET", "/api/get_transfer_offers"),
+  doTransfer: (payload) => req("POST", "/api/do_transfer", payload),
 };

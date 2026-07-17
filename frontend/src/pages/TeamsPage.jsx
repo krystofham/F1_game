@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useApi } from "../hooks/useApi";
 import { api } from "../utils/api";
+import ErrorMessage from "../components/ErrorMessage";
 import { Link } from "react-router-dom";
 
 const getPointsForPosition = (position) => {
@@ -315,7 +316,7 @@ const restTeams = displayedTeams.slice(6);
       </div>
 
       {teamsLoading && <div className="loading">FETCHING TEAMS</div>}
-      {teamsError && <div className="empty">⚠ {teamsError}</div>}
+      {teamsError && <ErrorMessage error={teamsError} context="teams" />}
 
 {displayedTeams.length > 0 && (
       <>

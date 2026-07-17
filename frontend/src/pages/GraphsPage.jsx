@@ -1,6 +1,7 @@
 import { useMemo, useRef, useState } from "react";
 import { useApi } from "../hooks/useApi";
 import { api } from "../utils/api";
+import ErrorMessage from "../components/ErrorMessage";
 import {
   buildGapToLeaderData,
   buildStintSegments,
@@ -342,7 +343,7 @@ export default function GraphsPage() {
   const filteredDrivers = useMemo(() => filterDrivers(drivers, filter), [drivers, filter]);
 
   if (loading) return <div className="loading">LOADING TELEMETRY</div>;
-  if (error) return <div className="empty">⚠ {error}</div>;
+  if (error) return <ErrorMessage error={error} />;
 
   const showFilter = tab <= 3;
 

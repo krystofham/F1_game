@@ -315,12 +315,12 @@ async def get_state():
 
 @app.get("/api/get_drivers")
 async def get_drivers():
-    return _state()["drivers"]
+    return _state().get("drivers", [])
 
 
 @app.get("/api/get_teams")
 async def get_teams():
-    return _state()["teams"]
+    return _state().get("teams", [])
 
 
 @app.get("/api/get_teams/{team_name}")
