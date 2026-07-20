@@ -6,8 +6,10 @@ from contextvars import ContextVar
 from datetime import datetime
 import atexit
 
+from paths import log_file, user_input_dir
+
 # --- Konfigurace logování ---
-_LOG_PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)), "info.log")
+_LOG_PATH = log_file()
 
 # PRODUCTION/DEBUG
 PRODUCTION = "prod" # or deb
@@ -65,7 +67,7 @@ def log(event: str, **payload) -> dict:
 
 def _is_prod() -> bool:
     try:
-        path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "user_input/settings.json")
+        path = os.path.join(user_input_dir(), "settings.json")
         with open(path) as f:
             return not json.load(f).get("show_logs", False)
     except Exception:

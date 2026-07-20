@@ -14,11 +14,11 @@ from engine import *
 #from plot import *
 from get_data import *
 from log import clear_log, ilog, dlog, elog, wlog
+from paths import config_dir
 clear_log()
 ilog(fn="init", msg="init.py run started")
-_BASE_DIR = os.path.dirname(__file__)
-_CONFIG_DIR = os.path.abspath(os.path.join(_BASE_DIR, "..", "config"))
-ilog(fn="init", msg="directories resolved", base_dir=_BASE_DIR, config_dir=_CONFIG_DIR)
+_CONFIG_DIR = config_dir()
+ilog(fn="init", msg="directories resolved", config_dir=_CONFIG_DIR)
 
 try:
     with open(os.path.join(_CONFIG_DIR, "drivers.json"), encoding="utf-8") as f:

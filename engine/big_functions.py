@@ -1,6 +1,7 @@
 from init import *
 import os, json as _json
 from log import dlog, elog, ilog, wlog, snapshot_init_config
+from paths import user_input_dir
 def sim_the_lap(cars, teams, player, player_2, lap, SAFETY_CAR, LAPS_REMAINING, WETTINESS, forecast, weather, LAPS, climax, pneu, speed, PNEU_types, weather_1, weather_2, weather_3, weather_4, training_type, k_wear, k_speed,speed_bonus, season_count, race, time_laps):
     state = load_state()
     race_ctx = state.get("race_state", {})
@@ -98,7 +99,7 @@ def sim_the_lap(cars, teams, player, player_2, lap, SAFETY_CAR, LAPS_REMAINING, 
 
 def init_race(tracks, race, cars, teams, championship, player, player_2, b, season_count):
     _cfg = {}
-    _p = os.path.join(os.path.dirname(__file__), "user_input/init.json")
+    _p = os.path.join(user_input_dir(), "init.json")
     try:
         with open(_p, encoding="utf-8") as _f:
             _cfg = _json.load(_f)
@@ -113,10 +114,22 @@ def init_race(tracks, race, cars, teams, championship, player, player_2, b, seas
 
     WETTINESS = 0
         # Loading climax
-    with open("user_input/climax.json", "r", encoding="utf-8") as f:
-        data = json.load(f)
-    climax = data["climax"]
-    weather = data["weather"]
+    _climax_path = os.path.join(user_input_dir(), "climax.json")
+    try:
+        with open(_climax_path, "r", encoding="utf-8") as f:
+            data = _json.load(f)
+        climax = data["climax"]
+        weather = data["weather"]
+        dlog(fn="init_race", msg="climax.json loaded", path=_climax_path,
+             climax=climax, weather=weather)
+    except (FileNotFoundError, _json.JSONDecodeError, KeyError) as e:
+        climax = random.choice(["transitional", "sunny", "sunny", "sunny"])
+        weather = generate_weather("sunny", climax)
+        os.makedirs(os.path.dirname(_climax_path), exist_ok=True)
+        with open(_climax_path, "w", encoding="utf-8") as f:
+            _json.dump({"climax": climax, "weather": weather}, f, indent=2, ensure_ascii=False)
+        wlog(fn="init_race", msg="climax.json missing/invalid — regenerated defaults",
+             path=_climax_path, error=str(e), climax=climax, weather=weather)
     lap = 0
     for track in tracks:
         if race == track.name:

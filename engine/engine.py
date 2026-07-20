@@ -5,6 +5,7 @@ from log import dlog, elog, ilog, wlog
 from weather import generate_weather
 from mmr2 import simulate_season_mmr2, list_drivers_mmr2
 from load_data_json import *
+from paths import config_dir
 
 def qualification(simulation, cars, TIME_S1, TIME_S2, TIME_S3, training):
     ilog(fn="qualification", msg="qualification started", training=training, car_count=len(cars))
@@ -213,7 +214,7 @@ def transfer(cars, teams, player, player_2):
 
 
 def safety_car(car, weather, lap, SAFETY_CAR, LAPS_REMAINING, LAPS):
-    json_path = os.path.join(os.path.dirname(__file__), "..", "config", "tracks.json")
+    json_path = os.path.join(config_dir(), "tracks.json")
     
     with open(json_path, "r", encoding="utf-8") as f:
         tracks_data = json.load(f)

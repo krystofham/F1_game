@@ -18,6 +18,15 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Build engine binary
+        shell: bash
+        run: python scripts/build-engine.py
+
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
@@ -30,17 +39,19 @@ jobs:
 
       - name: Build Electron App
         shell: bash
+        env:
+          ELECTRON_BUILD: 1
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           cd frontend
+          npm run build
           if [ "${{ matrix.os }}" = "macos-latest" ]; then
             npx electron-builder --mac dmg -c.mac.identity=null
           elif [ "${{ matrix.os }}" = "windows-latest" ]; then
-            npm run desktop:build:win
+            npx electron-builder --win nsis
           else
-            npm run desktop:build:linux
+            npx electron-builder --linux AppImage
           fi
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Release Packages
         if: startsWith(github.ref, 'refs/tags/v')
@@ -50,6 +61,6 @@ jobs:
             frontend/dist-electron/*.exe
             frontend/dist-electron/*.dmg
             frontend/dist-electron/*.AppImage
-          fail_on_unmatched_files: false  # ← přidej toto!
+          fail_on_unmatched_files: false
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

@@ -6,6 +6,7 @@ from log import dlog, elog, ilog, wlog
 from load_data_json import *
 from strategy import strategy
 from weather import generate_weather
+from paths import img_dir, user_input_dir
 def pit_player(player, player_2, LAPS, lap, TIME_S1, TIME_S2, TIME_S3, pneu, speed, PNEU_types, SAFETY_CAR, climax):
     data = load_data("lap_user_data")
 
@@ -67,7 +68,7 @@ def pit_player(player, player_2, LAPS, lap, TIME_S1, TIME_S2, TIME_S3, pneu, spe
 
     # Reset po přečtení — aby se pitstop neopakoval
     try:
-        reset_path = os.path.join(os.path.dirname(__file__), "user_input/lap_user_data.json")
+        reset_path = os.path.join(user_input_dir(), "lap_user_data.json")
         with open(reset_path, "w", encoding="utf-8") as f:
             json.dump({
                 player.name:   {"action": "1", "new_pneu": "medium"},
@@ -183,7 +184,7 @@ def print_teams_end_championship(teams:list) -> list:
     for i, t in enumerate(teams, 1):
         if i == 1:  
             t.rating += 1
-            img = mpimg.imread(f'../img/{t.name}.png')
+            img = mpimg.imread(os.path.join(img_dir(), f"{t.name}.png"))
             #plt.imshow(img)
             #plt.axis('off')
             #plt.show()

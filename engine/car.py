@@ -1,7 +1,9 @@
 import random
 from log import dlog, elog, ilog, wlog
 import os, json as _json
-_fuel_path = os.path.join(os.path.dirname(__file__), "user_input/lap_user_data.json")
+from paths import user_input_dir
+
+_fuel_path = os.path.join(user_input_dir(), "lap_user_data.json")
 
 class Car:
     def __init__(self, name, rating, is_player=False):

@@ -31,7 +31,7 @@ export function getApiBaseUrl() {
 
 /** Lightweight probe used by the startup blocker screen. */
 export async function checkEngine() {
-  const res = await fetch(`${BASE}/api/get_state`, {
+  const res = await fetch(`${BASE}/api/health`, {
     method: "GET",
     headers: { Accept: "application/json" },
   });

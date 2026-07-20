@@ -3,8 +3,9 @@ import os
 import csv
 from datetime import datetime
 from log import dlog, elog, ilog, wlog, snapshot_race_ctx
+from paths import state_file, stats_dir
 
-_STATE_FILE = os.path.join(os.path.dirname(__file__), "state.json")
+_STATE_FILE = state_file()
 
 POINTS_TABLE = {
     1: 50, 2: 45, 3: 40, 4: 35, 5: 30,
@@ -176,10 +177,11 @@ def save_state_end_of_season(cars, teams, season):
 
 def save_season_csv(cars, teams, season_count):
     timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-    os.makedirs("data", exist_ok=True)
+    export_dir = stats_dir()
+    os.makedirs(export_dir, exist_ok=True)
 
     # Drivers CSV
-    drivers_file = f"data/season_{season_count}_drivers_{timestamp}.csv"
+    drivers_file = os.path.join(export_dir, f"season_{season_count}_drivers_{timestamp}.csv")
     sorted_cars = sorted(cars, key=lambda x: x.points, reverse=True)
     with open(drivers_file, "w", newline="", encoding="utf-8") as f:
         writer = csv.DictWriter(f, fieldnames=[
@@ -206,7 +208,7 @@ def save_season_csv(cars, teams, season_count):
             })
 
     # Teams CSV
-    teams_file = f"data/season_{season_count}_teams_{timestamp}.csv"
+    teams_file = os.path.join(export_dir, f"season_{season_count}_teams_{timestamp}.csv")
     sorted_teams = sorted(teams, key=lambda x: x.points, reverse=True)
     with open(teams_file, "w", newline="", encoding="utf-8") as f:
         writer = csv.DictWriter(f, fieldnames=[
@@ -256,8 +258,9 @@ def _rotate_if_needed(filepath: str):
 
 
 def save_race_csv(drivers: list, race: str, season: int, race_ctx: dict):
-    os.makedirs("data", exist_ok=True)
-    filepath = "data/races.csv"
+    export_dir = stats_dir()
+    os.makedirs(export_dir, exist_ok=True)
+    filepath = os.path.join(export_dir, "races.csv")
 
     _rotate_if_needed(filepath)
 
@@ -299,21 +302,26 @@ def save_race_csv(drivers: list, race: str, season: int, race_ctx: dict):
     ilog(fn="save_race_csv", msg="race CSV appended",
          race=race, season=season, drivers_count=len(drivers))
 
-RECORDS_FILE = "data/track_records.csv"
+def _records_file() -> str:
+    return os.path.join(stats_dir(), "track_records.csv")
+
+
 _RECORDS_FIELDS = ["track", "driver", "team", "lap_time", "season", "race"]
 
 def _load_records() -> dict:
-    if not os.path.exists(RECORDS_FILE):
+    records_file = _records_file()
+    if not os.path.exists(records_file):
         return {}
     records = {}
-    with open(RECORDS_FILE, "r", encoding="utf-8") as f:
+    with open(records_file, "r", encoding="utf-8") as f:
         for row in csv.DictReader(f):
             records[row["track"]] = row
     return records
 
 def _write_records(records: dict):
-    os.makedirs("data", exist_ok=True)
-    with open(RECORDS_FILE, "w", newline="", encoding="utf-8") as f:
+    export_dir = stats_dir()
+    os.makedirs(export_dir, exist_ok=True)
+    with open(_records_file(), "w", newline="", encoding="utf-8") as f:
         writer = csv.DictWriter(f, fieldnames=_RECORDS_FIELDS)
         writer.writeheader()
         writer.writerows(records.values())
