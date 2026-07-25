@@ -13,11 +13,12 @@
     "dev": "vite",
     "build": "vite build",
     "preview": "vite preview",
+    "build:engine": "python ../scripts/build-engine.py",
     "desktop:dev": "concurrently -k \"vite\" \"wait-on tcp:3000 && cross-env VITE_DEV_SERVER_URL=http://localhost:3000 electron .\"",
-    "desktop:build": "cross-env ELECTRON_BUILD=1 npm run build && electron-builder",
-    "desktop:build:linux": "cross-env ELECTRON_BUILD=1 npm run build && electron-builder --linux AppImage",
-    "desktop:build:win": "cross-env ELECTRON_BUILD=1 npm run build && electron-builder --win nsis",
-    "desktop:build:mac": "cross-env ELECTRON_BUILD=1 npm run build && electron-builder --mac dmg"
+    "desktop:build": "npm run build:engine && cross-env ELECTRON_BUILD=1 npm run build && electron-builder",
+    "desktop:build:linux": "npm run build:engine && cross-env ELECTRON_BUILD=1 npm run build && electron-builder --linux AppImage",
+    "desktop:build:win": "npm run build:engine && cross-env ELECTRON_BUILD=1 npm run build && electron-builder --win nsis",
+    "desktop:build:mac": "npm run build:engine && cross-env ELECTRON_BUILD=1 npm run build && electron-builder --mac dmg"
   },
   "dependencies": {
     "html2canvas": "^1.4.1",
@@ -47,22 +48,50 @@
       "electron/**/*",
       "package.json"
     ],
+    "extraResources": [
+      {
+        "from": "../config",
+        "to": "config"
+      },
+      {
+        "from": "../img",
+        "to": "img"
+      }
+    ],
     "win": {
       "target": [
         "nsis"
+      ],
+      "extraResources": [
+        {
+          "from": "../engine/dist/mmrac1ng-engine.exe",
+          "to": "engine/mmrac1ng-engine.exe"
+        }
       ]
     },
     "linux": {
       "target": [
         "AppImage"
       ],
-      "category": "Game"
+      "category": "Game",
+      "extraResources": [
+        {
+          "from": "../engine/dist/mmrac1ng-engine",
+          "to": "engine/mmrac1ng-engine"
+        }
+      ]
     },
     "mac": {
       "target": [
         "dmg"
       ],
-      "category": "public.app-category.games"
+      "category": "public.app-category.games",
+      "extraResources": [
+        {
+          "from": "../engine/dist/mmrac1ng-engine",
+          "to": "engine/mmrac1ng-engine"
+        }
+      ]
     }
   }
 }

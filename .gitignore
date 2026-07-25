@@ -22,6 +22,7 @@ __pycache__/
 # Environment variables (Sensitive info!)
 .env
 .venv
+.venv-build
 env/
 venv/
 ENV/

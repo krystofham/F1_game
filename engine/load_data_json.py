@@ -1,24 +1,49 @@
 import json
 import os
 from log import dlog, elog, wlog
+from paths import state_file, user_input_dir
 
-_USER_INPUT_DIR = os.path.join(os.path.dirname(__file__), "user_input")
-_STATE_FILE = os.path.join(os.path.dirname(__file__), "state.json")
+_USER_INPUT_DIR = user_input_dir()
+_STATE_FILE = state_file()
 
 
-def load_data(name: str):
+_USER_INPUT_DEFAULTS = {
+    "lap_user_data": {
+        "driver_1": {"action": "1", "new_pneu": "medium"},
+        "driver_2": {"action": "1", "new_pneu": "medium"},
+        "commands": [],
+    },
+    "init": {},
+    "settings": {"stop_on_event": True, "show_logs": False},
+    "deal": {},
+    "transfer": {},
+    "transfer_offers": {},
+}
+
+
+def load_data(name: str, default=None):
+    """Load a JSON file from user_input/. If missing or malformed, self-heal:
+    write `default` (or the registered default for `name`) to disk and return it,
+    instead of crashing every caller upstream.
+    """
     path = os.path.join(_USER_INPUT_DIR, f"{name}.json")
     try:
         with open(path, encoding="utf-8") as input_file:
             data = json.load(input_file)
         dlog(fn="load_data", msg="user input loaded", name=name, path=path)
         return data
-    except FileNotFoundError:
-        elog(fn="load_data", msg="user input file not found", name=name, path=path)
-        raise
-    except json.JSONDecodeError as e:
-        elog(fn="load_data", msg="user input malformed JSON", name=name, path=path, error=str(e))
-        raise
+    except (FileNotFoundError, json.JSONDecodeError) as e:
+        fallback = default if default is not None else _USER_INPUT_DEFAULTS.get(name, {})
+        wlog(fn="load_data", msg="user input missing/malformed — regenerating default",
+             name=name, path=path, error=str(e), default=fallback)
+        os.makedirs(_USER_INPUT_DIR, exist_ok=True)
+        try:
+            with open(path, "w", encoding="utf-8") as out_file:
+                json.dump(fallback, out_file, indent=2, ensure_ascii=False)
+        except OSError as write_err:
+            elog(fn="load_data", msg="failed to write regenerated default", name=name,
+                 path=path, error=str(write_err))
+        return fallback
 
 
 def load_state():

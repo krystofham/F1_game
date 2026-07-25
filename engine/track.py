@@ -2,6 +2,7 @@ from log import elog, ilog, wlog, dlog
 import os
 import random
 import json
+from paths import config_dir
 
 class Track:
     def __init__(self, name, pneu, speed, TIME_S1, TIME_S2, TIME_S3, laps, dnf_probability):
@@ -18,9 +19,7 @@ class Track:
         """
         Načte konfiguraci ze souboru /config/tracks.json přesně podle poskytnuté struktury.
         """
-        # Cesta o úroveň výš (z /engine do /config)
-        current_dir = os.path.dirname(os.path.abspath(__file__))
-        json_path = os.path.join(current_dir, '..', 'config', 'tracks.json')
+        json_path = os.path.join(config_dir(), "tracks.json")
 
         tracks_list = []
         try:

@@ -15,15 +15,16 @@ from models import (
     SimUntilPayload,
     TransferPayload,
 )
+from paths import engine_dir, img_dir, state_file, stats_dir, user_input_dir
 
 
 app = FastAPI()
 app.add_middleware(CORSMiddleware, allow_origins=["*"], allow_methods=["*"], allow_headers=["*"])
 
-_CONFIG = os.path.dirname(os.path.abspath(__file__))
+_CONFIG = engine_dir()
 ilog(fn="app_startup", msg="FastAPI started", config_dir=_CONFIG)
 
-app.mount("/img", StaticFiles(directory="../img"), name="img")
+app.mount("/img", StaticFiles(directory=img_dir()), name="img")
 
 
 # ---------------------------------------------------------------------------
@@ -272,8 +273,9 @@ def _load_json(path):
 
 
 def _state():
+    path = state_file()
     try:
-        with open("state.json", "r") as f:
+        with open(path, "r") as f:
             return json.load(f)
     except FileNotFoundError:
         wlog(fn="_state", msg="state.json not found, returning empty dict")
@@ -286,7 +288,7 @@ def _state():
 def _write_state(state: dict, caller: str) -> None:
     """Centralizovaný zápis state.json — jedno místo, jeden log."""
     try:
-        with open("state.json", "w", encoding="utf-8") as f:
+        with open(state_file(), "w", encoding="utf-8") as f:
             json.dump(state, f, indent=4, ensure_ascii=False)
         ilog(fn=caller, msg="state.json written ok")
     except OSError as e:
@@ -296,7 +298,8 @@ def _write_state(state: dict, caller: str) -> None:
 
 def _clear_user_input():
     """Vymaže obsah všech souborů ve složce user_input."""
-    folder = os.path.join(_CONFIG, "../engine/user_input")
+    folder = user_input_dir()
+    os.makedirs(folder, exist_ok=True)
     for filename in os.listdir(folder):
         path = os.path.join(folder, filename)
         if os.path.isfile(path):
@@ -307,6 +310,11 @@ def _clear_user_input():
 # ---------------------------------------------------------------------------
 # GET endpointy — data
 # ---------------------------------------------------------------------------
+
+@app.get("/api/health")
+async def health():
+    return {"ok": True}
+
 
 @app.get("/api/get_state")
 async def get_state():
@@ -567,7 +575,7 @@ async def api_post_race():
     # Generate climax
     climax = random.choice(["transitional","sunny","sunny","sunny"])
     weather = generate_weather("sunny", climax)
-    with open(os.path.join(_CONFIG, "../engine/user_input/climax.json"), "w", encoding="utf-8") as f:
+    with open(os.path.join(user_input_dir(), "climax.json"), "w", encoding="utf-8") as f:
         json.dump({"climax": climax, "weather": weather}, f, indent=2, ensure_ascii=False)
     if new_b > championship_length:
         ilog(fn="api_post_race", msg="championship finished", season=season_count)
@@ -577,7 +585,7 @@ async def api_post_race():
 # Get climax
 @app.get("/api/get_climax")
 async def api_get_climax():
-    path = os.path.join(_CONFIG, "../engine/user_input/climax.json")
+    path = os.path.join(user_input_dir(), "climax.json")
     try:
         with open(path, "r", encoding="utf-8") as f:
             data = json.load(f)
@@ -654,7 +662,7 @@ async def api_post_championship():
 @app.post("/api/set_lap_user_data")
 async def api_set_lap_user_data(data: LapUserDataPayload):
     payload = data.model_dump()
-    path = os.path.join(_CONFIG, "../engine/user_input/lap_user_data.json")
+    path = os.path.join(user_input_dir(), "lap_user_data.json")
     with open(path, "w", encoding="utf-8") as f:
         json.dump(payload, f, indent=2, ensure_ascii=False)
     dlog(fn="api_set_lap_user_data", msg="lap user data written", data=payload)
@@ -664,7 +672,7 @@ async def api_set_lap_user_data(data: LapUserDataPayload):
 @app.post("/api/set_init_config")
 async def api_set_init_config(data: InitConfigPayload):
     payload = data.model_dump()
-    path = os.path.join(_CONFIG, "../engine/user_input/init.json")
+    path = os.path.join(user_input_dir(), "init.json")
     with open(path, "w", encoding="utf-8") as f:
         json.dump(payload, f, indent=2, ensure_ascii=False)
 
@@ -907,7 +915,7 @@ async def api_sim_race():
         ilog(fn="api_sim_race", msg="something happened function run", lap=lap)
         smt_occurs = happend_something(lap, cars, race_ctx["wettiness"]) 
         dlog(fn="api_sim_race", msg="lap simmed", smt_occurs=smt_occurs, smt_happened=smt_happened)
-        settings_path = os.path.join(_CONFIG, "user_input/settings.json")
+        settings_path = os.path.join(user_input_dir(), "settings.json")
         try:
             with open(settings_path) as f:
                 settings = json.load(f)
@@ -1018,7 +1026,7 @@ async def api_sim_until(data: SimUntilPayload):
             elog(fn="api_sim_until", msg="time_laps empty after sim_the_lap",
                  lap=lap, target_lap=target_lap, race=race)
         smt_occurs = happend_something(lap, cars, current_race_ctx["wettiness"]) 
-        settings_path = os.path.join(_CONFIG, "user_input/settings.json")
+        settings_path = os.path.join(user_input_dir(), "settings.json")
         try:
             with open(settings_path) as f:
                 settings = json.load(f)
@@ -1083,7 +1091,7 @@ def get_tracks_api():
 
 @app.get("/api/settings")
 async def get_settings():
-    path = os.path.join(_CONFIG, "user_input/settings.json")
+    path = os.path.join(user_input_dir(), "settings.json")
     try:
         with open(path, encoding="utf-8") as f:
             return json.load(f)
@@ -1093,7 +1101,7 @@ async def get_settings():
 @app.post("/api/settings")
 async def post_settings(data: SettingsPayload):
     payload = data.model_dump()
-    path = os.path.join(_CONFIG, "user_input/settings.json")
+    path = os.path.join(user_input_dir(), "settings.json")
     with open(path, "w", encoding="utf-8") as f:
         json.dump(payload, f, indent=2)
     return {"status": "ok"}
@@ -1147,7 +1155,7 @@ async def patch_state(data: PatchStatePayload):
 
 @app.get("/api/stats/track_records")
 async def get_track_records():
-    path = os.path.join(_CONFIG, "data", "track_records.csv")
+    path = os.path.join(stats_dir(), "track_records.csv")
     if not os.path.exists(path):
         return []
     records = []
@@ -1162,7 +1170,7 @@ async def get_track_records():
 
 @app.get("/api/stats/biggest_laps")
 async def get_biggest_laps():
-    path = os.path.join(_CONFIG, "data", "races.csv")
+    path = os.path.join(stats_dir(), "races.csv")
     if not os.path.exists(path):
         return []
     laps_history = []
