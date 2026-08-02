@@ -5,7 +5,12 @@ v1.1. tortuga
 	Tracks orded is generated randomly
 	Simulation stops when sth occurs
 	Weather are generated before races, so you know what weather and climax will be
-
+v1.2.
+	UX start binary
+	Safety car bug fix
+	Graphs
+	export to pdf
+	New logos for teams
 Namelist:
 Black Pearl
 Flying Dutchman
@@ -30,6 +35,5 @@ World's End
 Dead Man's Chest
 Cursed Gold
 Maelstrom
-Kraken
 Locker
 Brethren Court
