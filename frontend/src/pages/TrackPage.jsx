@@ -1,5 +1,6 @@
 import { useApi } from "../hooks/useApi";
 import { api } from "../utils/api";
+import ErrorMessage from "../components/ErrorMessage";
 
 const COUNTRY_FLAGS = {};
 
@@ -27,7 +28,7 @@ export default function TrackPage({ state }) {
   const { data: tracks, loading: tracksLoading, error: tracksError } = useApi(api.getTracks);
 
   if (!state || tracksLoading) return <div className="loading">LOADING TRACK</div>;
-  if (tracksError) return <div className="empty">⚠ {tracksError}</div>;
+  if (tracksError) return <ErrorMessage error={tracksError} />;
   // 1. Všechny hooky na absolutním topu komponenty
 
   // 2. Loading a Error stavy až ZA hooky

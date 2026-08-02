@@ -1,4 +1,10 @@
-{"ts": "2026-06-30T20:34:14", "event": "[WARNING]", "fn": "safety_car", "msg": "driver mistake penalty", "name": "Hiro Tanaka", "penalty": 25, "lap": 14, "weather": "sunny"}
-{"ts": "2026-06-30T20:34:14", "event": "[WARNING]", "fn": "safety_car", "msg": "driver mistake penalty", "name": "Renzo Morandi", "penalty": 16, "lap": 18, "weather": "sunny"}
-{"ts": "2026-06-30T20:34:14", "event": "[WARNING]", "fn": "safety_car", "msg": "driver mistake penalty", "name": "Riku Yamashita", "penalty": 13, "lap": 48, "weather": "sunny"}
-{"ts": "2026-06-30T20:34:15", "event": "[WARNING]", "fn": "safety_car", "msg": "driver mistake penalty", "name": "Carlos Navarro", "penalty": 53, "lap": 49, "weather": "sunny"}
+{"ts": "2026-08-02T15:52:50", "event": "[WARNING]", "fn": "safety_car", "msg": "driver mistake penalty", "name": "Nilapsai Vetrovski", "penalty": 27, "lap": 1, "weather": "sunny"}
+{"ts": "2026-08-02T15:52:52", "event": "[WARNING]", "fn": "api_sim_race", "msg": "time_laps not empty at sim_race start — leftover from previous race?", "race": "Ostrava Grand Prix", "time_laps_count": 196}
+{"ts": "2026-08-02T15:52:52", "event": "[WARNING]", "fn": "safety_car", "msg": "driver mistake penalty", "name": "Max Vershaeren", "penalty": 13, "lap": 15, "weather": "sunny"}
+{"ts": "2026-08-02T15:52:52", "event": "[WARNING]", "fn": "safety_car", "msg": "driver mistake penalty", "name": "Theo Hartman", "penalty": 46, "lap": 42, "weather": "sunny"}
+{"ts": "2026-08-02T15:53:10", "event": "[WARNING]", "fn": "get_player_pneu", "msg": "driver key missing from lap_user_data, keeping current pneu", "driver_key": "driver_1", "current_pneu": "medium"}
+{"ts": "2026-08-02T15:53:10", "event": "[WARNING]", "fn": "get_player_pneu", "msg": "driver key missing from lap_user_data, keeping current pneu", "driver_key": "driver_2", "current_pneu": "hard"}
+{"ts": "2026-08-02T15:53:38", "event": "[WARNING]", "fn": "safety_car", "msg": "driver mistake penalty", "name": "Pierre Lucien", "penalty": 41, "lap": 38, "weather": "sunny"}
+{"ts": "2026-08-02T15:53:38", "event": "[WARNING]", "fn": "safety_car", "msg": "driver mistake penalty", "name": "Lukas Rennhardt", "penalty": 36, "lap": 47, "weather": "sunny"}
+{"ts": "2026-08-02T15:53:45", "event": "[WARNING]", "fn": "get_player_pneu", "msg": "driver key missing from lap_user_data, keeping current pneu", "driver_key": "driver_1", "current_pneu": "medium"}
+{"ts": "2026-08-02T15:53:45", "event": "[WARNING]", "fn": "get_player_pneu", "msg": "driver key missing from lap_user_data, keeping current pneu", "driver_key": "driver_2", "current_pneu": "medium"}

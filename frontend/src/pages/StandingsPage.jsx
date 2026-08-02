@@ -1,5 +1,6 @@
 import { useApi } from "../hooks/useApi";
 import { api } from "../utils/api";
+import ErrorMessage from "../components/ErrorMessage";
 
 function PosBadge({ pos }) {
   const cls = pos === 1 ? "p1" : pos === 2 ? "p2" : pos === 3 ? "p3" : "pn";
@@ -32,7 +33,7 @@ export default function StandingsPage() {
           <div className="section-title" style={{ marginTop: 0 }}>Drivers</div>
 
           {dLoad && <div className="loading">LOADING</div>}
-          {dErr  && <div className="empty">⚠ {dErr}</div>}
+          {dErr && <ErrorMessage error={dErr} context="drivers" />}
 
           {drivers && (
             <table className="data-table">
@@ -82,7 +83,7 @@ export default function StandingsPage() {
           <div className="section-title" style={{ marginTop: 0 }}>Constructors</div>
 
           {tLoad && <div className="loading">LOADING</div>}
-          {tErr  && <div className="empty">⚠ {tErr}</div>}
+          {tErr && <ErrorMessage error={tErr} context="teams" />}
 
           {teams && (
             <table className="data-table">

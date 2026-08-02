@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { BrowserRouter, Routes, Route, NavLink } from "react-router-dom";
 import TeamsPage from "./pages/TeamsPage";
 import DriversPage from "./pages/DriversPage";
@@ -10,7 +11,9 @@ import TransferMarket from "./pages/TransfersPage";
 import SettingsPage from "./pages/SettingsPage";
 import StatsPage from "./pages/StatsPage";
 import { useApi } from "./hooks/useApi";
-import { api } from "./utils/api"; 
+import { api } from "./utils/api";
+import EngineGate from "./components/EngineGate";
+import WelcomeModal from "./components/WelcomeModal";
 import "./styles.css";
 
 const NAV_ITEMS = [
@@ -60,32 +63,46 @@ function Sidebar() {
     </nav>
   );
 }
-export default function App() {
-  const { data: state } = useApi(api.getState);
+
+function AppShell() {
+  const { data: state, loading, refetch } = useApi(api.getState);
+  const [welcomeDismissed, setWelcomeDismissed] = useState(false);
 
   return (
-    <BrowserRouter>
-      <Routes>
-        <Route path="/*" element={
-          <div className="app-shell">
-            <Sidebar />
-            <main className="main-content">
-              <Routes>
-                <Route path="/" element={<StandingsPage />} />
-                <Route path="/race" element={<RacePage />} />
-                <Route path="/teams" element={<TeamsPage />} />
-                <Route path="/drivers" element={<DriversPage />} />
-                <Route path="/track" element={<TrackPage state={state }/>} />
-                <Route path="/graphs" element={<GraphsPage />} />
-                <Route path="/team/:teamId" element={<TeamPage />} />
-                <Route path="/transfer" element={<TransferMarket />} />
-                <Route path="/stats" element={<StatsPage />} />
-                <Route path="/settings" element={<SettingsPage />} />
-              </Routes>
-            </main>
-          </div>
-        } />
-      </Routes>
-    </BrowserRouter>
+    <div className="app-shell">
+      <Sidebar />
+      <main className="main-content">
+        <Routes>
+          <Route path="/" element={<StandingsPage />} />
+          <Route path="/race" element={<RacePage onSeasonChange={refetch} />} />
+          <Route path="/teams" element={<TeamsPage />} />
+          <Route path="/drivers" element={<DriversPage />} />
+          <Route path="/track" element={<TrackPage state={state} />} />
+          <Route path="/graphs" element={<GraphsPage />} />
+          <Route path="/team/:teamId" element={<TeamPage />} />
+          <Route path="/transfer" element={<TransferMarket />} />
+          <Route path="/stats" element={<StatsPage />} />
+          <Route path="/settings" element={<SettingsPage />} />
+        </Routes>
+      </main>
+      <WelcomeModal
+        state={state}
+        loading={loading}
+        dismissed={welcomeDismissed}
+        onDismiss={() => setWelcomeDismissed(true)}
+      />
+    </div>
+  );
+}
+
+export default function App() {
+  return (
+    <EngineGate>
+      <BrowserRouter>
+        <Routes>
+          <Route path="/*" element={<AppShell />} />
+        </Routes>
+      </BrowserRouter>
+    </EngineGate>
   );
 }

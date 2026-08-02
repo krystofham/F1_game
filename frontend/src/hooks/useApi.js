@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback } from "react";
+import { formatApiError } from "../utils/errors";
 
 export function useApi(fetcher, deps = []) {
   const [data, setData] = useState(null);
@@ -12,7 +13,7 @@ export function useApi(fetcher, deps = []) {
       const result = await fetcher();
       setData(result);
     } catch (e) {
-      setError(e.message);
+      setError(formatApiError(e));
     } finally {
       setLoading(false);
     }
@@ -36,7 +37,7 @@ export function useAction(action) {
       setResult(r);
       return r;
     } catch (e) {
-      setError(e.message);
+      setError(formatApiError(e));
       throw e;
     } finally {
       setLoading(false);

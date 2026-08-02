@@ -1,6 +1,7 @@
 import { Link, useParams, useNavigate } from "react-router-dom";
 import { useApi } from "../hooks/useApi";
 import { api } from "../utils/api";
+import ErrorMessage from "../components/ErrorMessage";
 
 function RatingBar({ value }) {
   // Rating appears to be ~4-7 range, normalize to 0-10
@@ -114,11 +115,13 @@ export default function TeamPage() {
   if (loading) return <div className="loading">LOADING TEAM DATA</div>;
   if (error)
     return (
-      <div className="empty">
-        <div style={{ color: "var(--accent)", marginBottom: 12 }}>⚠ {error}</div>
-        <button className="btn" onClick={() => navigate("/teams")}>
-          ← BACK TO TEAMS
-        </button>
+      <div>
+        <ErrorMessage error={error} context="team" />
+        <div style={{ textAlign: "center" }}>
+          <button className="btn" onClick={() => navigate("/teams")}>
+            ← BACK TO TEAMS
+          </button>
+        </div>
       </div>
     );
   if (!team) return null;

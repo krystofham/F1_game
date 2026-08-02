@@ -21,7 +21,7 @@ function startEngine() {
   engineProcess.on("error", (e) => console.error("Failed to start engine:", e));
 }
 
-function waitForEngine(retries = 20) {
+function waitForEngine(retries = 30) {
   return new Promise((resolve, reject) => {
     const attempt = () => {
       http.get("http://127.0.0.1:8000/docs", (res) => {

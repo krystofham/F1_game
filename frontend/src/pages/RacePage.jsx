@@ -1,6 +1,7 @@
 import { useState, useCallback, useRef, useEffect, useMemo } from "react";
 import { useApi } from "../hooks/useApi";
 import { api } from "../utils/api";
+import ErrorMessage from "../components/ErrorMessage";
 import TyreBadge from "../components/TyreBadge";
 import WearBar from "../components/WearBar";
 import TrackPage from "./TrackPage";
@@ -246,11 +247,7 @@ function InitForm({ onInit, currentClima, currentWeather }) {
           ))}
         </div>
       )}
-      {err && (
-        <div style={{ color: "var(--accent)", fontFamily: "var(--font-mono)", fontSize: 11, marginBottom: 12 }}>
-          {err}
-        </div>
-      )}
+      {err && <ErrorMessage error={err} compact />}
 
       <button className="btn btn-primary" onClick={handleInit} disabled={loading}>
         {loading ? "INITIALIZING" : "INIT RACE"}
@@ -359,7 +356,7 @@ const simEverything = (deps) => {
   run();
 };
 
-export default function RacePage() {
+export default function RacePage({ onSeasonChange }) {
   const [raceState, setRaceState] = useState(null);
   const [lap, setLap] = useState(0);
   const [totalLaps, setTotalLaps] = useState(null);
@@ -423,6 +420,7 @@ export default function RacePage() {
     setPitSaved(false);
     addLog(`Race initialised: ${res.race}`, "good");
     await refetchState();
+    onSeasonChange?.();
   };
 
   const doSimLap = useCallback(async () => {
