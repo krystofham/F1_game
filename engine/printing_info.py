@@ -9,12 +9,12 @@ from weather import generate_weather
 from paths import img_dir, user_input_dir
 def pit_player(player, player_2, LAPS, lap, TIME_S1, TIME_S2, TIME_S3, pneu, speed, PNEU_types, SAFETY_CAR, climax):
     data = load_data("lap_user_data")
-
-    d1_data = data.get(player.name,   data.get("driver_1", {"action": "1", "new_pneu": "medium"}))
-    d2_data = data.get(player_2.name, data.get("driver_2", {"action": "1", "new_pneu": "medium"}))
-
+    default_action = {"action": "1", "new_pneu": "medium"}
+    d1_data = {**default_action, **(data.get(player.name) or data.get("driver_1") or {})}
+    d2_data = {**default_action, **(data.get(player_2.name) or data.get("driver_2") or {})}
     pick   = d1_data["action"].strip().lower()
     pick_2 = d2_data["action"].strip().lower()
+
     dlog(fn="pit_player", msg="lap user data loaded",
          player_1=player.name, action_1=pick, pneu_1=d1_data.get("new_pneu"),
          player_2=player_2.name, action_2=pick_2, pneu_2=d2_data.get("new_pneu"))

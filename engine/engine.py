@@ -47,8 +47,16 @@ def reset_race(climax, cars):
     return lap, time_laps, SAFETY_CAR, LAPS_REMAINING, weather, forecast, cars, WETTINESS
 
 def make_a_deal(player, teams, tymy_ridic_1_trade, tymy_ridic_2_trade, possible_transfer):
-    data = load_data("transfer")
-    new_pilot = data["chosen_pilot"].strip()
+    try:
+        data = load_data("transfer")
+        new_pilot = data["chosen_pilot"].strip()
+    except UserInputMissingError as e:
+        elog(fn="make_a_deal", msg="transfer.json missing")
+        raise ValueError("No transfer request submitted yet") from e
+    except KeyError:
+        elog(fn="make_a_deal", msg="transfer.json missing key 'chosen_pilot'")
+        raise ValueError("transfer.json missing required key 'chosen_pilot'")
+
 
     new_car = None
     for team in teams:
@@ -99,7 +107,15 @@ def make_a_deal(player, teams, tymy_ridic_1_trade, tymy_ridic_2_trade, possible_
     return new_car
 
 def transef_mmr1(cars, teams, player, player_2):
-    data = load_data("transfer")
+    try:
+        data = load_data("transfer")
+        swap = data["pilot_to_change"]
+    except UserInputMissingError as e:
+        elog(fn="transef_mmr1", msg="transfer.json missing")
+        raise ValueError("No transfer request submitted yet") from e
+    except KeyError:
+        elog(fn="transef_mmr1", msg="transfer.json missing key 'pilot_to_change'")
+        raise ValueError("transfer.json missing required key 'pilot_to_change'")
     average_rating = sum(x.ratings for x in cars) / (len(cars) + 1)
 
     swap = data["pilot_to_change"]
@@ -120,7 +136,6 @@ def transef_mmr1(cars, teams, player, player_2):
         if len(x.drivers) >= 2 and (x.rating - x.drivers[1].ratings) >= 0:
             tymy_ridic_2_trade.append(x)
 
-    # 🔴 OPRAVA: Přiřaď celý objekt (ne player.name!)
     if player.name == swap:
         new_player = make_a_deal(
             player, teams,
@@ -131,26 +146,46 @@ def transef_mmr1(cars, teams, player, player_2):
             idx = cars.index(player)
             cars[idx] = new_player
         except ValueError:
-            pass  # Pokud player není v cars, ignoruj
-        player = new_player  # ✅ Přiřaď celý objekt
+            pass  
+        player = new_player 
 
     elif player_2.name == swap:
         new_player_2 = make_a_deal(
             player_2, teams,
             tymy_ridic_1_trade, tymy_ridic_2_trade, possible_transfer
         )
-        # Nahraď starý player_2 v cars
         try:
             idx = cars.index(player_2)
             cars[idx] = new_player_2
         except ValueError:
             pass
-        player_2 = new_player_2  # ✅ Přiřaď celý objekt
+        player_2 = new_player_2  
 
     return cars, teams, player, player_2, player.name, player_2.name
 def transfer(cars, teams, player, player_2):
-    data = load_data("deal")
-    new_pilot = data["where"]
+    try:
+        data = load_data("deal")
+        new_pilot = data["where"]
+    except UserInputMissingError as e:
+        elog(fn="transfer", msg="deal.json missing")
+        raise ValueError("No deal request submitted yet") from e
+    except KeyError:
+        elog(fn="transfer", msg="deal.json missing key 'where'")
+        raise ValueError("deal.json missing required key 'where'")
+    if new_pilot not in ("MMR1", "MMR2"):
+        elog(fn="transfer", msg="invalid league target", league=new_pilot)
+        raise ValueError("bad league")
+    ilog(fn="transfer", msg="transfer started", league=new_pilot, pilot_to_change=data.get("pilot_to_change"))
+    if new_pilot == "MMR1":
+        cars, teams, player, player_2, player.name, player_2.name = transef_mmr1(cars, teams, player, player_2)
+    elif new_pilot == "MMR2":
+        best, worst = simulate_season_mmr2(list_drivers_mmr2)
+        try:
+            change = data["pilot_to_change"]
+        except KeyError:
+            elog(fn="transfer", msg="deal.json missing key 'pilot_to_change'")
+            raise ValueError("deal.json missing required key 'pilot_to_change'")
+
 
     if new_pilot not in ("MMR1", "MMR2"):
         elog(fn="transfer", msg="invalid league target", league=new_pilot)
