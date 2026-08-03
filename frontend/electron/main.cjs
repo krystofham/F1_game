@@ -255,7 +255,7 @@ app.whenReady().then(async () => {
 
   createWindow();
   startEngine();
-
+ 
   try {
     if (engineSpawnError) throw new Error(engineSpawnError);
     await waitForEngine();
