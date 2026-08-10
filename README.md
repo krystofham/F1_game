@@ -30,6 +30,7 @@ On first launch you will see:
 
 Your save data (season progress, stats exports) is stored in the app’s user data folder on your computer.
 Is possible that this doesn't work. This is still developed.
+
 ---
 
 > If it doesn't work
@@ -69,20 +70,6 @@ OR
 6) go to the frontend folder (not subfolder in engine, but equal to)
 7) run `npm install` - this may take some this
 8) run `npm run desktop:dev` - this should make a popup window
-### Frontend (dev)
-
-```bash
-cd frontend
-npm install
-npm run dev          # Vite on port (ussually :5173)
-```
-
-### Desktop app (dev)
-
-```bash
-cd frontend
-npm run desktop:dev  # Electron + Vite concurrently
-```
 
 ---
 
