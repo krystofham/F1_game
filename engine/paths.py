@@ -1,4 +1,5 @@
 """Resolve read-only resources and writable game data paths (dev + PyInstaller)."""
+
 import os
 import sys
 

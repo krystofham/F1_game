@@ -1,10 +1,11 @@
 import matplotlib.pyplot as plt
-import matplotlib.image as mpimg
-import random
+
 try:
-    from engine import reset_race
+    pass
 except:
-    from engine.engine import reset_race
+    pass
+
+
 def colours_graphs(cars, colours):
     for c in cars:
         if c.dnf:
@@ -20,39 +21,40 @@ def colours_graphs(cars, colours):
         elif c.pneu.lower() == "inter":
             colours.append("green")
         else:
-            colours.append("green")  
+            colours.append("green")
     return colours
 
+
 def plot_graph(RANK, teams, cars, player, player_2, climax):
-    points = sorted(teams, key=lambda x: (x.points))
+    points = sorted(teams, key=lambda x: x.points)
     # Rank count
     position_1 = None
-    position_2 =None
+    position_2 = None
     for x in RANK:
         if x.name == player.name:
             position_1 = RANK.index(x) + 1
         if x.name == player_2.name:
             position_2 = RANK.index(x) + 1
-    if position_1 == None: 
-        position_1 = 'DNF'    
-    if position_2 == None: 
-        position_2 = 'DNF'
-    #print("\n🏁 Final Position:")
-    #print(f"{player.name}: {position_1}. position")
-    #print(f"{player_2.name}: {position_2}. position")
-    #time.sleep(4)
+    if position_1 == None:
+        position_1 = "DNF"
+    if position_2 == None:
+        position_2 = "DNF"
+    # print("\n🏁 Final Position:")
+    # print(f"{player.name}: {position_1}. position")
+    # print(f"{player_2.name}: {position_2}. position")
+    # time.sleep(4)
     # Results
     cars.sort(key=lambda x: (x.dnf, x.time))
     for i, a in enumerate(cars, 1):
         stav = "DNF" if a.dnf else f"{round(a.time, 2)}s"
-        #print(f"{i}. {a.name} ({a.team.name}) {a.points} points ({round(a.ratings+ random.uniform(0,4) - random.uniform(0,4), 2)} rating)")
+        # print(f"{i}. {a.name} ({a.team.name}) {a.points} points ({round(a.ratings+ random.uniform(0,4) - random.uniform(0,4), 2)} rating)")
     teams.sort(key=lambda team: team.points, reverse=True)
-    #time.sleep(8)
-    for i, team in enumerate(teams,1):
-        print (f"{i}.{team.name} {team.points} points")
-    #time.sleep(8)
+    # time.sleep(8)
+    for i, team in enumerate(teams, 1):
+        print(f"{i}.{team.name} {team.points} points")
+    # time.sleep(8)
     jmena = [a.name for a in cars]
-    timey = [a.time/60 if not a.dnf else None for a in cars]
+    timey = [a.time / 60 if not a.dnf else None for a in cars]
     # colours podle pneu
     colours = []
     colours_graphs(cars, colours)
@@ -62,7 +64,11 @@ def plot_graph(RANK, teams, cars, player, player_2, climax):
             a.stints.append((a.last_stint_start, a.time - a.last_stint_start, a.pneu))
     # Print graph
     plt.figure(figsize=(12, 6))
-    plt.barh(jmena[::-1], [c if c is not None else 0 for c in timey][::-1], color=colours[::-1])
+    plt.barh(
+        jmena[::-1],
+        [c if c is not None else 0 for c in timey][::-1],
+        color=colours[::-1],
+    )
     plt.xlabel("time (min)")
     plt.ylabel("Drivers")
     plt.title("🏁 Results of race")
@@ -93,5 +99,5 @@ def plot_graph(RANK, teams, cars, player, player_2, climax):
     plt.grid(True)
     plt.tight_layout()
     plt.show()
-    
+
     return points, cars, teams, players

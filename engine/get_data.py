@@ -1,6 +1,9 @@
-try: from load_data_json import *
-except: from engine.load_data_json import *
+try:
+    from load_data_json import *
+except:
+    from engine.load_data_json import *
 from log import dlog, elog, wlog
+
 
 def get_length_of_championship() -> int:
     try:
@@ -13,10 +16,17 @@ def get_length_of_championship() -> int:
         elog(fn="get_length_of_championship", msg="init.json missing key 'length'")
         raise ValueError("init.json missing required key 'length'")
     if length < 0 or length > 12:
-        elog(fn="get_length_of_championship", msg="invalid championship length", length=length)
+        elog(
+            fn="get_length_of_championship",
+            msg="invalid championship length",
+            length=length,
+        )
         raise ValueError("invalid length")
-    dlog(fn="get_length_of_championship", msg="championship length loaded", length=length)
+    dlog(
+        fn="get_length_of_championship", msg="championship length loaded", length=length
+    )
     return length
+
 
 def get_player_pneu(PNEU_types, current_pneu, driver_key):
     try:
@@ -27,10 +37,17 @@ def get_player_pneu(PNEU_types, current_pneu, driver_key):
             wlog(fn="get_player_pneu", msg="driver key missing", driver_key=driver_key)
             return current_pneu
         if pneu in PNEU_types:
-            dlog(fn="get_player_pneu", msg="pneu loaded", driver_key=driver_key, pneu=pneu)
+            dlog(
+                fn="get_player_pneu",
+                msg="pneu loaded",
+                driver_key=driver_key,
+                pneu=pneu,
+            )
             return pneu
         wlog(fn="get_player_pneu", msg="invalid pneu", driver_key=driver_key, pneu=pneu)
         return current_pneu
     except Exception as e:
-        wlog(fn="get_player_pneu", msg="read failed", driver_key=driver_key, error=str(e))
+        wlog(
+            fn="get_player_pneu", msg="read failed", driver_key=driver_key, error=str(e)
+        )
         return current_pneu

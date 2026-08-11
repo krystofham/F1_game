@@ -1,22 +1,33 @@
 import random
-#import matplotlib.pyplot as plt
-from log import dlog, ilog
+
 from load_data_json import *
+
+# import matplotlib.pyplot as plt
+from log import ilog
 
 
 def ask_for_int():
     return load_data(init)
+
+
 def technical_sector_sim(settings):
-    speed_in_training = settings[0]/10
-    understeer_in_traning = settings[1]/5
-    oversteer_in_training = settings[2]/5
-    acceleration = settings[3]/10
-    grip = settings[4]/5
-    curb_handling = settings[5]/5
+    speed_in_training = settings[0] / 10
+    understeer_in_traning = settings[1] / 5
+    oversteer_in_training = settings[2] / 5
+    acceleration = settings[3] / 10
+    grip = settings[4] / 5
+    curb_handling = settings[5] / 5
     my_time = 30
-    my_time -= (grip + acceleration + oversteer_in_training + understeer_in_traning + speed_in_training + curb_handling)        
+    my_time -= (
+        grip
+        + acceleration
+        + oversteer_in_training
+        + understeer_in_traning
+        + speed_in_training
+        + curb_handling
+    )
     corner_slow = [1, 3, 5, 9, 11, 15]
-    corner_medium =  [2, 6, 7, 12, 13]
+    corner_medium = [2, 6, 7, 12, 13]
     corner_fast = [4, 8, 10, 14]
     speeds_on_exit_player = []
     oversteers_player = []
@@ -24,8 +35,7 @@ def technical_sector_sim(settings):
     time_sim_player = []
     for x in range(1, 16):
         chance_mistake = (settings[1] + settings[2]) * -1
-        if chance_mistake < 1:
-            chance_mistake = 1
+        chance_mistake = max(chance_mistake, 1)
         if random.randint(0, 100) < chance_mistake:
             mistake = True
         else:
@@ -34,90 +44,94 @@ def technical_sector_sim(settings):
             if x == y:
                 corner = "fast"
         for y in corner_medium:
-            if x ==y:
+            if x == y:
                 corner = "medium"
         for y in corner_slow:
-            if x==y:
+            if x == y:
                 corner = "slow"
-        under = settings[1]*random.uniform(0.8,1.2)
-        over = settings[2]*random.uniform(0.8,1.2)
+        under = settings[1] * random.uniform(0.8, 1.2)
+        over = settings[2] * random.uniform(0.8, 1.2)
         bonus_time = 0
         if corner == "slow":
-            corner_speed = 100+ random.uniform(-50, 50)
+            corner_speed = 100 + random.uniform(-50, 50)
             if under > 2:
-                corner_speed -= 10*under
+                corner_speed -= 10 * under
                 bonus_time += 2
             if over > 2:
-                corner_speed -= 10*over
+                corner_speed -= 10 * over
                 bonus_time += 2
             if grip < -1:
-                under += settings[1]*grip*2
-                over += settings[2]*grip
-            if curb_handling <-5:
-                under += settings[1]*grip
-                over += settings[2]*grip*2
-            if over < 0: over*=-1
-            if under < 0: under*=-1
-            if corner_speed < 10:corner_speed=10
-            time_sim_player.append(15 + under + over+ bonus_time)
+                under += settings[1] * grip * 2
+                over += settings[2] * grip
+            if curb_handling < -5:
+                under += settings[1] * grip
+                over += settings[2] * grip * 2
+            if over < 0:
+                over *= -1
+            if under < 0:
+                under *= -1
+            corner_speed = max(corner_speed, 10)
+            time_sim_player.append(15 + under + over + bonus_time)
         elif corner == "medium":
-            corner_speed = 150+ random.uniform(-50, 50)
+            corner_speed = 150 + random.uniform(-50, 50)
             if under > 2:
-                corner_speed -= 30*under
+                corner_speed -= 30 * under
                 bonus_time += 2
             if over > 2:
-                corner_speed -= 30*over
+                corner_speed -= 30 * over
                 bonus_time += 2
             if grip < -4:
-                under += settings[1]*grip*2
-                if under <0:
+                under += settings[1] * grip * 2
+                if under < 0:
                     under *= -1
-                over += settings[2]*grip
-                if over <0:
+                over += settings[2] * grip
+                if over < 0:
                     over *= -1
-            if curb_handling <-4:
-                under += settings[1]*grip
-                if under <0:
+            if curb_handling < -4:
+                under += settings[1] * grip
+                if under < 0:
                     under *= -1
-                over += settings[2]*grip*2
-                if over <0:
+                over += settings[2] * grip * 2
+                if over < 0:
                     over *= -1
-            if over < 0: over*=-1
-            if under < 0: under*=-1
-            if corner_speed < 10:corner_speed=10
-            time_sim_player.append(10 + under + over+ bonus_time)
+            if over < 0:
+                over *= -1
+            if under < 0:
+                under *= -1
+            corner_speed = max(corner_speed, 10)
+            time_sim_player.append(10 + under + over + bonus_time)
         elif corner == "fast":
-            corner_speed = 200+ random.uniform(-50, 50)
+            corner_speed = 200 + random.uniform(-50, 50)
             if under > 2:
-                corner_speed -= 30*under
+                corner_speed -= 30 * under
                 bonus_time += 2
             if over > 2:
-                corner_speed -= 30*over
+                corner_speed -= 30 * over
                 bonus_time += 2
             if grip < -5:
-                under += settings[1]*grip*2
-                over += settings[2]*grip
-            if curb_handling <-2:
-                under += settings[1]*grip
-                over += settings[2]*grip*2
-            if over < 0: over*=-1
-            if under < 0: under*=-1
-            if corner_speed < 10:corner_speed=10
+                under += settings[1] * grip * 2
+                over += settings[2] * grip
+            if curb_handling < -2:
+                under += settings[1] * grip
+                over += settings[2] * grip * 2
+            if over < 0:
+                over *= -1
+            if under < 0:
+                under *= -1
+            corner_speed = max(corner_speed, 10)
             time_sim_player.append(7 + under + over + bonus_time)
-        if corner_speed < 0:
-            corner_speed = 0
-        speed_on_exit = corner_speed +speed_in_training*10+10* acceleration
+        corner_speed = max(corner_speed, 0)
+        speed_on_exit = corner_speed + speed_in_training * 10 + 10 * acceleration
 
         if mistake:
             speed_on_exit = 30
             under = 10
             over = 10
-        if speed_on_exit <0:
-            speed_on_exit *=-1
+        if speed_on_exit < 0:
+            speed_on_exit *= -1
         speeds_on_exit_player.append(speed_on_exit)
         understeers_player.append(under)
         oversteers_player.append(over)
-
 
     speeds_on_exit_bot = []
     time_sim = []
@@ -126,51 +140,61 @@ def technical_sector_sim(settings):
             if x == y:
                 corner = "fast"
         for y in corner_medium:
-            if x ==y:
+            if x == y:
                 corner = "medium"
         for y in corner_slow:
-            if x==y:
+            if x == y:
                 corner = "slow"
         under = 0
         over = 0
         if corner == "slow":
-            corner_speed = 100+ random.uniform(-50, 50)
+            corner_speed = 100 + random.uniform(-50, 50)
             time_sim.append(15 + random.uniform(-3.5, 3.5))
         elif corner == "medium":
-            corner_speed = 150+ random.uniform(-50, 50)
+            corner_speed = 150 + random.uniform(-50, 50)
             time_sim.append(10 + random.uniform(-3.5, 3.5))
         elif corner == "fast":
-            corner_speed = 200+ random.uniform(-50, 50)
-            time_sim.append(7+ random.uniform(-3.5, 3.5))
+            corner_speed = 200 + random.uniform(-50, 50)
+            time_sim.append(7 + random.uniform(-3.5, 3.5))
         speeds_on_exit_bot.append(corner_speed)
 
-
-
     turns = list(range(1, 16))
-    #fig, axs = plt.subplots(3, 1, figsize=(14, 10), sharex=True)
-# Time comparison
-    axs[0].plot(turns, time_sim_player, label="player – time", marker='o', color='orange')
-    axs[0].plot(turns, time_sim, label="Bot – time", marker='o', color='blue')
+    # fig, axs = plt.subplots(3, 1, figsize=(14, 10), sharex=True)
+    # Time comparison
+    axs[0].plot(
+        turns, time_sim_player, label="player – time", marker="o", color="orange"
+    )
+    axs[0].plot(turns, time_sim, label="Bot – time", marker="o", color="blue")
     axs[0].set_ylabel("time [s]")
     axs[0].legend()
     axs[0].grid(True)
-# Speed comparison
-    axs[1].plot(turns, speeds_on_exit_player, label="exit player [km/h]", marker='o', color='green')
-    axs[1].plot(turns, speeds_on_exit_bot, label="exit bot [km/h]", marker='o', color='gray')
+    # Speed comparison
+    axs[1].plot(
+        turns,
+        speeds_on_exit_player,
+        label="exit player [km/h]",
+        marker="o",
+        color="green",
+    )
+    axs[1].plot(
+        turns, speeds_on_exit_bot, label="exit bot [km/h]", marker="o", color="gray"
+    )
     axs[1].set_ylabel("Speed [km/h]")
     axs[1].legend()
     axs[1].grid(True)
 
-# Understeer / Oversteer
-    axs[2].bar(turns, understeers_player, label="understeer", color='blue', alpha=0.6)
-    axs[2].bar(turns, oversteers_player, label="oversteer", color='green', alpha=0.6)
+    # Understeer / Oversteer
+    axs[2].bar(turns, understeers_player, label="understeer", color="blue", alpha=0.6)
+    axs[2].bar(turns, oversteers_player, label="oversteer", color="green", alpha=0.6)
     axs[2].set_ylabel("mistakes")
     axs[2].set_xlabel("corner")
     axs[2].legend()
     axs[2].grid(True)
 
-    #plt.tight_layout()
-    #plt.show()
+    # plt.tight_layout()
+    # plt.show()
+
+
 def training(speed, climax, cars):
     speed_in_training = 0
     understeer_in_traning = 0
@@ -184,20 +208,25 @@ def training(speed, climax, cars):
     stabilizators = None
     suspension = None
     training_mode = ask_for_int()["training_mode"]
-    ilog(fn="training", msg="training session started",
-         training_mode=training_mode, speed=speed, climax=climax)
-    #print("Settings of the car. You have three attemps")
+    ilog(
+        fn="training",
+        msg="training session started",
+        training_mode=training_mode,
+        speed=speed,
+        climax=climax,
+    )
+    # print("Settings of the car. You have three attemps")
     for x in range(3):
-        #print("We are setting front wing. Value 0-11. In lower speed higher number. Lowers understeer. During rain bigger number.")
+        # print("We are setting front wing. Value 0-11. In lower speed higher number. Lowers understeer. During rain bigger number.")
         user_input = ask_for_int()["front_wing"]
         if speed == "quick":
             front_wing_ideal = random.randint(0, 4)
         elif speed == "medium":
-            front_wing_ideal = random.randint(4, 7) 
+            front_wing_ideal = random.randint(4, 7)
         else:
             front_wing_ideal = random.randint(6, 11)
         if climax == "transitional":
-            front_wing_ideal += random.randint(3,5)
+            front_wing_ideal += random.randint(3, 5)
         front_wing = user_input
         diff = front_wing_ideal - front_wing
         speed_in_training += diff
@@ -208,19 +237,18 @@ def training(speed, climax, cars):
         understeer_in_traning -= diff
         acceleration += diff
         grip += diff
-        #print("We are setting rear wing.")
+        # print("We are setting rear wing.")
         user_input = ask_for_int()["rear_wing"]
         rear_wing = user_input
         if speed == "quick":
             rear_wing_ideal = random.randint(0, 4)
         elif speed == "medium":
-            rear_wing_ideal = random.randint(4, 7) 
+            rear_wing_ideal = random.randint(4, 7)
         else:
             rear_wing_ideal = random.randint(6, 11)
         if climax == "transitional":
-            rear_wing_ideal += random.randint(3,5)
-        if rear_wing_ideal > 11:
-            rear_wing_ideal = 11
+            rear_wing_ideal += random.randint(3, 5)
+        rear_wing_ideal = min(rear_wing_ideal, 11)
         diff = rear_wing_ideal - rear_wing
         speed_in_training += diff
         if diff > 2 or diff < -2:
@@ -230,92 +258,106 @@ def training(speed, climax, cars):
         understeer_in_traning -= diff
         acceleration += diff
         grip += diff
-        #print("We are setting brakes.")
-        user_input =ask_for_int()["brakes"]
+        # print("We are setting brakes.")
+        user_input = ask_for_int()["brakes"]
         brakes = user_input
-        brakes__ideal = random.randint (50, 60)
+        brakes__ideal = random.randint(50, 60)
         diff = brakes__ideal - brakes
-        if diff < 0: diff*=-1
+        if diff < 0:
+            diff *= -1
         understeer_in_traning += diff * 2
-        oversteer_in_training += diff *-2
+        oversteer_in_training += diff * -2
         user_input = ask_for_int["stabilizators"]
         stabilizators = user_input
 
         if stabilizators == 1:
             grip -= 2
-            curb_handling -=2
-            speed_in_training +=2
-            acceleration +=2
+            curb_handling -= 2
+            speed_in_training += 2
+            acceleration += 2
         else:
             grip += 2
-            curb_handling +=2
-            speed_in_training -=2
-            acceleration -=2
+            curb_handling += 2
+            speed_in_training -= 2
+            acceleration -= 2
 
-
-        #print("We are setting springs.")
+        # print("We are setting springs.")
         user_input = ask_for_int()["springs"]
         if suspension == 1:
             acceleration += 2
-            grip -=1
-            curb_handling -=2
-            oversteer_in_training -=1
-            understeer_in_traning -=1
-            speed_in_training +=3
+            grip -= 1
+            curb_handling -= 2
+            oversteer_in_training -= 1
+            understeer_in_traning -= 1
+            speed_in_training += 3
         else:
             acceleration -= 2
-            grip +=1
-            curb_handling +=2
-            oversteer_in_training +=1
-            understeer_in_traning +=1
-            speed_in_training -=3
+            grip += 1
+            curb_handling += 2
+            oversteer_in_training += 1
+            understeer_in_traning += 1
+            speed_in_training -= 3
 
-        settings = [speed_in_training,understeer_in_traning,oversteer_in_training,acceleration,grip,curb_handling]
+        settings = [
+            speed_in_training,
+            understeer_in_traning,
+            oversteer_in_training,
+            acceleration,
+            grip,
+            curb_handling,
+        ]
         technical_sector_sim(settings)
-        if understeer_in_traning > 3 :
+        if understeer_in_traning > 3:
             for car in cars:
                 if car.is_player:
-                    car.safety_car_probability -= understeer_in_traning*250
-        if oversteer_in_training > 3 :
+                    car.safety_car_probability -= understeer_in_traning * 250
+        if oversteer_in_training > 3:
             for car in cars:
                 if car.is_player:
-                    car.safety_car_probability -= oversteer_in_training*250
-        if grip > 3 :
+                    car.safety_car_probability -= oversteer_in_training * 250
+        if grip > 3:
             for car in cars:
                 if car.is_player:
-                    car.safety_car_probability -= 250*grip
-        if curb_handling >3:
+                    car.safety_car_probability -= 250 * grip
+        if curb_handling > 3:
             for car in cars:
                 if car.is_player:
-                    car.safety_car_probability -= curb_handling*250     
-        if oversteer_in_training < -2 :
+                    car.safety_car_probability -= curb_handling * 250
+        if oversteer_in_training < -2:
             for car in cars:
                 if car.is_player:
-                    car.safety_car_probability += oversteer_in_training*250
-        if oversteer_in_training < -2 :
+                    car.safety_car_probability += oversteer_in_training * 250
+        if oversteer_in_training < -2:
             for car in cars:
                 if car.is_player:
-                    car.safety_car_probability += oversteer_in_training*250
+                    car.safety_car_probability += oversteer_in_training * 250
         if grip < -2:
             for car in cars:
                 if car.is_player:
-                    car.safety_car_probability += 250*grip
-        if curb_handling <-2:
+                    car.safety_car_probability += 250 * grip
+        if curb_handling < -2:
             for car in cars:
                 if car.is_player:
-                    car.safety_car_probability += curb_handling*250     
+                    car.safety_car_probability += curb_handling * 250
         if oversteer_in_training + understeer_in_traning > 5:
             for car in cars:
                 if car.is_player:
-                    car.safety_car_probability -= (oversteer_in_training + understeer_in_traning)*150
+                    car.safety_car_probability -= (
+                        oversteer_in_training + understeer_in_traning
+                    ) * 150
         user_input = input("Do you want to end settings? If so, type EXIT").lower()
-        if user_input == "exit": 
+        if user_input == "exit":
             break
     if speed_in_training + acceleration > 5:
         speed_bonus = True
     else:
         speed_bonus = False
-    ilog(fn="training", msg="training session finished",
-         training_mode=training_mode, speed_bonus=speed_bonus,
-         speed_in_training=speed_in_training, acceleration=acceleration)
+    ilog(
+        fn="training",
+        msg="training session finished",
+        training_mode=training_mode,
+        speed_bonus=speed_bonus,
+        speed_in_training=speed_in_training,
+        acceleration=acceleration,
+    )
     return speed_bonus, training_mode

@@ -1,5 +1,6 @@
 import json
 import os
+
 from log import dlog, elog, wlog
 from paths import state_file, user_input_dir
 
@@ -38,11 +39,23 @@ def load_data(name: str, default=None):
         elif name in _USER_INPUT_DEFAULTS:
             fallback = _USER_INPUT_DEFAULTS[name]
         elif name in _REQUIRED_ACTION_FILES:
-            elog(fn="load_data", msg="required action file missing", name=name, path=path, error=str(e))
+            elog(
+                fn="load_data",
+                msg="required action file missing",
+                name=name,
+                path=path,
+                error=str(e),
+            )
             raise UserInputMissingError(name, path, cause=e) from e
         else:
             fallback = {}
-        wlog(fn="load_data", msg="regenerating default", name=name, path=path, error=str(e))
+        wlog(
+            fn="load_data",
+            msg="regenerating default",
+            name=name,
+            path=path,
+            error=str(e),
+        )
         os.makedirs(_USER_INPUT_DIR, exist_ok=True)
         with open(path, "w", encoding="utf-8") as f:
             json.dump(fallback, f, indent=2, ensure_ascii=False)

@@ -1,9 +1,11 @@
 """PyInstaller entry point — starts the FastAPI simulation server."""
+
 from __future__ import annotations
 
 import multiprocessing
 import os
 import traceback
+
 
 def main() -> None:
     from paths import ensure_runtime_dirs
@@ -11,6 +13,7 @@ def main() -> None:
     ensure_runtime_dirs()
 
     import uvicorn
+
     from app import app
 
     host = os.environ.get("MMRAC1NG_HOST", "127.0.0.1")
@@ -23,6 +26,7 @@ def main() -> None:
         log_level="info",
         access_log=False,
     )
+
 
 if __name__ == "__main__":
     multiprocessing.freeze_support()
