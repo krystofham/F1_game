@@ -3,11 +3,11 @@ import json
 import os
 import random
 import traceback
-
+import asyncio
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
-
+from typing import Any
 from big_functions import *
 from load_data_json import *
 from log import dlog, elog, ilog, wlog
@@ -38,12 +38,68 @@ app.mount("/img", StaticFiles(directory=img_dir()), name="img")
 # ---------------------------------------------------------------------------
 # Helpers
 # ---------------------------------------------------------------------------
+file_lock = asyncio.Lock()
+
+# Loading files
+
+
+def _save_to_disk(path: str, payload: Any) -> None:
+    temp_path = f"{path}.tmp"
+    with open(temp_path, "w", encoding="utf-8") as f:
+        json.dump(payload, f, indent=2)
+
+    os.replace(temp_path, path)
+
+
+async def write_into_file(data: Any, destination: str, file_name: str) -> None:
+    os.makedirs(destination, exist_ok=True)
+    path = os.path.join(destination, file_name)
+
+    async with file_lock:
+        try:
+            await asyncio.to_thread(_save_to_disk, path, data)
+        except OSError:
+            elog(fn="write_into_file", msg=str(e))
+
+
+def _read_from_disk(path: str) -> Any | None:
+    if not os.path.exists(path):
+        return None
+    with open(path, "r", encoding="utf-8") as f:
+        return json.load(f)
+
+
+async def read_from_file(destination: str, file_name: str, fallback: Any = None) -> Any:
+    path = os.path.join(destination, file_name)
+    try:
+        data = await asyncio.to_thread(_read_from_disk, path)
+    except OSError:
+        elog(fn="read_from_file", msg=str(e))
+        data = None
+    if data is None:
+        return fallback
+    return data
+
+
+def _read_csv_from_disk(path: str) -> list[list[str]]:
+    if not os.path.exists(path):
+        return []
+    with open(path, "r", encoding="utf-8", newline="") as f:
+        return list(csv.reader(f))
+
+
+async def read_csv_from_file(destination: str, file_name: str) -> list[list[str]]:
+    path = os.path.join(destination, file_name)
+    try:
+        return await asyncio.to_thread(_read_csv_from_disk, path)
+    except OSError as e:
+        elog(fn="read_csv_from_file", msg=str(e))
+        return []
 
 
 def _resolve_driver_car(
     driver_name, player_by_name, ai_by_name, player_names, is_player_slot
 ):
-    """Najde správný Car objekt — hráč vs. AI u stejného jména po transferu."""
     if is_player_slot and driver_name in player_by_name:
         return player_by_name[driver_name]
     if driver_name in ai_by_name and driver_name not in player_names:
@@ -56,14 +112,12 @@ def _resolve_driver_car(
 
 
 def _remove_shadow_duplicate_cars(cars, player_names):
-    """Init má AI jezdce stejného jména jako hráč po transferu — bez týmu a duplicitní."""
     for car in list(cars):
         if car.team is None and not car.is_player and car.name in player_names:
             cars.remove(car)
 
 
 def apply_teams_from_state(cars, teams, state_teams, state_drivers=None):
-    """Synchronizuje in-memory týmy podle state.json. Při neshodě vrátí False."""
     if not state_teams:
         wlog(fn="apply_teams_from_state", msg="state_teams empty, skipping")
         return False
@@ -159,7 +213,7 @@ def _apply_driver_dict_to_car(car, d):
     car.ratings = d.get("rating", car.ratings)
     car.time = d.get("time", 0.0)
     car.wear = d.get("wear", 0.0)
-    car.tyre = d.get("tyre", car.tyre)
+    car.tire = d.get("tire", car.tire)
     car.drs = d.get("drs", False)
     car.pit = d.get("pit", False)
     car.dnf = d.get("dnf", False)
@@ -175,7 +229,7 @@ def _apply_ai_driver_dict_to_car(car, d):
     car.ratings = d.get("rating", car.ratings)
     car.time = d.get("time", 0.0)
     car.wear = d.get("wear", 0.0)
-    car.tyre = d.get("tyre", car.tyre)
+    car.tire = d.get("tire", car.tire)
     car.drs = d.get("drs", False)
     car.pit = d.get("pit", False)
     car.dnf = d.get("dnf", False)
@@ -188,8 +242,7 @@ def _apply_ai_driver_dict_to_car(car, d):
 
 def _sync_ai_cars_with_state(cars, state_ai, player_names):
     """
-    Namapuje AI auta na state AI i když došlo k přejmenování
-    (např. Johan -> player, Max -> AI).
+    maps AI cars on state AI even if renamed
     """
     ai_cars = [c for c in cars if not c.is_player]
     ai_by_name = {}
@@ -334,6 +387,8 @@ def load_game_objects(apply_state=True):
         (c for c in player_cars if c.name == p2_name),
         player_cars[1] if len(player_cars) > 1 else None,
     )
+    assert player is not None, "Player 1 car not found"
+    assert player_2 is not None, "Player 2 car not found"
 
     return (
         cars,
@@ -442,9 +497,9 @@ async def api_init_race():
         tracks,
         player.name,
         player_2.name,
-        COUNT_CARS,
-        SAFETY_CAR,
-        LAPS_REMAINING,
+        _COUNT_CARS,
+        _SAFETY_CAR,
+        _LAPS_REMAINING,
         b,
         season_count,
     ) = load_game_objects(apply_state=False)
@@ -452,22 +507,22 @@ async def api_init_race():
     (
         speed_bonus,
         season_count,
-        time_laps,
+        _time_laps,
         k_speed,
         k_wear,
         training_type,
         WETTINESS,
-        lap,
+        _lap,
         forecast,
-        weather,
+        _weather,
         climax,
-        tyre,
+        tire,
         speed,
-        PNEU_types,
-        weather_1,
-        weather_2,
-        weather_3,
-        weather_4,
+        _PNEU_types,
+        _weather_1,
+        _weather_2,
+        _weather_3,
+        _weather_4,
         weather_actual,
     ) = init_race(
         tracks,
@@ -518,7 +573,7 @@ async def api_init_race():
         "weather": weather_actual,
         "forecast": forecast,
         "wettiness": WETTINESS,
-        "tyre_type": tyre,
+        "tire_type": tire,
         "speed_type": speed,
         "training_type": training_type,
         "speed_bonus": speed_bonus,
@@ -533,7 +588,7 @@ async def api_init_race():
         total_laps=total_laps,
         weather=weather_actual,
         forecast=forecast,
-        tyre_p1=tyre,
+        tire_p1=tire,
         training=training_type,
         b=b,
         season=season_count,
@@ -624,17 +679,17 @@ async def api_sim_lap():
         teams,
         player,
         player_2,
-        championship,
-        tracks,
+        _championship,
+        _tracks,
         player.name,
         player_2.name,
-        COUNT_CARS,
+        _COUNT_CARS,
         SAFETY_CAR,
         LAPS_REMAINING,
-        b,
+        _b,
         season_count,
     ) = load_game_objects()
-
+    # Exception je prilis obecny, upravit
     try:
         lap, cars, teams = sim_the_lap(
             cars,
@@ -649,7 +704,7 @@ async def api_sim_lap():
             race_ctx["weather"],
             race_ctx["total_laps"],
             race_ctx["climax"],
-            race_ctx["tyre_type"],
+            race_ctx["tire_type"],
             race_ctx["speed_type"],
             {
                 "hard": {"wear": race_ctx["k_wear"][0], "speed": k_speed[0]},
@@ -734,7 +789,7 @@ async def api_post_race():
         player,
         player_2,
         championship,
-        tracks,
+        _tracks,
         player.name,
         player_2.name,
         COUNT_CARS,
@@ -804,9 +859,16 @@ async def api_post_race():
     if record_broken:
         ilog(fn="api_post_race", msg="new track record set", race=race)
 
-    lap, time_laps, SAFETY_CAR, LAPS_REMAINING, weather, forecast, cars, WETTINESS = (
-        reset_race(climax, cars)
-    )
+    (
+        _lap,
+        time_laps,
+        _SAFETY_CAR,
+        _LAPS_REMAINING,
+        weather,
+        _forecast,
+        cars,
+        _WETTINESS,
+    ) = reset_race(climax, cars)
 
     # Ověř že time_laps byl správně uložen save_state_end_of_race
     check_state = _state()
@@ -1303,7 +1365,7 @@ async def api_sim_race():
             race_ctx["weather"],
             total_laps,
             race_ctx["climax"],
-            race_ctx["tyre_type"],
+            race_ctx["tire_type"],
             race_ctx["speed_type"],
             tyre_compounds,
             race_ctx["forecast"][0]
@@ -1498,7 +1560,7 @@ async def api_sim_until(data: SimUntilPayload):
             current_race_ctx["weather"],
             total_laps,
             current_race_ctx["climax"],
-            current_race_ctx["tyre_type"],
+            current_race_ctx["tire_type"],
             current_race_ctx["speed_type"],
             tyre_compounds,
             forecast[0] if len(forecast) > 0 else current_race_ctx["weather"],
@@ -1582,7 +1644,7 @@ def get_tracks_api():
         tracks_data = [
             {
                 "name": track.name,
-                "tyre_wear": track.tyre,
+                "tire_wear": track.tire,
                 "speed_type": track.speed,
                 "temp_1": track.TIME_S1,
                 "temp_2": track.TIME_S2,
@@ -1688,29 +1750,22 @@ async def get_track_records():
 
 @app.get("/api/stats/biggest_laps")
 async def get_biggest_laps():
-    path = os.path.join(stats_dir(), "races.csv")
-    if not os.path.exists(path):
-        return []
     laps_history = []
-    try:
-        with open(path, mode="r", encoding="utf-8") as f:
-            reader = csv.reader(f)
-            for row in reader:
-                if not row or len(row) < 11:
-                    continue
-                # Struktura dle ukázky: season, race, pos, driver, team, points, time/gap...
-                laps_history.append(
-                    {
-                        "season": row[0],
-                        "race": row[1],
-                        "position": row[2],
-                        "driver": row[3],
-                        "team": row[4],
-                        "points": row[5],
-                        "total_time": row[10],
-                        "weather": row[15] if len(row) > 15 else "sunny",
-                    }
-                )
-    except Exception as e:
-        elog(fn="get_biggest_laps", msg=str(e))
+    # reader is a dump of every line in races.csv
+    rows = await read_csv_from_file(stats_dir(), "races.csv")
+    for row in rows:
+        if not row:
+            continue
+        laps_history.append(
+            {
+                "season": row[0],
+                "race": row[1],
+                "position": row[2],
+                "driver": row[3],
+                "team": row[4],
+                "points": row[5],
+                "total_time": row[10],
+                "weather": row[15] if len(row) > 15 else "sunny",
+            }
+        )
     return laps_history

@@ -1,11 +1,11 @@
 {
   "Max Vershaeren": {
     "action": "1",
-    "new_pneu": "medium"
+    "new_tyre": "medium"
   },
   "Kim Nguyen": {
     "action": "1",
-    "new_pneu": "medium"
+    "new_tyre": "medium"
   },
   "commands": []
 }
