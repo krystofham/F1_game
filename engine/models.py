@@ -10,8 +10,8 @@ class LapUserDataPayload(BaseModel):
 
 
 class InitConfigPayload(BaseModel):
-    pneu_driver_1: str
-    pneu_driver_2: str
+    tyre_driver_1: str
+    tyre_driver_2: str
     training_mode: int
 
 

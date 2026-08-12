@@ -20,14 +20,14 @@ def pit_player(
     TIME_S1,
     TIME_S2,
     TIME_S3,
-    pneu,
+    tyre,
     speed,
     PNEU_types,
     SAFETY_CAR,
     climax,
 ):
     data = load_data("lap_user_data")
-    default_action = {"action": "1", "new_pneu": "medium"}
+    default_action = {"action": "1", "new_tyre": "medium"}
     d1_data = {
         **default_action,
         **(data.get(player.name) or data.get("driver_1") or {}),
@@ -44,64 +44,64 @@ def pit_player(
         msg="lap user data loaded",
         player_1=player.name,
         action_1=pick,
-        pneu_1=d1_data.get("new_pneu"),
+        tyre_1=d1_data.get("new_tyre"),
         player_2=player_2.name,
         action_2=pick_2,
-        pneu_2=d2_data.get("new_pneu"),
+        tyre_2=d2_data.get("new_tyre"),
     )
 
     if not player.dnf:
-        if pick == "pneustav":
-            # print(player.pneu, round(player.wear, 2), "%")
+        if pick == "tyrestav":
+            # print(player.tyre, round(player.wear, 2), "%")
             player.time += 2
-        elif pick == "pneusafe":
+        elif pick == "tyresafe":
             # print("PNEUSAFE active for 1 lap")
             player.wear -= 1
             player.time += 3
         elif pick == "2":
-            new = d1_data["new_pneu"].strip().lower()
+            new = d1_data["new_tyre"].strip().lower()
             if new not in PNEU_types:
                 elog(
                     fn="pit_player",
                     msg="invalid tyre for driver 1",
                     driver=player.name,
-                    pneu=new,
+                    tyre=new,
                 )
                 raise ValueError(f"Driver 1: invalid tyre '{new}'")
-            strategy(LAPS - lap, TIME_S1, TIME_S2, TIME_S3, pneu, speed, climax)
+            strategy(LAPS - lap, TIME_S1, TIME_S2, TIME_S3, tyre, speed, climax)
             ilog(
                 fn="pit_player",
                 msg="driver 1 pit stop",
                 driver=player.name,
-                new_pneu=new,
+                new_tyre=new,
                 lap=lap,
             )
             player.pit_stop(new, SAFETY_CAR)
 
     if not player_2.dnf:
-        if pick_2 == "pneustav":
-            # print(player_2.pneu, round(player_2.wear, 2), "%")
+        if pick_2 == "tyrestav":
+            # print(player_2.tyre, round(player_2.wear, 2), "%")
             player_2.time += 2
-        elif pick_2 == "pneusafe":
+        elif pick_2 == "tyresafe":
             # print("PNEUSAFE active for 1 lap")
             player_2.wear -= 1
             player_2.time += 3
         elif pick_2 == "2":
-            new = d2_data["new_pneu"].strip().lower()
+            new = d2_data["new_tyre"].strip().lower()
             if new not in PNEU_types:
                 elog(
                     fn="pit_player",
                     msg="invalid tyre for driver 2",
                     driver=player_2.name,
-                    pneu=new,
+                    tyre=new,
                 )
                 raise ValueError(f"Driver 2: invalid tyre '{new}'")
-            strategy(LAPS - lap, TIME_S1, TIME_S2, TIME_S3, pneu, speed, climax)
+            strategy(LAPS - lap, TIME_S1, TIME_S2, TIME_S3, tyre, speed, climax)
             ilog(
                 fn="pit_player",
                 msg="driver 2 pit stop",
                 driver=player_2.name,
-                new_pneu=new,
+                new_tyre=new,
                 lap=lap,
             )
             player_2.pit_stop(new, SAFETY_CAR)
@@ -143,8 +143,8 @@ def pit_player(
         with open(reset_path, "w", encoding="utf-8") as f:
             json.dump(
                 {
-                    player.name: {"action": "1", "new_pneu": "medium"},
-                    player_2.name: {"action": "1", "new_pneu": "medium"},
+                    player.name: {"action": "1", "new_tyre": "medium"},
+                    player_2.name: {"action": "1", "new_tyre": "medium"},
                     "commands": [],
                 },
                 f,

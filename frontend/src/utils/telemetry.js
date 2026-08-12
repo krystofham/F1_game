@@ -86,7 +86,7 @@ export function buildStintSegments(driver, totalLaps) {
 
   const lastEnd = segments.length ? segments[segments.length - 1].endLap : 0;
   const currentEnd = lapTimes.length || raceLaps;
-  const compound = (driver.pneu || "medium").toLowerCase();
+  const compound = (driver.tyre || "medium").toLowerCase();
 
   if (currentEnd > lastEnd) {
     segments.push({

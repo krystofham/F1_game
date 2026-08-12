@@ -1,7 +1,7 @@
 [
   {
     "name": "Grand Prix of Spa",
-    "pneu_wear": "hard",
+    "tyre_wear": "hard",
     "speed_type": "quick",
     "temp_1": 22,
     "temp_2": 25,
@@ -11,7 +11,7 @@
   },
   {
     "name": "Grand Prix de France",
-    "pneu_wear": "hard",
+    "tyre_wear": "hard",
     "speed_type": "slow",
     "temp_1": 26,
     "temp_2": 19,
@@ -21,7 +21,7 @@
   },
   {
     "name": "Warsaw Grand Prix",
-    "pneu_wear": "hard",
+    "tyre_wear": "hard",
     "speed_type": "medium",
     "temp_1": 35,
     "temp_2": 18,
@@ -31,7 +31,7 @@
   },
   {
     "name": "China Grand Prix",
-    "pneu_wear": "medium",
+    "tyre_wear": "medium",
     "speed_type": "slow",
     "temp_1": 25,
     "temp_2": 34,
@@ -41,7 +41,7 @@
   },
   {
     "name": "Ostrava Grand Prix",
-    "pneu_wear": "medium",
+    "tyre_wear": "medium",
     "speed_type": "quick",
     "temp_1": 20,
     "temp_2": 26,
@@ -51,7 +51,7 @@
   },
   {
     "name": "Bahamas Circuit",
-    "pneu_wear": "hard",
+    "tyre_wear": "hard",
     "speed_type": "medium",
     "temp_1": 25,
     "temp_2": 23,
@@ -61,7 +61,7 @@
   },
   {
     "name": "Bulgarian Grand Prix",
-    "pneu_wear": "medium",
+    "tyre_wear": "medium",
     "speed_type": "medium",
     "temp_1": 23,
     "temp_2": 29,
@@ -71,7 +71,7 @@
   },
   {
     "name": "Grand Prix de Espana",
-    "pneu_wear": "medium",
+    "tyre_wear": "medium",
     "speed_type": "quick",
     "temp_1": 26,
     "temp_2": 31,
@@ -81,7 +81,7 @@
   },
   {
     "name": "Prague Grand Prix",
-    "pneu_wear": "soft",
+    "tyre_wear": "soft",
     "speed_type": "quick",
     "temp_1": 20,
     "temp_2": 33,
@@ -91,7 +91,7 @@
   },
   {
     "name": "Skyline Turkey Grand Prix",
-    "pneu_wear": "medium",
+    "tyre_wear": "medium",
     "speed_type": "slow",
     "temp_1": 27,
     "temp_2": 24,
@@ -101,7 +101,7 @@
   },
   {
     "name": "Monza Italy Grand Prix",
-    "pneu_wear": "soft",
+    "tyre_wear": "soft",
     "speed_type": "quick",
     "temp_1": 30,
     "temp_2": 16,

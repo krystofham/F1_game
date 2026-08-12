@@ -123,7 +123,7 @@ def make_a_deal(
     # Převezmi race stav
     new_car.time = player.time
     new_car.wear = player.wear
-    new_car.pneu = player.pneu
+    new_car.tyre = player.tyre
     new_car.dnf = player.dnf
     new_car.box = player.box
     new_car.points = player.points
@@ -276,7 +276,7 @@ def transfer(cars, teams, player, player_2):
         # Převezmi race stav z target_playera — best nastupuje na jeho místo
         best.time = target_player.time
         best.wear = target_player.wear
-        best.pneu = target_player.pneu
+        best.tyre = target_player.tyre
         best.dnf = target_player.dnf
         best.box = target_player.box
         best.position = list(target_player.position)
@@ -393,23 +393,23 @@ def safety_car(car, weather, lap, SAFETY_CAR, LAPS_REMAINING, LAPS):
     return SAFETY_CAR, LAPS_REMAINING, car
 
 
-def generate_pneu_for_bots_on_start(cars: list, weather_1: str) -> list:
-    bot_pneu = {}
+def generate_tyre_for_bots_on_start(cars: list, weather_1: str) -> list:
+    bot_tyre = {}
     for car in cars:
         if not car.is_player:
             if weather_1 in ("rain", "heavy rain"):
-                car.pneu = random.choice(["wet", "inter"])
+                car.tyre = random.choice(["wet", "inter"])
             elif weather_1 == "transitional":
-                car.pneu = random.choice(["soft", "inter"])
+                car.tyre = random.choice(["soft", "inter"])
             else:
-                car.pneu = random.choice(["hard", "medium", "soft"])
-            bot_pneu[car.name] = car.pneu
+                car.tyre = random.choice(["hard", "medium", "soft"])
+            bot_tyre[car.name] = car.tyre
     dlog(
-        fn="generate_pneu_for_bots_on_start",
-        msg="bot starting pneu assigned",
+        fn="generate_tyre_for_bots_on_start",
+        msg="bot starting tyre assigned",
         weather=weather_1,
-        bot_count=len(bot_pneu),
-        sample=list(bot_pneu.items())[:5],
+        bot_count=len(bot_tyre),
+        sample=list(bot_tyre.items())[:5],
     )
     return cars
 
@@ -477,25 +477,25 @@ def happend_something(lap, cars, WETTINESS):
             return True
 
         # Stop if track is wet and car uses dry tyres
-        if WETTINESS > 50 and car.pneu in DRY and car.is_player:
+        if WETTINESS > 50 and car.tyre in DRY and car.is_player:
             dlog(
                 fn="happend_something",
-                msg=f"Wet track (wettiness={WETTINESS}) but {car.name} uses dry tyres ({car.pneu}) at lap {lap}. Stopping simulation.",
+                msg=f"Wet track (wettiness={WETTINESS}) but {car.name} uses dry tyres ({car.tyre}) at lap {lap}. Stopping simulation.",
                 lap=lap,
                 driver=car.name,
-                pneu=car.pneu,
+                tyre=car.tyre,
                 wettiness=WETTINESS,
             )
             return True
 
         # Stop if track is dry and car uses wet tyres
-        if WETTINESS < 30 and car.pneu in WET and car.is_player:
+        if WETTINESS < 30 and car.tyre in WET and car.is_player:
             dlog(
                 fn="happend_something",
-                msg=f"Dry track (wettiness={WETTINESS}) but {car.name} uses wet tyres ({car.pneu}) at lap {lap}. Stopping simulation.",
+                msg=f"Dry track (wettiness={WETTINESS}) but {car.name} uses wet tyres ({car.tyre}) at lap {lap}. Stopping simulation.",
                 lap=lap,
                 driver=car.name,
-                pneu=car.pneu,
+                tyre=car.tyre,
                 wettiness=WETTINESS,
             )
             return True

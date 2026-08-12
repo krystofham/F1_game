@@ -28,26 +28,26 @@ def get_length_of_championship() -> int:
     return length
 
 
-def get_player_pneu(PNEU_types, current_pneu, driver_key):
+def get_player_tyre(PNEU_types, current_tyre, driver_key):
     try:
         data = load_data("lap_user_data")
         if driver_key in data:
-            pneu = data[driver_key]["new_pneu"]
+            tyre = data[driver_key]["new_tyre"]
         else:
-            wlog(fn="get_player_pneu", msg="driver key missing", driver_key=driver_key)
-            return current_pneu
-        if pneu in PNEU_types:
+            wlog(fn="get_player_tyre", msg="driver key missing", driver_key=driver_key)
+            return current_tyre
+        if tyre in PNEU_types:
             dlog(
-                fn="get_player_pneu",
-                msg="pneu loaded",
+                fn="get_player_tyre",
+                msg="tyre loaded",
                 driver_key=driver_key,
-                pneu=pneu,
+                tyre=tyre,
             )
-            return pneu
-        wlog(fn="get_player_pneu", msg="invalid pneu", driver_key=driver_key, pneu=pneu)
-        return current_pneu
+            return tyre
+        wlog(fn="get_player_tyre", msg="invalid tyre", driver_key=driver_key, tyre=tyre)
+        return current_tyre
     except Exception as e:
         wlog(
-            fn="get_player_pneu", msg="read failed", driver_key=driver_key, error=str(e)
+            fn="get_player_tyre", msg="read failed", driver_key=driver_key, error=str(e)
         )
-        return current_pneu
+        return current_tyre

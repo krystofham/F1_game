@@ -19,7 +19,7 @@ def sim_the_lap(
     weather,
     LAPS,
     climax,
-    pneu,
+    tyre,
     speed,
     PNEU_types,
     weather_1,
@@ -86,7 +86,7 @@ def sim_the_lap(
         TIME_S1,
         TIME_S2,
         TIME_S3,
-        pneu,
+        tyre,
         speed,
         PNEU_types,
         SAFETY_CAR,
@@ -159,7 +159,7 @@ def sim_the_lap(
         forecast=forecast,
         training_type=training_type,
         speed_bonus=speed_bonus,
-        pneu_type=pneu,
+        tyre_type=tyre,
         speed_type=speed,
         k_wear=k_wear,
         k_speed=k_speed,  # k_speed předej pokud ho máš v scope
@@ -245,7 +245,7 @@ def init_race(
     lap = 0
     for track in tracks:
         if race == track.name:
-            pneu = track.pneu
+            tyre = track.tyre
             speed = track.speed
             TIME_S1 = track.TIME_S1
             TIME_S2 = track.TIME_S2
@@ -256,12 +256,12 @@ def init_race(
     for x in cars:
         x.safety_car_probability = dnf_probability
     # print(f"Actual race {race} {b}/{len(championship)}")
-    # print(f"Track is known for {pneu} pneu and {speed} speed. Has {LAPS} laps")
-    strategy(LAPS, TIME_S1, TIME_S2, TIME_S3, pneu, speed, climax)
+    # print(f"Track is known for {tyre} tyre and {speed} speed. Has {LAPS} laps")
+    strategy(LAPS, TIME_S1, TIME_S2, TIME_S3, tyre, speed, climax)
 
-    if pneu == "medium":
+    if tyre == "medium":
         k_wear = [1.5, 5, 9, 4.4, 8.4]
-    elif pneu == "soft":
+    elif tyre == "soft":
         k_wear = [2, 7, 12, 5, 9]
     else:
         k_wear = [1, 4, 7, 4, 8]
@@ -290,18 +290,18 @@ def init_race(
     for weather in forecast:
         print(f"weather: 🌤️ ☁️  {weather}")
     for car in cars:
-        car.pneu = random.choice(["hard", "medium"])
-    player.pneu = get_player_pneu(PNEU_types, player.pneu, "driver_1")
-    player_2.pneu = get_player_pneu(PNEU_types, player_2.pneu, "driver_2")
-    player.pneu = _cfg.get("pneu_driver_1", "hard")
-    player_2.pneu = _cfg.get("pneu_driver_2", "hard")
-    cars = generate_pneu_for_bots_on_start(cars, weather_1)
+        car.tyre = random.choice(["hard", "medium"])
+    player.tyre = get_player_tyre(PNEU_types, player.tyre, "driver_1")
+    player_2.tyre = get_player_tyre(PNEU_types, player_2.tyre, "driver_2")
+    player.tyre = _cfg.get("tyre_driver_1", "hard")
+    player_2.tyre = _cfg.get("tyre_driver_2", "hard")
+    cars = generate_tyre_for_bots_on_start(cars, weather_1)
     for car in cars:
         if car.is_player:
             if player.name == car.name:
-                car.pneu = player.pneu
+                car.tyre = player.tyre
             elif player_2.name == car.name:
-                car.pneu = player_2.pneu
+                car.tyre = player_2.tyre
             else:
                 elog(
                     fn="init_race",
@@ -316,11 +316,11 @@ def init_race(
                 )
     ilog(
         fn="init_race",
-        msg="player pneu applied from init.json",
-        pneu_driver_1=player.pneu,
-        pneu_driver_2=player_2.pneu,
-        cfg_pneu_driver_1=_cfg.get("pneu_driver_1"),
-        cfg_pneu_driver_2=_cfg.get("pneu_driver_2"),
+        msg="player tyre applied from init.json",
+        tyre_driver_1=player.tyre,
+        tyre_driver_2=player_2.tyre,
+        cfg_tyre_driver_1=_cfg.get("tyre_driver_1"),
+        cfg_tyre_driver_2=_cfg.get("tyre_driver_2"),
         training_mode=_cfg.get("training_mode", 1),
     )
     simulation = []
@@ -342,7 +342,7 @@ def init_race(
         forecast=forecast,
         training_type=training_type,
         speed_bonus=speed_bonus,
-        pneu_type=pneu,
+        tyre_type=tyre,
         speed_type=speed,
         k_wear=k_wear,
         k_speed=k_speed,
@@ -360,7 +360,7 @@ def init_race(
         climax=climax,
         weather=weather,
         training_type=training_type,
-        pneu_type=pneu,
+        tyre_type=tyre,
         speed_type=speed,
     )
     return (
@@ -375,7 +375,7 @@ def init_race(
         forecast,
         weather,
         climax,
-        pneu,
+        tyre,
         speed,
         PNEU_types,
         weather_1,
@@ -399,7 +399,7 @@ def sim_the_race(
     weather,
     LAPS,
     climax,
-    pneu,
+    tyre,
     speed,
     PNEU_types,
     weather_1,
@@ -417,7 +417,7 @@ def sim_the_race(
     lap = 0
     for track in tracks:
         if race == track.name:
-            pneu = track.pneu
+            tyre = track.tyre
             speed = track.speed
             TIME_S1 = track.TIME_S1
             TIME_S2 = track.TIME_S2
@@ -427,12 +427,12 @@ def sim_the_race(
     for x in cars:
         x.safety_car_probability = dnf_probability
     # print(f"Actual race {race} {b}/{len(championship)}")
-    # print(f"Track is known for {pneu} pneu and {speed} speed. Has {LAPS} laps")
-    strategy(LAPS, TIME_S1, TIME_S2, TIME_S3, pneu, speed, climax)
+    # print(f"Track is known for {tyre} tyre and {speed} speed. Has {LAPS} laps")
+    strategy(LAPS, TIME_S1, TIME_S2, TIME_S3, tyre, speed, climax)
 
-    if pneu == "medium":
+    if tyre == "medium":
         k_wear = [1.5, 5, 9, 4.4, 8.4]
-    elif pneu == "soft":
+    elif tyre == "soft":
         k_wear = [2, 7, 12, 5, 9]
     else:
         k_wear = [1, 4, 7, 4, 8]
@@ -465,10 +465,10 @@ def sim_the_race(
     for weather in forecast:
         print(f"weather: 🌤️ ☁️  {weather}")
     for car in cars:
-        car.pneu = random.choice(["hard", "medium"])
-    player.pneu = get_player_pneu(PNEU_types, player.pneu, "driver_1")
-    player_2.pneu = get_player_pneu(PNEU_types, player_2.pneu, "driver_2")
-    cars = generate_pneu_for_bots_on_start(cars, weather_1)
+        car.tyre = random.choice(["hard", "medium"])
+    player.tyre = get_player_tyre(PNEU_types, player.tyre, "driver_1")
+    player_2.tyre = get_player_tyre(PNEU_types, player_2.tyre, "driver_2")
+    cars = generate_tyre_for_bots_on_start(cars, weather_1)
     simulation = []
     # Training
     # speed_bonus, training_type = training(speed, climax, cars)
@@ -495,7 +495,7 @@ def sim_the_race(
             climax,
             player.name,
             player_2.name,
-            pneu,
+            tyre,
             speed,
             PNEU_types,
             weather_1,

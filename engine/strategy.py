@@ -1,14 +1,14 @@
 from log import dlog
 
 
-def strategy(LAPS, TIME_S1, TIME_S2, TIME_S3, pneu, speed, climax):
+def strategy(LAPS, TIME_S1, TIME_S2, TIME_S3, tyre, speed, climax):
     count_laps = LAPS
     if count_laps < 2:
         count_laps = 3
     lap_time = (TIME_S1 + TIME_S2 + TIME_S3) / 60
-    if pneu == "medium":
+    if tyre == "medium":
         k_wear = [1.5, 5, 9, 4.4, 8.4]
-    elif pneu == "soft":
+    elif tyre == "soft":
         k_wear = [2, 7, 12, 5, 9]
     else:
         k_wear = [1, 4, 7, 4, 8]
@@ -29,7 +29,7 @@ def strategy(LAPS, TIME_S1, TIME_S2, TIME_S3, pneu, speed, climax):
         fn="strategy",
         msg="tyre endurance calculated",
         laps_remaining=LAPS,
-        pneu_type=pneu,
+        tyre_type=tyre,
         speed_type=speed,
         climax=climax,
         hard_laps=round(endurance_h, 1),

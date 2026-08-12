@@ -58,7 +58,7 @@ COUNT_CARS = 28
 
 WEATHER_TYPES = ["sunny", "transitional", "rain", "heavy rain"]
 
-pneu_colours = {
+tyre_colours = {
     "hard": "gray",
     "medium": "yellow",
     "soft": "red",

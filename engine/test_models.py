@@ -26,7 +26,7 @@ def main() -> None:
     print("Pydantic model validation")
 
     # Valid payloads
-    InitConfigPayload(pneu_driver_1="hard", pneu_driver_2="soft", training_mode=2)
+    InitConfigPayload(tyre_driver_1="hard", tyre_driver_2="soft", training_mode=2)
     ok("InitConfigPayload valid")
 
     LapUserDataPayload(commands=[], **{"Max Vershaeren": {"pace": "normal"}})
@@ -49,7 +49,7 @@ def main() -> None:
     # Invalid payloads should raise
     for bad, model, label in [
         (
-            {"pneu_driver_1": "hard"},
+            {"tyre_driver_1": "hard"},
             InitConfigPayload,
             "InitConfigPayload missing fields",
         ),

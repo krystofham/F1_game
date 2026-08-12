@@ -9,8 +9,8 @@ _STATE_FILE = state_file()
 
 _USER_INPUT_DEFAULTS = {
     "lap_user_data": {
-        "driver_1": {"action": "1", "new_pneu": "medium"},
-        "driver_2": {"action": "1", "new_pneu": "medium"},
+        "driver_1": {"action": "1", "new_tyre": "medium"},
+        "driver_2": {"action": "1", "new_tyre": "medium"},
         "commands": [],
     },
     "settings": {"stop_on_event": True, "show_logs": False},

@@ -45,7 +45,7 @@ class Drivermmr2:
         self.points = 0
         self.dnf = False
         self.wear = 0.0
-        self.pneu = "medium"
+        self.tyre = "medium"
         self.box = 0
         self.position = []
         self.stints = []

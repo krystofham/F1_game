@@ -10,15 +10,15 @@ def colours_graphs(cars, colours):
     for c in cars:
         if c.dnf:
             colours.append("red")
-        elif c.pneu.lower() == "hard":
+        elif c.tyre.lower() == "hard":
             colours.append("gray")
-        elif c.pneu.lower() == "medium":
+        elif c.tyre.lower() == "medium":
             colours.append("yellow")
-        elif c.pneu.lower() == "soft":
+        elif c.tyre.lower() == "soft":
             colours.append("red")
-        elif c.pneu.lower() == "wet":
+        elif c.tyre.lower() == "wet":
             colours.append("blue")
-        elif c.pneu.lower() == "inter":
+        elif c.tyre.lower() == "inter":
             colours.append("green")
         else:
             colours.append("green")
@@ -55,13 +55,13 @@ def plot_graph(RANK, teams, cars, player, player_2, climax):
     # time.sleep(8)
     jmena = [a.name for a in cars]
     timey = [a.time / 60 if not a.dnf else None for a in cars]
-    # colours podle pneu
+    # colours podle tyre
     colours = []
     colours_graphs(cars, colours)
     # Last stint for every car
     for a in cars:
         if not a.dnf:
-            a.stints.append((a.last_stint_start, a.time - a.last_stint_start, a.pneu))
+            a.stints.append((a.last_stint_start, a.time - a.last_stint_start, a.tyre))
     # Print graph
     plt.figure(figsize=(12, 6))
     plt.barh(

@@ -8,10 +8,10 @@ from paths import config_dir
 
 class Track:
     def __init__(
-        self, name, pneu, speed, TIME_S1, TIME_S2, TIME_S3, laps, dnf_probability
+        self, name, tyre, speed, TIME_S1, TIME_S2, TIME_S3, laps, dnf_probability
     ):
         self.name = name
-        self.pneu = pneu
+        self.tyre = tyre
         self.speed = speed
         self.TIME_S1 = TIME_S1
         self.TIME_S2 = TIME_S2
@@ -33,7 +33,7 @@ class Track:
                 for item in data:
                     track = Track(
                         name=item["name"],
-                        pneu=item["pneu_wear"],
+                        tyre=item["tyre_wear"],
                         speed=item["speed_type"],
                         TIME_S1=item["temp_1"],
                         TIME_S2=item["temp_2"],

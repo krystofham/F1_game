@@ -185,7 +185,7 @@ def snapshot_cars(cars: list, init_player, init_player_2) -> dict:
                 "name": c.name,
                 "team": c.team.name if c.team else None,
                 "is_player": c.is_player,
-                "pneu": getattr(c, "pneu", None),
+                "tyre": getattr(c, "tyre", None),
                 "wear": round(getattr(c, "wear", 0.0), 3),
             }
             for c in cars
@@ -204,8 +204,8 @@ def snapshot_cars(cars: list, init_player, init_player_2) -> dict:
 def snapshot_init_config(cfg: dict, label: str) -> dict:
     return {
         "label": label,
-        "pneu_driver_1": cfg.get("pneu_driver_1"),
-        "pneu_driver_2": cfg.get("pneu_driver_2"),
+        "tyre_driver_1": cfg.get("tyre_driver_1"),
+        "tyre_driver_2": cfg.get("tyre_driver_2"),
         "training_mode": cfg.get("training_mode"),
         "length": cfg.get("length"),
         "keys": sorted(cfg.keys()),
@@ -221,7 +221,7 @@ def snapshot_race_ctx(race_ctx: dict, label: str) -> dict:
         "total_laps": race_ctx.get("total_laps"),
         "training_type": race_ctx.get("training_type"),
         "speed_bonus": race_ctx.get("speed_bonus"),
-        "pneu_type": race_ctx.get("pneu_type"),
+        "tyre_type": race_ctx.get("tyre_type"),
         "speed_type": race_ctx.get("speed_type"),
         "forecast_len": len(race_ctx.get("forecast", [])),
         "safety_car": race_ctx.get("safety_car"),
