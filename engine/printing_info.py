@@ -181,13 +181,13 @@ def info(WETTINESS, forecast, lap, weather, LAPS, climax):
         # print(f"🔮 Forecast: {', '.join(forecast)}")
         if weather_1 == "sunny" and weather_4 in ["rain", "heavy rain"]:
             pass
-            # print(random.choice(["We’re monitoring the weather, expect rain in 3 laps.", "Rain is coming in now, you should start thinking about wet tires soon.", "Rain intensity increasing, we expect full wet conditions in the next 3 laps."]))
+            # print(random.choice(["We’re monitoring the weather, expect rain in 3 laps.", "Rain is coming in now, you should start thinking about wet tyres soon.", "Rain intensity increasing, we expect full wet conditions in the next 3 laps."]))
             # print(random.choice(["Copy that, adjusting my pace.", "Understood, I’m keeping an eye on it.","OK"]))
     else:
         fake = [generate_weather(weather, climax) for _ in range(4)]
         # print(f"🔮 Forecast: {', '.join(fake)}")
         if fake[0] == "sunny" and fake[3] in ["rain", "heavy rain"]:
-            # print(random.choice(["We’re monitoring the weather, expect rain in 3 laps.", "Rain is coming in now, you should start thinking about wet tires soon.", "Rain intensity increasing, we expect full wet conditions in the next 3 laps."]))
+            # print(random.choice(["We’re monitoring the weather, expect rain in 3 laps.", "Rain is coming in now, you should start thinking about wet tyres soon.", "Rain intensity increasing, we expect full wet conditions in the next 3 laps."]))
             # print(random.choice(["Copy that, adjusting my pace.", "Understood, I’m keeping an eye on it.","OK"]))
             pass
     return forecast

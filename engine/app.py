@@ -213,7 +213,7 @@ def _apply_driver_dict_to_car(car, d):
     car.ratings = d.get("rating", car.ratings)
     car.time = d.get("time", 0.0)
     car.wear = d.get("wear", 0.0)
-    car.tire = d.get("tire", car.tire)
+    car.tyre = d.get("tyre", car.tyre)
     car.drs = d.get("drs", False)
     car.pit = d.get("pit", False)
     car.dnf = d.get("dnf", False)
@@ -229,7 +229,7 @@ def _apply_ai_driver_dict_to_car(car, d):
     car.ratings = d.get("rating", car.ratings)
     car.time = d.get("time", 0.0)
     car.wear = d.get("wear", 0.0)
-    car.tire = d.get("tire", car.tire)
+    car.tyre = d.get("tyre", car.tyre)
     car.drs = d.get("drs", False)
     car.pit = d.get("pit", False)
     car.dnf = d.get("dnf", False)
@@ -516,7 +516,7 @@ async def api_init_race():
         forecast,
         _weather,
         climax,
-        tire,
+        tyre,
         speed,
         _PNEU_types,
         _weather_1,
@@ -573,7 +573,7 @@ async def api_init_race():
         "weather": weather_actual,
         "forecast": forecast,
         "wettiness": WETTINESS,
-        "tire_type": tire,
+        "tyre_type": tyre,
         "speed_type": speed,
         "training_type": training_type,
         "speed_bonus": speed_bonus,
@@ -588,7 +588,7 @@ async def api_init_race():
         total_laps=total_laps,
         weather=weather_actual,
         forecast=forecast,
-        tire_p1=tire,
+        tyre_p1=tyre,
         training=training_type,
         b=b,
         season=season_count,
@@ -637,7 +637,7 @@ async def api_sim_lap():
     if time_laps is None:
         elog(
             fn="api_sim_lap",
-            msg="time_laps key missing from state.json entirely — init_race may not have run",
+            msg="time_laps key missing from state.json entyrely — init_race may not have run",
             lap=lap,
         )
         time_laps = []
@@ -704,7 +704,7 @@ async def api_sim_lap():
             race_ctx["weather"],
             race_ctx["total_laps"],
             race_ctx["climax"],
-            race_ctx["tire_type"],
+            race_ctx["tyre_type"],
             race_ctx["speed_type"],
             {
                 "hard": {"wear": race_ctx["k_wear"][0], "speed": k_speed[0]},
@@ -809,7 +809,7 @@ async def api_post_race():
     if time_laps is None:
         elog(
             fn="api_post_race",
-            msg="time_laps key missing entirely from state.json",
+            msg="time_laps key missing entyrely from state.json",
             race=race,
             season=season_count,
         )
@@ -1365,7 +1365,7 @@ async def api_sim_race():
             race_ctx["weather"],
             total_laps,
             race_ctx["climax"],
-            race_ctx["tire_type"],
+            race_ctx["tyre_type"],
             race_ctx["speed_type"],
             tyre_compounds,
             race_ctx["forecast"][0]
@@ -1560,7 +1560,7 @@ async def api_sim_until(data: SimUntilPayload):
             current_race_ctx["weather"],
             total_laps,
             current_race_ctx["climax"],
-            current_race_ctx["tire_type"],
+            current_race_ctx["tyre_type"],
             current_race_ctx["speed_type"],
             tyre_compounds,
             forecast[0] if len(forecast) > 0 else current_race_ctx["weather"],
@@ -1644,7 +1644,7 @@ def get_tracks_api():
         tracks_data = [
             {
                 "name": track.name,
-                "tire_wear": track.tire,
+                "tyre_wear": track.tyre,
                 "speed_type": track.speed,
                 "temp_1": track.TIME_S1,
                 "temp_2": track.TIME_S2,

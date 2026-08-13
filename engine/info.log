@@ -1,0 +1,6 @@
+{"ts": "2026-08-13T16:43:13", "event": "[WARNING]", "fn": "safety_car", "msg": "driver mistake penalty", "name": "Kim Nguyen", "penalty": 42, "lap": 20, "weather": "sunny"}
+{"ts": "2026-08-13T16:43:13", "event": "[WARNING]", "fn": "safety_car", "msg": "driver mistake penalty", "name": "Johan Reißer", "penalty": 41, "lap": 34, "weather": "sunny"}
+{"ts": "2026-08-13T16:43:13", "event": "[WARNING]", "fn": "safety_car", "msg": "driver mistake penalty", "name": "Ivan Vasiliev", "penalty": 31, "lap": 38, "weather": "sunny"}
+{"ts": "2026-08-13T16:43:14", "event": "[WARNING]", "fn": "api_sim_race", "msg": "time_laps not empty at sim_race start — leftover from previous race?", "race": "Prague Grand Prix", "time_laps_count": 1148}
+{"ts": "2026-08-13T16:43:17", "event": "[WARNING]", "fn": "get_player_tyre", "msg": "driver key missing", "driver_key": "driver_1"}
+{"ts": "2026-08-13T16:43:17", "event": "[WARNING]", "fn": "get_player_tyre", "msg": "driver key missing", "driver_key": "driver_2"}
