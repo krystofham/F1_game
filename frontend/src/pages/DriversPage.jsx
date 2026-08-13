@@ -43,11 +43,11 @@ function DriverDetail({ driver }) {
         </div>
       </div>
 
-      {driver.pneu && (
+      {driver.tyre && (
         <div className="flex items-center gap-4 mb-4" style={{ gap: 16 }}>
           <div>
             <div className="card-label" style={{ marginBottom: 6 }}>Tyre</div>
-            <TyreBadge type={driver.pneu} />
+            <TyreBadge type={driver.tyre} />
           </div>
           <div style={{ flex: 1 }}>
             <div className="card-label" style={{ marginBottom: 6 }}>Wear</div>
@@ -137,8 +137,8 @@ export default function DriversPage() {
 
       return {
         ...driver,
-        // Pokud má liveDriver čerstvější pneu a opotřebení ze simulace, ukážeme je
-        pneu: liveDriver?.pneu || driver.pneu,
+        // Pokud má liveDriver čerstvější tyre a opotřebení ze simulace, ukážeme je
+        tyre: liveDriver?.tyre || driver.tyre,
         wear: liveDriver?.wear !== undefined ? liveDriver.wear : driver.wear,
         dnf: liveDriver?.dnf !== undefined ? liveDriver.dnf : driver.dnf,
         history: liveDriver?.position_history || liveDriver?.lap_times || [],
@@ -252,9 +252,9 @@ export default function DriversPage() {
 
                 {/* Tyre + Wear */}
                 <div className="flex items-center" style={{ gap: 8 }}>
-                  {d.pneu ? (
+                  {d.tyre ? (
                     <>
-                      <TyreBadge type={d.pneu} />
+                      <TyreBadge type={d.tyre} />
                       <WearBar wear={d.wear || 0} />
                     </>
                   ) : (

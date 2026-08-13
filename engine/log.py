@@ -1,16 +1,18 @@
+import atexit
 import json
 import os
 from collections import Counter
 from contextlib import contextmanager
 from contextvars import ContextVar
 from datetime import datetime
-import atexit
+
+from paths import log_file, user_input_dir
 
 # --- Konfigurace logování ---
-_LOG_PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)), "info.log")
+_LOG_PATH = log_file()
 
 # PRODUCTION/DEBUG
-PRODUCTION = "prod" # or deb
+PRODUCTION = "prod"  # or deb
 
 # --- Buffer a flush ---
 _buffer: list[str] = []
@@ -18,6 +20,7 @@ _FLUSH_EVERY = 1
 # _FLUSH_EVERY = 5 # uncomment in prod
 
 DEBUG_MODE = False
+
 
 def _flush() -> None:
     if not _buffer:
@@ -29,10 +32,12 @@ def _flush() -> None:
     except OSError:
         pass
 
+
 atexit.register(_flush)
 
 # --- Kontext pro funkce ---
 _fn_ctx: ContextVar[str | None] = ContextVar("log_fn", default=None)
+
 
 @contextmanager
 def log_context(fn: str):
@@ -42,6 +47,7 @@ def log_context(fn: str):
     finally:
         _fn_ctx.reset(token)
 
+
 def _inject_fn(payload: dict) -> dict:
     if "fn" not in payload:
         fn = _fn_ctx.get()
@@ -49,9 +55,14 @@ def _inject_fn(payload: dict) -> dict:
             payload["fn"] = fn
     return payload
 
+
 # --- Logovací funkce (kompatibilní) ---
 def log(event: str, **payload) -> dict:
-    entry = {"ts": datetime.now().isoformat(timespec="seconds"), "event": event, **_inject_fn(payload)}
+    entry = {
+        "ts": datetime.now().isoformat(timespec="seconds"),
+        "event": event,
+        **_inject_fn(payload),
+    }
     line = json.dumps(entry, ensure_ascii=False)
 
     if DEBUG_MODE:
@@ -63,29 +74,35 @@ def log(event: str, **payload) -> dict:
 
     return entry
 
+
 def _is_prod() -> bool:
     try:
-        path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "user_input/settings.json")
+        path = os.path.join(user_input_dir(), "settings.json")
         with open(path) as f:
             return not json.load(f).get("show_logs", False)
     except Exception:
         return True
+
 
 def dlog(**payload) -> dict:
     if _is_prod():
         return
     return log("[DEBUG]", **payload)
 
+
 def ilog(**payload) -> dict:
     if _is_prod():
         return
     return log("[INFO]", **payload)
 
+
 def wlog(**payload) -> dict:
     return log("[WARNING]", **payload)
 
+
 def elog(**payload) -> dict:
     return log("[ERROR]", **payload)
+
 
 # --- Čtení a mazání logů ---
 def read_log(max_lines: int = 200) -> list[dict]:
@@ -107,12 +124,14 @@ def read_log(max_lines: int = 200) -> list[dict]:
             out.append({"raw": line})
     return out
 
+
 def clear_log() -> None:
     try:
         with open(_LOG_PATH, "w", encoding="utf-8") as f:
             f.write("")
     except OSError:
         pass
+
 
 # --- Snapshoty (původní) ---
 def snapshot_state(state: dict, label: str) -> dict:
@@ -140,7 +159,8 @@ def snapshot_state(state: dict, label: str) -> dict:
         ],
         "duplicate_names": [n for n, c in counts.items() if c > 1],
         "players_missing_from_drivers": [
-            name for name in player_names
+            name
+            for name in player_names
             if not any(d.get("name") == name and d.get("is_player") for d in drivers)
         ],
         "players_in_teams": {
@@ -150,13 +170,11 @@ def snapshot_state(state: dict, label: str) -> dict:
             )
             for name in player_names
         },
-        "team_rosters": {
-            t.get("name"): t.get("drivers", [])
-            for t in teams
-        },
+        "team_rosters": {t.get("name"): t.get("drivers", []) for t in teams},
         "driver_count": len(drivers),
         "team_count": len(teams),
     }
+
 
 def snapshot_cars(cars: list, init_player, init_player_2) -> dict:
     return {
@@ -167,34 +185,32 @@ def snapshot_cars(cars: list, init_player, init_player_2) -> dict:
                 "name": c.name,
                 "team": c.team.name if c.team else None,
                 "is_player": c.is_player,
-                "pneu": getattr(c, "pneu", None),
+                "tyre": getattr(c, "tyre", None),
                 "wear": round(getattr(c, "wear", 0.0), 3),
             }
             for c in cars
             if c.is_player
         ],
         "no_team": [
-            {"name": c.name, "is_player": c.is_player}
-            for c in cars
-            if c.team is None
+            {"name": c.name, "is_player": c.is_player} for c in cars if c.team is None
         ],
         "shadow_duplicates": [
-            c.name
-            for c in cars
-            if c.team is None and not c.is_player
+            c.name for c in cars if c.team is None and not c.is_player
         ],
         "total_cars": len(cars),
     }
 
+
 def snapshot_init_config(cfg: dict, label: str) -> dict:
     return {
         "label": label,
-        "pneu_driver_1": cfg.get("pneu_driver_1"),
-        "pneu_driver_2": cfg.get("pneu_driver_2"),
+        "tyre_driver_1": cfg.get("tyre_driver_1"),
+        "tyre_driver_2": cfg.get("tyre_driver_2"),
         "training_mode": cfg.get("training_mode"),
         "length": cfg.get("length"),
         "keys": sorted(cfg.keys()),
     }
+
 
 def snapshot_race_ctx(race_ctx: dict, label: str) -> dict:
     return {
@@ -205,7 +221,7 @@ def snapshot_race_ctx(race_ctx: dict, label: str) -> dict:
         "total_laps": race_ctx.get("total_laps"),
         "training_type": race_ctx.get("training_type"),
         "speed_bonus": race_ctx.get("speed_bonus"),
-        "pneu_type": race_ctx.get("pneu_type"),
+        "tyre_type": race_ctx.get("tyre_type"),
         "speed_type": race_ctx.get("speed_type"),
         "forecast_len": len(race_ctx.get("forecast", [])),
         "safety_car": race_ctx.get("safety_car"),

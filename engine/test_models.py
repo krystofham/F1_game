@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 """Verify Pydantic models used by FastAPI endpoints."""
+
 from pydantic import ValidationError
 
 from models import (
@@ -25,7 +26,7 @@ def main() -> None:
     print("Pydantic model validation")
 
     # Valid payloads
-    InitConfigPayload(pneu_driver_1="hard", pneu_driver_2="soft", training_mode=2)
+    InitConfigPayload(tyre_driver_1="hard", tyre_driver_2="soft", training_mode=2)
     ok("InitConfigPayload valid")
 
     LapUserDataPayload(commands=[], **{"Max Vershaeren": {"pace": "normal"}})
@@ -40,12 +41,18 @@ def main() -> None:
     SettingsPayload(stop_on_event=True, show_logs=False)
     ok("SettingsPayload valid")
 
-    PatchStatePayload(teams=[{"name": "Team X"}], drivers=[{"name": "Driver Y", "rating": 5.0}])
+    PatchStatePayload(
+        teams=[{"name": "Team X"}], drivers=[{"name": "Driver Y", "rating": 5.0}]
+    )
     ok("PatchStatePayload valid")
 
     # Invalid payloads should raise
     for bad, model, label in [
-        ({"pneu_driver_1": "hard"}, InitConfigPayload, "InitConfigPayload missing fields"),
+        (
+            {"tyre_driver_1": "hard"},
+            InitConfigPayload,
+            "InitConfigPayload missing fields",
+        ),
         ({"lap": "not-int"}, SimUntilPayload, "SimUntilPayload bad lap type"),
         ({}, TransferPayload, "TransferPayload missing required"),
     ]:
@@ -57,6 +64,7 @@ def main() -> None:
 
     # FastAPI app imports models without error
     import app  # noqa: F401
+
     ok("app.py imports models and loads")
 
     print("\nAll Pydantic checks passed.")

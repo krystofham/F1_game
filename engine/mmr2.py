@@ -1,12 +1,30 @@
 import random
+
 from log import ilog
 
 drivers_mmr2 = [
-    "Noah Blake", "Felipe Sandoval", "Luca Moretti", "Brian Chen", "Adam Kerdöl", "Pierre Gauthier",
-    "Viktor Orlov", "Daisuke Tanaka", "Elias Müller", "Jordan Evans", "Diego Ramirez", "Anton Petrov",
-    "Kenji Nakamura", "Nicolas Dubois", "Thomas Fischer", "Miguel Lopéz", "Alexei Solapov", "Ethan Zhang",
-    "Leo Harrington", "Marco Silva"
+    "Noah Blake",
+    "Felipe Sandoval",
+    "Luca Moretti",
+    "Brian Chen",
+    "Adam Kerdöl",
+    "Pierre Gauthier",
+    "Viktor Orlov",
+    "Daisuke Tanaka",
+    "Elias Müller",
+    "Jordan Evans",
+    "Diego Ramirez",
+    "Anton Petrov",
+    "Kenji Nakamura",
+    "Nicolas Dubois",
+    "Thomas Fischer",
+    "Miguel Lopéz",
+    "Alexei Solapov",
+    "Ethan Zhang",
+    "Leo Harrington",
+    "Marco Silva",
 ]
+
 
 class DummyTeam:
     def __init__(self):
@@ -14,6 +32,7 @@ class DummyTeam:
         self.drivers = []
         self.rating = 0
         self.points = 0
+
 
 class Drivermmr2:
     def __init__(self, name, rating):
@@ -26,7 +45,7 @@ class Drivermmr2:
         self.points = 0
         self.dnf = False
         self.wear = 0.0
-        self.pneu = "medium"
+        self.tyre = "medium"
         self.box = 0
         self.position = []
         self.stints = []
@@ -37,8 +56,13 @@ class Drivermmr2:
         self.safety_car_probability = 0
         self.last_stint_start = 0
 
+
 def simulate_season_mmr2(drivers):
-    ilog(fn="simulate_season_mmr2", msg="MMR2 season simulation started", driver_count=len(drivers))
+    ilog(
+        fn="simulate_season_mmr2",
+        msg="MMR2 season simulation started",
+        driver_count=len(drivers),
+    )
     for driver in drivers:
         driver.time = 0.0
     for lap in range(50 * 12):
@@ -46,9 +70,17 @@ def simulate_season_mmr2(drivers):
             driver.time += driver.rating * random.uniform(0.98, 1.02)
     mmr2_sorted = sorted(drivers, key=lambda x: x.time)
     best, worst = mmr2_sorted[0], mmr2_sorted[-1]
-    ilog(fn="simulate_season_mmr2", msg="MMR2 season simulation finished",
-         best=best.name, best_time=round(best.time, 3),
-         worst=worst.name, worst_time=round(worst.time, 3))
+    ilog(
+        fn="simulate_season_mmr2",
+        msg="MMR2 season simulation finished",
+        best=best.name,
+        best_time=round(best.time, 3),
+        worst=worst.name,
+        worst_time=round(worst.time, 3),
+    )
     return best, worst
 
-list_drivers_mmr2 = [Drivermmr2(name, random.uniform(5.95, 8.05)) for name in drivers_mmr2]
+
+list_drivers_mmr2 = [
+    Drivermmr2(name, random.uniform(5.95, 8.05)) for name in drivers_mmr2
+]

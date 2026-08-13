@@ -5,19 +5,21 @@ class Team:
     def __init__(self, name, rating):
         self.name = name
         self.rating = rating
-        self.drivers = [] 
-        self.points = 0   
+        self.drivers = []
+        self.points = 0
 
     def pridej_jezdce(self, car):
         self.drivers.append(car)
         car.team = self
+
     def to_log(self) -> dict:
         return {
-            "name":    self.name,
-            "rating":  round(self.rating, 4),
-            "points":  self.points,
+            "name": self.name,
+            "rating": round(self.rating, 4),
+            "points": self.points,
             "drivers": [d.name for d in self.drivers],
         }
+
     def vypocitej_points(self, RANK, COUNT_CARS):
         points_before = self.points
         for jezdec in self.drivers:
@@ -65,25 +67,34 @@ class Team:
                 self.points += 3
             elif position == 20:
                 self.points += 2
-            elif position == 21:
-                self.points += 1
-            elif position == 22:
-                self.points += 1
-            elif position == 23:
+            elif position == 21 or position == 22 or position == 23:
                 self.points += 1
         gained = self.points - points_before
         if gained:
-            dlog(fn="vypocitej_points", msg="team points awarded",
-                 team=self.name, gained=gained, total=self.points,
-                 drivers=[d.name for d in self.drivers])
+            dlog(
+                fn="vypocitej_points",
+                msg="team points awarded",
+                team=self.name,
+                gained=gained,
+                total=self.points,
+                drivers=[d.name for d in self.drivers],
+            )
+
 
 teams = []
+
+
 def create_team(TEAM_PLAYER, player_1, player_2, teams, rating):
     team = Team(TEAM_PLAYER, rating)
     team.pridej_jezdce(player_1)
     team.pridej_jezdce(player_2)
     teams.append(team)
-    dlog(fn="create_team", msg="team created",
-         team=TEAM_PLAYER, rating=round(rating, 4),
-         driver_1=player_1.name, driver_2=player_2.name)
+    dlog(
+        fn="create_team",
+        msg="team created",
+        team=TEAM_PLAYER,
+        rating=round(rating, 4),
+        driver_1=player_1.name,
+        driver_2=player_2.name,
+    )
     return team

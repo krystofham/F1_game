@@ -16,7 +16,7 @@ function PitForm({ drivers, onSubmit, disabled }) {
   const buildDefault = (list) => {
     const init = {};
     list.forEach((d) => {
-      init[d.name] = { action: "1", new_pneu: "medium", pace: "normal" };    
+      init[d.name] = { action: "1", new_tyre: "medium", pace: "normal" };    
     });
     return init;
   };
@@ -35,16 +35,16 @@ function PitForm({ drivers, onSubmit, disabled }) {
   const handleSubmit = () => {
       const payload = { commands: [] };
       playerDrivers.forEach((d) => {
-          payload[d.name] = actions[d.name] ?? { action: "1", new_pneu: "medium", pace: "normal" };
+          payload[d.name] = actions[d.name] ?? { action: "1", new_tyre: "medium", pace: "normal" };
       });
       onSubmit(payload);
-      // Reset jen action a new_pneu, pace zachovej
+      // Reset jen action a new_tyre, pace zachovej
       setActions((prev) => {
           const next = {};
           playerDrivers.forEach((d) => {
               next[d.name] = {
                   action: "1",
-                  new_pneu: "medium",
+                  new_tyre: "medium",
                   pace: prev[d.name]?.pace ?? "normal",
               };
           });
@@ -58,7 +58,7 @@ function PitForm({ drivers, onSubmit, disabled }) {
     <div className="card" style={{ marginBottom: 24 }}>
       <div style={{ display: "flex", gap: 16, flexWrap: "wrap" }}>
         {playerDrivers.map((d) => {
-          const act = actions[d.name] ?? { action: "1", new_pneu: "medium", pace: "normal" };
+          const act = actions[d.name] ?? { action: "1", new_tyre: "medium", pace: "normal" };
           const isPit = act.action === "2";
 
           return (
@@ -91,8 +91,8 @@ function PitForm({ drivers, onSubmit, disabled }) {
               <div className="field" style={{ opacity: isPit ? 1 : 0.3, pointerEvents: isPit ? "auto" : "none" }}>
                 <label style={{ fontSize: 9 }}>New Tyre</label>
                 <select
-                  value={act.new_pneu}
-                  onChange={(e) => setField(d.name, "new_pneu", e.target.value)}
+                  value={act.new_tyre}
+                  onChange={(e) => setField(d.name, "new_tyre", e.target.value)}
                   disabled={disabled || !isPit}
                 >
                   {TYRE_OPTS.map((t) => <option key={t} value={t}>{t.toUpperCase()}</option>)}
@@ -135,8 +135,8 @@ function InitForm({ onInit, currentClima, currentWeather }) {
   const [cfg, setCfg] = useState({
     // Default values
     length: 2,
-    pneu_driver_1: "hard",
-    pneu_driver_2: "hard",
+    tyre_driver_1: "hard",
+    tyre_driver_2: "hard",
     training_mode: 1,
     front_wing: 5,
     rear_wing: 5,
@@ -156,8 +156,8 @@ function InitForm({ onInit, currentClima, currentWeather }) {
     setErr(null);
     try {
       await api.setInitConfig({
-        pneu_driver_1: cfg.pneu_driver_1,
-        pneu_driver_2: cfg.pneu_driver_2,
+        tyre_driver_1: cfg.tyre_driver_1,
+        tyre_driver_2: cfg.tyre_driver_2,
         training_mode: cfg.training_mode,
       });
       const res = await api.initRace();
@@ -209,13 +209,13 @@ function InitForm({ onInit, currentClima, currentWeather }) {
         )}
         <div className="field">
           <label>Driver 1 Tyre</label>
-          <select value={cfg.pneu_driver_1} onChange={(e) => set("pneu_driver_1", e.target.value)}>
+          <select value={cfg.tyre_driver_1} onChange={(e) => set("tyre_driver_1", e.target.value)}>
             {tyreOpts.map((t) => <option key={t} value={t}>{t.toUpperCase()}</option>)}
           </select>
         </div>
         <div className="field">
           <label>Driver 2 Tyre</label>
-          <select value={cfg.pneu_driver_2} onChange={(e) => set("pneu_driver_2", e.target.value)}>
+          <select value={cfg.tyre_driver_2} onChange={(e) => set("tyre_driver_2", e.target.value)}>
             {tyreOpts.map((t) => <option key={t} value={t}>{t.toUpperCase()}</option>)}
           </select>
         </div>
@@ -312,7 +312,7 @@ function RaceTable({ drivers }) {
                 {d.is_player && <span className="badge badge-ok" style={{ marginLeft: 6, fontSize: 7 }}>YOU</span>}
                 {d.drs && <span className="badge badge" style={{ marginLeft: 6, fontSize: 7, borderColor: "var(--green)", color: "var(--green)"}}>DRS open</span>}
               </td>
-              <td><TyreBadge type={d.pneu} /></td>
+              <td><TyreBadge type={d.tyre} /></td>
               <td style={{ minWidth: 120 }}><WearBar wear={d.wear || 0} /></td>
               <td className="text-mono">{gapDisplay}</td>
               <td className="text-mono">{d.pit_stops}</td>
@@ -402,7 +402,7 @@ export default function RacePage({ onSeasonChange }) {
           addLog(
               `Instructions: ${Object.entries(payload)
                   .filter(([k]) => k !== "commands")
-                  .map(([k, v]) => `${k} -> ${v.action === "2" ? "PIT (" + v.new_pneu + ")" : "GO"}`)
+                  .map(([k, v]) => `${k} -> ${v.action === "2" ? "PIT (" + v.new_tyre + ")" : "GO"}`)
                   .join(" | ")}`,
               "good"
           );
@@ -529,16 +529,16 @@ export default function RacePage({ onSeasonChange }) {
         <>
           {/* 
           JAK FUNGUJE PROP AvgPneu NA ŘÁDKU VYŠE:
-          1. Spočítá výskyt pneu:
-            const pneuCounts = raceData.drivers.reduce((acc, driver) => {
-              const pneu = driver.current_tyre;
-              if (pneu) acc[pneu] = (acc[pneu] || 0) + 1;
+          1. Spočítá výskyt tyre:
+            const tyreCounts = raceData.drivers.reduce((acc, driver) => {
+              const tyre = driver.current_tyre;
+              if (tyre) acc[tyre] = (acc[tyre] || 0) + 1;
               return acc;
             }, {});
 
-          2. Vybere pneumatiku s nejvyšším počtem výskytů:
-            const AvgPneu = Object.keys(pneuCounts).reduce((a, b) => 
-              pneuCounts[a] > pneuCounts[b] ? a : b
+          2. Vybere tyrematiku s nejvyšším počtem výskytů:
+            const AvgPneu = Object.keys(tyreCounts).reduce((a, b) => 
+              tyreCounts[a] > tyreCounts[b] ? a : b
             );
         */}
         <InitForm 

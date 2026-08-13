@@ -964,6 +964,17 @@ select option {
   margin-bottom: 20px;
 }
 
+.engine-gate__hint--secondary {
+  font-size: 12px;
+  margin-top: -8px;
+}
+
+.engine-gate__hint code {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--text-3);
+}
+
 .engine-gate__meta {
   font-family: var(--font-mono);
   font-size: 11px;

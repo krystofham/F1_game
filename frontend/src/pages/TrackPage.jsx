@@ -111,14 +111,14 @@ export default function TrackPage({ state }) {
       </div>
 
       {/* Profil směsí se nyní renderuje na základě spárovaných detailů z tracks.json */}
-      {(trackDetails.pneu_types || trackDetails.speed_types) && (
+      {(trackDetails.tyre_types || trackDetails.speed_types) && (
         <div>
           <div className="section-title">Compound Profile</div>
           <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
             <div className="card">
               <div className="card-label" style={{ marginBottom: 10 }}>Tyre Compounds</div>
               <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
-                {(trackDetails.pneu_types || ["soft", "medium", "hard"]).map((t) => (
+                {(trackDetails.tyre_types || ["soft", "medium", "hard"]).map((t) => (
                   <div
                     key={t}
                     className={`tyre ${t}`}

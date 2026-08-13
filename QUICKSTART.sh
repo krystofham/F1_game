@@ -1,14 +1,21 @@
 #!/bin/bash
+set -euo pipefail
 
-git clone https://github.com/krystofham/F1_game
-cd F1_game
+REPO="https://github.com/krystofham/F1_game"
+DIR="F1_game"
 
-pip install -r requirements.txt --break-system-packages
+if [ ! -d "$DIR" ]; then
+  git clone "$REPO"
+fi
 
-cd engine
-uvicorn app:app --port 8000 &
-cd ..
+cd "$DIR"
 
+echo "Installing Python dependencies..."
+python3 -m pip install -r requirements.txt
+
+echo "Installing frontend dependencies..."
 cd frontend
-npm install 
+npm install
+
+echo "Starting MMRAC1NG (development mode)..."
 npm run desktop:dev
