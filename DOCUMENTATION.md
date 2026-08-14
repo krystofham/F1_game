@@ -70,7 +70,6 @@ F1_game/
 | POST | `/api/sim_until` | Simulate up to target lap |
 | POST | `/api/sim_race` | Simulate entire race, returns snapshots |
 | POST | `/api/post_race` | Save results, advance championship counter |
-| POST | `/api/post_championship` | End season, MMR2, transfers, reset |
 | GET | `/api/get_transfer_offers` | Generate transfer market offers |
 | POST | `/api/do_transfer` | Execute driver transfer |
 
