@@ -48,3 +48,5 @@ __pycache__/
 !.vscode/extensions.jsondocs/
 engine/data/
 engine/user_input/
+.mypy_cache/
+.ruff_cache

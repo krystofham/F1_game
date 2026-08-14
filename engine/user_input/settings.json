@@ -1,4 +1,4 @@
 {
-  "stop_on_event": true,
+  "stop_on_event": false,
   "show_logs": false
 }

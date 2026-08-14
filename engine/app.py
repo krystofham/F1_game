@@ -58,7 +58,7 @@ async def write_into_file(data: Any, destination: str, file_name: str) -> None:
     async with file_lock:
         try:
             await asyncio.to_thread(_save_to_disk, path, data)
-        except OSError:
+        except OSError as e:
             elog(fn="write_into_file", msg=str(e))
 
 
@@ -73,7 +73,7 @@ async def read_from_file(destination: str, file_name: str, fallback: Any = None)
     path = os.path.join(destination, file_name)
     try:
         data = await asyncio.to_thread(_read_from_disk, path)
-    except OSError:
+    except OSError as e:
         elog(fn="read_from_file", msg=str(e))
         data = None
     if data is None:
@@ -560,7 +560,7 @@ async def api_init_race():
     state = _state()
     state["smt_happened"] = False
     state["lap"] = 0
-    state["time_laps"] = []  # ← reset při každém novém závodě
+    state["time_laps"] = []
     state["race"] = getattr(race, "name", str(race))
     state["b"] = b
     state["season_count"] = season_count
@@ -595,7 +595,6 @@ async def api_init_race():
     )
 
     _write_state(state, "api_init_race")
-
     return {
         "status": "ok",
         "race": state["race"],
@@ -689,7 +688,6 @@ async def api_sim_lap():
         _b,
         season_count,
     ) = load_game_objects()
-    # Exception je prilis obecny, upravit
     try:
         lap, cars, teams = sim_the_lap(
             cars,
@@ -746,7 +744,6 @@ async def api_sim_lap():
     new_state = _state()
     new_time_laps = new_state.get("time_laps", [])
 
-    # Ověř že sim_the_lap skutečně zapsal time_laps zpět do state.json
     if len(new_time_laps) == 0 and lap > 0:
         elog(
             fn="api_sim_lap",
@@ -911,6 +908,7 @@ async def api_post_race():
         )
     if new_b > championship_length:
         ilog(fn="api_post_race", msg="championship finished", season=season_count)
+        api_post_championship()
         return {"status": "race_done", "race": race, "championship_finished": True}
     return {"status": "race_done", "race": race, "championship_finished": False}
 
@@ -941,25 +939,22 @@ async def api_get_climax():
 # ---------------------------------------------------------------------------
 
 
-@app.post("/api/post_championship")
-async def api_post_championship():
-    state = _state()
+def api_post_championship():
     (
         cars,
         teams,
         player,
         player_2,
         championship,
-        tracks,
+        _tracks,
         player.name,
         player_2.name,
-        COUNT_CARS,
-        SAFETY_CAR,
-        LAPS_REMAINING,
-        b,
+        _COUNT_CARS,
+        _SAFETY_CAR,
+        _LAPS_REMAINING,
+        _b,
         season_count,
-    ) = load_game_objects()
-
+    ) = load_game_objects(apply_state=False)
     best, worst = simulate_season_mmr2(list_drivers_mmr2)
     season_count += 1
 
@@ -975,7 +970,7 @@ async def api_post_championship():
         mmr2_best_rating=round(best.rating, 4),
         mmr2_worst_replaced_with=worst.name,
     )
-
+     
     cars.sort(key=lambda x: x.points, reverse=True)
     last_car = cars[-1]
 
@@ -999,11 +994,10 @@ async def api_post_championship():
     teams, player, player_2, player.name, player_2.name, cars = (
         trading_at_the_of_season(teams, player, player_2, cars)
     )
-
+    
     save_state_end_of_season(cars, teams, season_count)
     save_season_csv(cars, teams, season_count)
     WETTINESS, cars, teams = reset_championship(cars, teams)
-
     updated_state = _state()
     updated_state["b"] = 1
     updated_state["season_count"] = season_count

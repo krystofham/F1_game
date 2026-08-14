@@ -16,7 +16,7 @@ function PitForm({ drivers, onSubmit, disabled }) {
   const buildDefault = (list) => {
     const init = {};
     list.forEach((d) => {
-      init[d.name] = { action: "1", new_tyre: "medium", pace: "normal" };    
+      init[d.name] = { action: "1", new_tyre: "medium", pace: "normal" };
     });
     return init;
   };
@@ -33,23 +33,23 @@ function PitForm({ drivers, onSubmit, disabled }) {
     setActions((prev) => ({ ...prev, [name]: { ...prev[name], [field]: value } }));
 
   const handleSubmit = () => {
-      const payload = { commands: [] };
+    const payload = { commands: [] };
+    playerDrivers.forEach((d) => {
+      payload[d.name] = actions[d.name] ?? { action: "1", new_tyre: "medium", pace: "normal" };
+    });
+    onSubmit(payload);
+    // Reset jen action a new_tyre, pace zachovej
+    setActions((prev) => {
+      const next = {};
       playerDrivers.forEach((d) => {
-          payload[d.name] = actions[d.name] ?? { action: "1", new_tyre: "medium", pace: "normal" };
+        next[d.name] = {
+          action: "1",
+          new_tyre: "medium",
+          pace: prev[d.name]?.pace ?? "normal",
+        };
       });
-      onSubmit(payload);
-      // Reset jen action a new_tyre, pace zachovej
-      setActions((prev) => {
-          const next = {};
-          playerDrivers.forEach((d) => {
-              next[d.name] = {
-                  action: "1",
-                  new_tyre: "medium",
-                  pace: prev[d.name]?.pace ?? "normal",
-              };
-          });
-          return next;
-      });
+      return next;
+    });
   };
 
   if (playerDrivers.length === 0) return null;
@@ -169,7 +169,7 @@ function InitForm({ onInit, currentClima, currentWeather }) {
     }
   };
   const tyreOpts = ["soft", "medium", "hard", "wet", "inter"];
-      // state?.race_state.clima
+  // state?.race_state.clima
 
   return (
     <div className="card" style={{ maxWidth: 620 }}>
@@ -187,25 +187,25 @@ function InitForm({ onInit, currentClima, currentWeather }) {
 
       <div className="grid-2" style={{ gap: 14, marginBottom: 14 }}>
         {false && (
-        <>
-        <div className="field">
-          <label>Season Length</label>
-          <input
-            type="number"
-            min={1} max={24}
-            value={cfg.length}
-            onChange={(e) => set("length", +e.target.value)}
-          />
-        </div>
-        <div className="field">
-          <label>Training Mode</label>
-          <select value={cfg.training_mode} onChange={(e) => set("training_mode", +e.target.value)}>
-            <option value={1}>1 — Debug / Full</option>
-            <option value={2}>2 — Short</option>
-            <option value={3}>3 — None</option>
-          </select>
+          <>
+            <div className="field">
+              <label>Season Length</label>
+              <input
+                type="number"
+                min={1} max={24}
+                value={cfg.length}
+                onChange={(e) => set("length", +e.target.value)}
+              />
             </div>
-        </>
+            <div className="field">
+              <label>Training Mode</label>
+              <select value={cfg.training_mode} onChange={(e) => set("training_mode", +e.target.value)}>
+                <option value={1}>1 — Debug / Full</option>
+                <option value={2}>2 — Short</option>
+                <option value={3}>3 — None</option>
+              </select>
+            </div>
+          </>
         )}
         <div className="field">
           <label>Driver 1 Tyre</label>
@@ -396,19 +396,19 @@ export default function RacePage({ onSeasonChange }) {
   };
 
   const handlePitSubmit = async (payload) => {
-      try {
-          await api.setLapUserData(payload);
-          setPitSaved(true);
-          addLog(
-              `Instructions: ${Object.entries(payload)
-                  .filter(([k]) => k !== "commands")
-                  .map(([k, v]) => `${k} -> ${v.action === "2" ? "PIT (" + v.new_tyre + ")" : "GO"}`)
-                  .join(" | ")}`,
-              "good"
-          );
-      } catch (e) {
-          addLog(`Pit instruction error: ${e.message}`, "danger");
-      }
+    try {
+      await api.setLapUserData(payload);
+      setPitSaved(true);
+      addLog(
+        `Instructions: ${Object.entries(payload)
+          .filter(([k]) => k !== "commands")
+          .map(([k, v]) => `${k} -> ${v.action === "2" ? "PIT (" + v.new_tyre + ")" : "GO"}`)
+          .join(" | ")}`,
+        "good"
+      );
+    } catch (e) {
+      addLog(`Pit instruction error: ${e.message}`, "danger");
+    }
   };
 
   const handleInit = async (res) => {
@@ -449,42 +449,42 @@ export default function RacePage({ onSeasonChange }) {
   };
 
   const playSnapshots = async (snapshots, delayMs = 0) => {
-      for (const snap of snapshots) {
-          setLap(snap.lap);
-          setDrivers(snap.drivers);
-          await new Promise((r) => setTimeout(r, delayMs));
-      }
+    for (const snap of snapshots) {
+      setLap(snap.lap);
+      setDrivers(snap.drivers);
+      await new Promise((r) => setTimeout(r, delayMs));
+    }
   };
 
   const handleSimAll = async () => {
-      setRunning(true);
-      try {
-          const res = await api.simRace();          // 1 request místo 70
-          await playSnapshots(res.snapshots);        // animace lokálně
-          setLap(res.final_state.lap);
-          setDrivers(res.final_state.drivers ?? []);
-          addLog("CHEQUERED FLAG", "good");
-          await refetchState();
-      } catch (e) {
-          addLog(`Error: ${e.message}`, "danger");
-      }
-      setRunning(false);
+    setRunning(true);
+    try {
+      const res = await api.simRace();          // 1 request místo 70
+      await playSnapshots(res.snapshots);        // animace lokálně
+      setLap(res.final_state.lap);
+      setDrivers(res.final_state.drivers ?? []);
+      addLog("CHEQUERED FLAG", "good");
+      await refetchState();
+    } catch (e) {
+      addLog(`Error: ${e.message}`, "danger");
+    }
+    setRunning(false);
   };
 
   const handleSimUntil = async () => {
-      const target = parseInt(simUntil, 10);
-      if (!target || target <= lap) return;
-      setRunning(true);
-      try {
-          const res = await api.simUntil(target);  // nový call
-          await playSnapshots(res.snapshots);
-          setLap(res.lap);
-          setDrivers(res.final_state.drivers ?? []);
-          await refetchState();
-      } catch (e) {
-          addLog(`Error: ${e.message}`, "danger");
-      }
-      setRunning(false);
+    const target = parseInt(simUntil, 10);
+    if (!target || target <= lap) return;
+    setRunning(true);
+    try {
+      const res = await api.simUntil(target);  // nový call
+      await playSnapshots(res.snapshots);
+      setLap(res.lap);
+      setDrivers(res.final_state.drivers ?? []);
+      await refetchState();
+    } catch (e) {
+      addLog(`Error: ${e.message}`, "danger");
+    }
+    setRunning(false);
   };
 
   const handlePostRace = async () => {
@@ -498,19 +498,7 @@ export default function RacePage({ onSeasonChange }) {
     }
   };
 
-  const handlePostChampionship = async () => {
-    try {
-      await api.postChampionship();
-      addLog("Season ended. New season begun.", "highlight");
-      setRaceState(null);
-      setPostDone(false);
-      setLap(0);
-      setTotalLaps(null);
-      await refetchState();
-    } catch (e) {
-      addLog(`Championship error: ${e.message}`, "danger");
-    }
-  };
+
 
   const progress = totalLaps ? Math.min(100, (lap / totalLaps) * 100) : 0;
   const [showTrack, setShowTrack] = useState(true);
@@ -541,13 +529,13 @@ export default function RacePage({ onSeasonChange }) {
               tyreCounts[a] > tyreCounts[b] ? a : b
             );
         */}
-        <InitForm 
+          <InitForm
             onInit={handleInit}
             currentClima={weather?.climax}
             currentWeather={weather?.weather}
-        />
+          />
         </>
-    )}
+      )}
       {raceState && (
         <div>
           <div className="race-progress">
@@ -600,9 +588,6 @@ export default function RacePage({ onSeasonChange }) {
                     {postDone ? "DONE" : "POST RACE"}
                   </button>
 
-                  <button className="btn btn-danger" onClick={handlePostChampionship}>
-                    END SEASON
-                  </button>
                 </>
               )}
               {postDone && !isLastRace && (
