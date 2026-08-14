@@ -582,10 +582,10 @@ export default function RacePage({ onSeasonChange }) {
                   </button>
                 </>
               )}
-              {finished && (
+              {finished && !postDone && (
                 <>
-                  <button className="btn btn-success" onClick={handlePostRace} disabled={postDone}>
-                    {postDone ? "DONE" : "POST RACE"}
+                  <button className="btn btn-success" onClick={handlePostRace}>
+                    POST RACE
                   </button>
 
                 </>
