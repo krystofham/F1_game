@@ -459,7 +459,7 @@ export default function RacePage({ onSeasonChange }) {
   const handleSimAll = async () => {
     setRunning(true);
     try {
-      const res = await api.simRace();          // 1 request místo 70
+      const res = await api.simRace();
       await playSnapshots(res.snapshots);        // animace lokálně
       setLap(res.final_state.lap);
       setDrivers(res.final_state.drivers ?? []);
@@ -515,20 +515,6 @@ export default function RacePage({ onSeasonChange }) {
       </div>
       {!raceState && (
         <>
-          {/* 
-          JAK FUNGUJE PROP AvgPneu NA ŘÁDKU VYŠE:
-          1. Spočítá výskyt tyre:
-            const tyreCounts = raceData.drivers.reduce((acc, driver) => {
-              const tyre = driver.current_tyre;
-              if (tyre) acc[tyre] = (acc[tyre] || 0) + 1;
-              return acc;
-            }, {});
-
-          2. Vybere tyrematiku s nejvyšším počtem výskytů:
-            const AvgPneu = Object.keys(tyreCounts).reduce((a, b) => 
-              tyreCounts[a] > tyreCounts[b] ? a : b
-            );
-        */}
           <InitForm
             onInit={handleInit}
             currentClima={weather?.climax}
