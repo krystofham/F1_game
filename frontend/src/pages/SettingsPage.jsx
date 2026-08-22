@@ -1,9 +1,7 @@
 import { useState, useEffect } from "react";
 import { api } from "../utils/api";
 
-// ---------------------------------------------------------------------------
 // Helpers
-// ---------------------------------------------------------------------------
 function Section({ title, children }) {
   return (
     <div style={{ marginBottom: 40 }}>
@@ -60,9 +58,7 @@ function Toast({ msg, type }) {
   );
 }
 
-// ---------------------------------------------------------------------------
 // Colour tokens the user can tweak
-// ---------------------------------------------------------------------------
 const DEFAULT_COLORS = {
   "--accent":  "#8ecae6",
   "--bg":      "#0D1B2A",
@@ -91,9 +87,7 @@ function setCSSVar(name, value) {
   document.documentElement.style.setProperty(name, value);
 }
 
-// ---------------------------------------------------------------------------
 // Main page
-// ---------------------------------------------------------------------------
 export default function SettingsPage() {
   const [state, setState] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -194,7 +188,7 @@ export default function SettingsPage() {
         <div className="page-title">SETTINGS</div>
       </div>
 
-      {/* ── APPEARANCE ── */}
+      {/* APPEARANCE */}
       <Section title="Appearance">
         <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
           {Object.entries(COLOR_LABELS).map(([key, label]) => (
@@ -221,7 +215,7 @@ export default function SettingsPage() {
         </button>
       </Section>
 
-      {/* ── HARDCORE / ENGINE ── */}
+      {/* HARDCORE / ENGINE */}
       <Section title="Engine">
         <Field label="FastAPI server URL" hint="restart required">
           <input
@@ -263,7 +257,7 @@ export default function SettingsPage() {
         </Field>
       </Section>
 
-      {/* ── YOUR DRIVERS ── */}
+      {/* YOUR DRIVERS */}
       <Section title="Your Drivers">
         {playerDrivers.length === 0 && (
           <div style={{ fontFamily: "var(--font-mono)", fontSize: 11, color: "var(--text-3)" }}>
@@ -302,8 +296,7 @@ export default function SettingsPage() {
       })}
       </Section>
 
-      {/* ── ALL DRIVERS ── */}
-      <Section title={`All Drivers (${aiDrivers.length} AI)`}>
+      <Section title={`All Drivers`}>
         <div style={{ maxHeight: 300, overflowY: "auto", paddingRight: 4 }}>
         {aiDrivers.map((d, idx) => {
           const globalIdx = drivers.indexOf(d);
@@ -339,7 +332,7 @@ export default function SettingsPage() {
         </div>
       </Section>
 
-      {/* ── TEAMS ── */}
+      {/* TEAMS */}
       <Section title="Teams">
         {teams.map((t, idx) => (
           <Field key={idx} label={t.name} hint={`rating ${t.rating}`}>
@@ -357,7 +350,7 @@ export default function SettingsPage() {
         ))}
       </Section>
 
-      {/* ── SAVE ── */}
+      {/* SAVE */}
       <button
         className="btn btn-primary"
         style={{ fontSize: 11, letterSpacing: 2, padding: "12px 32px", marginTop: 8 }}
