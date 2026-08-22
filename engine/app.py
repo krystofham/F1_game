@@ -1456,9 +1456,7 @@ async def api_sim_race():
     }
 
 
-# ---------------------------------------------------------------------------
 # POST /api/sim_until
-# ---------------------------------------------------------------------------
 
 
 @app.post("/api/sim_until")
@@ -1474,7 +1472,6 @@ async def api_sim_until(data: SimUntilPayload):
     total_laps = race_ctx["total_laps"]
     race = state.get("race", "Unknown Race")
 
-    # --- time_laps guard ---
     time_laps = state.get("time_laps")
     if time_laps is None:
         elog(
@@ -1589,8 +1586,12 @@ async def api_sim_until(data: SimUntilPayload):
             stop_on_event = settings.get("stop_on_event", True)
         except Exception:
             stop_on_event = True
+        smt_happened = state.get("smt_happened", False)
         if smt_occurs and not smt_happened and stop_on_event:
-            smt_happened = True
+            updated = _state()
+            updated["smt_happened"] = True
+            _write_state(updated, "api_sim_race")
+            dlog(fn="api_sim_race", msg="breaking loop", smt_occurs=smt_occurs)
             break
         lap_snapshots.append({"lap": lap, "drivers": current_state.get("drivers", [])})
 
