@@ -64,7 +64,6 @@ def sim_the_lap(
         SAFETY_CAR = False
 
     cars.sort(key=lambda x: (x.dnf, x.time))
-    info(WETTINESS, forecast, lap, weather, LAPS, climax)
 
     for car in cars:
         if car.is_player:

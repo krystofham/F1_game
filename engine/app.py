@@ -847,7 +847,6 @@ async def api_post_race():
         season=season_count,
         race_ctx=race_ctx,
     )
-
     record_broken = update_track_record(
         time_laps=state.get("time_laps", []),
         track=race,
