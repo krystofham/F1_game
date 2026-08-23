@@ -52,10 +52,8 @@ def pit_player(
 
     if not player.dnf:
         if pick == "tyrestav":
-            # print(player.tyre, round(player.wear, 2), "%")
             player.time += 2
         elif pick == "tyresafe":
-            # print("PNEUSAFE active for 1 lap")
             player.wear -= 1
             player.time += 3
         elif pick == "2":

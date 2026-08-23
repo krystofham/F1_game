@@ -9,7 +9,7 @@ from log import ilog
 def ask_for_int():
     return load_data(init)
 
-
+# Not using
 def technical_sector_sim(settings):
     speed_in_training = settings[0] / 10
     understeer_in_traning = settings[1] / 5
@@ -194,7 +194,7 @@ def technical_sector_sim(settings):
     # plt.tight_layout()
     # plt.show()
 
-
+# Remake PLSSSS
 def training(speed, climax, cars):
     speed_in_training = 0
     understeer_in_traning = 0
@@ -215,9 +215,7 @@ def training(speed, climax, cars):
         speed=speed,
         climax=climax,
     )
-    # print("Settings of the car. You have three attemps")
     for x in range(3):
-        # print("We are setting front wing. Value 0-11. In lower speed higher number. Lowers understeer. During rain bigger number.")
         user_input = ask_for_int()["front_wing"]
         if speed == "quick":
             front_wing_ideal = random.randint(0, 4)

@@ -64,13 +64,7 @@ def sim_the_lap(
         SAFETY_CAR = False
 
     cars.sort(key=lambda x: (x.dnf, x.time))
-
-    for car in cars:
-        if car.is_player:
-            car.player_info(cars, COUNT_CARS, player, player_2, SAFETY_CAR)
-
-    cars.sort(key=lambda x: (x.dnf, x.time))
-
+    
     for i, car in enumerate(cars, 1):
         if i != 1:
             car.drs = car.drss(cars[i - 2])
@@ -127,7 +121,6 @@ def sim_the_lap(
             boxy_po_teamu[a.team] = boxy_po_teamu.get(a.team, 0) + 1
     for team, count in boxy_po_teamu.items():
         if count >= 2:
-            # print(f"{team.name} is going to double stack.")
             continue
 
     cars.sort(key=lambda x: (x.dnf, x.time))
@@ -248,11 +241,8 @@ def init_race(
             TIME_S3 = track.TIME_S3
             LAPS = track.laps
             dnf_probability = track.dnf_probability
-            # print(f"závod {race} má {LAPS}")
     for x in cars:
         x.safety_car_probability = dnf_probability
-    # print(f"Actual race {race} {b}/{len(championship)}")
-    # print(f"Track is known for {tyre} tyre and {speed} speed. Has {LAPS} laps")
     strategy(LAPS, TIME_S1, TIME_S2, TIME_S3, tyre, speed, climax)
 
     if tyre == "medium":
@@ -282,9 +272,6 @@ def init_race(
     weather_3 = generate_weather(weather_2, climax)
     weather_4 = generate_weather(weather_3, climax)
     forecast = [weather_1, weather_2, weather_3, weather_4]
-    # print(f"Will be {climax}")
-    for weather in forecast:
-        print(f"weather: 🌤️ ☁️  {weather}")
     for car in cars:
         car.tyre = random.choice(["hard", "medium"])
     player.tyre = get_player_tyre(PNEU_types, player.tyre, "driver_1")
@@ -422,8 +409,6 @@ def sim_the_race(
             dnf_probability = track.dnf_probability
     for x in cars:
         x.safety_car_probability = dnf_probability
-    # print(f"Actual race {race} {b}/{len(championship)}")
-    # print(f"Track is known for {tyre} tyre and {speed} speed. Has {LAPS} laps")
     strategy(LAPS, TIME_S1, TIME_S2, TIME_S3, tyre, speed, climax)
 
     if tyre == "medium":
@@ -457,9 +442,6 @@ def sim_the_race(
     weather_3 = generate_weather(weather_2, climax)
     weather_4 = generate_weather(weather_3, climax)
     forecast = [weather_1, weather_2, weather_3, weather_4]
-    # print(f"Will be {climax}")
-    for weather in forecast:
-        print(f"weather: 🌤️ ☁️  {weather}")
     for car in cars:
         car.tyre = random.choice(["hard", "medium"])
     player.tyre = get_player_tyre(PNEU_types, player.tyre, "driver_1")

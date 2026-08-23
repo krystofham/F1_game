@@ -1,6 +1,6 @@
 from log import dlog
 
-
+# Make this as an api endpoint
 def strategy(LAPS, TIME_S1, TIME_S2, TIME_S3, tyre, speed, climax):
     count_laps = LAPS
     if count_laps < 2:
