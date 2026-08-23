@@ -1,0 +1,66 @@
+{"ts": "2026-08-23T10:20:05", "event": "[WARNING]", "fn": "safety_car", "msg": "driver mistake penalty", "name": "Alex Storme", "penalty": 18, "lap": 15, "weather": "sunny"}
+{"ts": "2026-08-23T10:20:05", "event": "[WARNING]", "fn": "safety_car", "msg": "driver mistake penalty", "name": "Felipe Marquez", "penalty": 46, "lap": 21, "weather": "sunny"}
+{"ts": "2026-08-23T10:20:05", "event": "[WARNING]", "fn": "safety_car", "msg": "driver mistake penalty", "name": "Matteo Blaze", "penalty": 53, "lap": 35, "weather": "sunny"}
+{"ts": "2026-08-23T10:20:06", "event": "[WARNING]", "fn": "safety_car", "msg": "driver mistake penalty", "name": "Santiago Cruz", "penalty": 35, "lap": 58, "weather": "sunny"}
+{"ts": "2026-08-23T10:20:12", "event": "[WARNING]", "fn": "get_player_tyre", "msg": "driver key missing", "driver_key": "driver_1"}
+{"ts": "2026-08-23T10:20:12", "event": "[WARNING]", "fn": "get_player_tyre", "msg": "driver key missing", "driver_key": "driver_2"}
+{"ts": "2026-08-23T10:20:13", "event": "[WARNING]", "fn": "safety_car", "msg": "driver mistake penalty", "name": "Johan Reißer", "penalty": 35, "lap": 3, "weather": "sunny"}
+{"ts": "2026-08-23T10:20:13", "event": "[WARNING]", "fn": "safety_car", "msg": "driver mistake penalty", "name": "Sebastian Krell", "penalty": 14, "lap": 9, "weather": "sunny"}
+{"ts": "2026-08-23T10:20:13", "event": "[WARNING]", "fn": "safety_car", "msg": "driver mistake penalty", "name": "Enzo DaCosta", "penalty": 28, "lap": 10, "weather": "sunny"}
+{"ts": "2026-08-23T10:20:14", "event": "[WARNING]", "fn": "safety_car", "msg": "driver mistake penalty", "name": "Aiden Falk", "penalty": 47, "lap": 47, "weather": "sunny"}
+{"ts": "2026-08-23T10:20:14", "event": "[WARNING]", "fn": "safety_car", "msg": "driver mistake penalty", "name": "Arjun Desai", "penalty": 55, "lap": 53, "weather": "sunny"}
+{"ts": "2026-08-23T10:20:14", "event": "[WARNING]", "fn": "safety_car", "msg": "driver mistake penalty", "name": "Diego Ventura", "penalty": 25, "lap": 64, "weather": "sunny"}
+{"ts": "2026-08-23T10:23:02", "event": "[WARNING]", "fn": "api_sim_race", "msg": "time_laps not empty at sim_race start — leftover from previous race?", "race": "Grand Prix de France", "time_laps_count": 2100}
+{"ts": "2026-08-23T10:23:02", "event": "[WARNING]", "fn": "safety_car", "msg": "driver mistake penalty", "name": "Ivan Vasiliev", "penalty": 25, "lap": 7, "weather": "sunny"}
+{"ts": "2026-08-23T10:23:02", "event": "[WARNING]", "fn": "safety_car", "msg": "driver mistake penalty", "name": "Marco Falcone", "penalty": 11, "lap": 8, "weather": "sunny"}
+{"ts": "2026-08-23T10:23:02", "event": "[WARNING]", "fn": "safety_car", "msg": "driver mistake penalty", "name": "Tomás Moreira", "penalty": 16, "lap": 18, "weather": "sunny"}
+{"ts": "2026-08-23T10:23:03", "event": "[WARNING]", "fn": "safety_car", "msg": "driver mistake penalty", "name": "Elias Northgate", "penalty": 35, "lap": 20, "weather": "sunny"}
+{"ts": "2026-08-23T10:23:03", "event": "[WARNING]", "fn": "safety_car", "msg": "driver mistake penalty", "name": "Matteo Blaze", "penalty": 18, "lap": 28, "weather": "sunny"}
+{"ts": "2026-08-23T10:23:04", "event": "[WARNING]", "fn": "safety_car", "msg": "driver mistake penalty", "name": "Pierre Lucien", "penalty": 42, "lap": 65, "weather": "sunny"}
+{"ts": "2026-08-23T10:23:10", "event": "[WARNING]", "fn": "get_player_tyre", "msg": "driver key missing", "driver_key": "driver_1"}
+{"ts": "2026-08-23T10:23:10", "event": "[WARNING]", "fn": "get_player_tyre", "msg": "driver key missing", "driver_key": "driver_2"}
+{"ts": "2026-08-23T10:23:11", "event": "[WARNING]", "fn": "safety_car", "msg": "driver mistake penalty", "name": "Pierre Lucien", "penalty": 55, "lap": 3, "weather": "sunny"}
+{"ts": "2026-08-23T10:23:12", "event": "[WARNING]", "fn": "safety_car", "msg": "driver mistake penalty", "name": "Santiago Cruz", "penalty": 16, "lap": 39, "weather": "sunny"}
+{"ts": "2026-08-23T10:23:15", "event": "[WARNING]", "fn": "get_player_tyre", "msg": "driver key missing", "driver_key": "driver_1"}
+{"ts": "2026-08-23T10:23:15", "event": "[WARNING]", "fn": "get_player_tyre", "msg": "driver key missing", "driver_key": "driver_2"}
+{"ts": "2026-08-23T10:23:16", "event": "[WARNING]", "fn": "safety_car", "msg": "driver mistake penalty", "name": "Sebastian Krell", "penalty": 30, "lap": 28, "weather": "sunny"}
+{"ts": "2026-08-23T10:23:16", "event": "[WARNING]", "fn": "safety_car", "msg": "driver mistake penalty", "name": "Santiago Cruz", "penalty": 32, "lap": 32, "weather": "sunny"}
+{"ts": "2026-08-23T10:23:16", "event": "[WARNING]", "fn": "safety_car", "msg": "driver mistake penalty", "name": "Aiden Falk", "penalty": 18, "lap": 32, "weather": "sunny"}
+{"ts": "2026-08-23T10:23:20", "event": "[WARNING]", "fn": "get_player_tyre", "msg": "driver key missing", "driver_key": "driver_1"}
+{"ts": "2026-08-23T10:23:20", "event": "[WARNING]", "fn": "get_player_tyre", "msg": "driver key missing", "driver_key": "driver_2"}
+{"ts": "2026-08-23T10:23:29", "event": "[WARNING]", "fn": "get_player_tyre", "msg": "driver key missing", "driver_key": "driver_1"}
+{"ts": "2026-08-23T10:23:29", "event": "[WARNING]", "fn": "get_player_tyre", "msg": "driver key missing", "driver_key": "driver_2"}
+{"ts": "2026-08-23T10:23:31", "event": "[WARNING]", "fn": "safety_car", "msg": "driver mistake penalty", "name": "Leo Krüger", "penalty": 19, "lap": 7, "weather": "sunny"}
+{"ts": "2026-08-23T10:23:31", "event": "[WARNING]", "fn": "safety_car", "msg": "driver mistake penalty", "name": "Tomás Moreira", "penalty": 35, "lap": 28, "weather": "sunny"}
+{"ts": "2026-08-23T10:23:36", "event": "[WARNING]", "fn": "get_player_tyre", "msg": "driver key missing", "driver_key": "driver_1"}
+{"ts": "2026-08-23T10:23:36", "event": "[WARNING]", "fn": "get_player_tyre", "msg": "driver key missing", "driver_key": "driver_2"}
+{"ts": "2026-08-23T10:23:44", "event": "[WARNING]", "fn": "get_player_tyre", "msg": "driver key missing", "driver_key": "driver_1"}
+{"ts": "2026-08-23T10:23:44", "event": "[WARNING]", "fn": "get_player_tyre", "msg": "driver key missing", "driver_key": "driver_2"}
+{"ts": "2026-08-23T10:23:45", "event": "[WARNING]", "fn": "safety_car", "msg": "driver mistake penalty", "name": "Arjun Desai", "penalty": 46, "lap": 7, "weather": "sunny"}
+{"ts": "2026-08-23T10:23:49", "event": "[WARNING]", "fn": "get_player_tyre", "msg": "driver key missing", "driver_key": "driver_1"}
+{"ts": "2026-08-23T10:23:49", "event": "[WARNING]", "fn": "get_player_tyre", "msg": "driver key missing", "driver_key": "driver_2"}
+{"ts": "2026-08-23T10:23:53", "event": "[WARNING]", "fn": "safety_car", "msg": "driver mistake penalty", "name": "Julian Stroud", "penalty": 29, "lap": 19, "weather": "sunny"}
+{"ts": "2026-08-23T10:23:53", "event": "[WARNING]", "fn": "safety_car", "msg": "driver mistake penalty", "name": "Tomás Moreira", "penalty": 45, "lap": 24, "weather": "sunny"}
+{"ts": "2026-08-23T10:24:04", "event": "[WARNING]", "fn": "get_player_tyre", "msg": "driver key missing", "driver_key": "driver_1"}
+{"ts": "2026-08-23T10:24:04", "event": "[WARNING]", "fn": "get_player_tyre", "msg": "driver key missing", "driver_key": "driver_2"}
+{"ts": "2026-08-23T10:24:08", "event": "[WARNING]", "fn": "safety_car", "msg": "driver mistake penalty", "name": "Tomás Moreira", "penalty": 51, "lap": 21, "weather": "sunny"}
+{"ts": "2026-08-23T10:24:08", "event": "[WARNING]", "fn": "safety_car", "msg": "driver mistake penalty", "name": "Lukas Rennhardt", "penalty": 35, "lap": 26, "weather": "sunny"}
+{"ts": "2026-08-23T10:24:08", "event": "[WARNING]", "fn": "safety_car", "msg": "driver mistake penalty", "name": "Enzo DaCosta", "penalty": 44, "lap": 37, "weather": "sunny"}
+{"ts": "2026-08-23T10:24:13", "event": "[WARNING]", "fn": "get_player_tyre", "msg": "driver key missing", "driver_key": "driver_1"}
+{"ts": "2026-08-23T10:24:13", "event": "[WARNING]", "fn": "get_player_tyre", "msg": "driver key missing", "driver_key": "driver_2"}
+{"ts": "2026-08-23T10:24:14", "event": "[WARNING]", "fn": "safety_car", "msg": "driver mistake penalty", "name": "Mikhail Antonov", "penalty": 43, "lap": 6, "weather": "sunny"}
+{"ts": "2026-08-23T10:24:14", "event": "[WARNING]", "fn": "safety_car", "msg": "driver mistake penalty", "name": "Enzo DaCosta", "penalty": 14, "lap": 13, "weather": "sunny"}
+{"ts": "2026-08-23T10:24:14", "event": "[WARNING]", "fn": "safety_car", "msg": "driver mistake penalty", "name": "Aiden Falk", "penalty": 47, "lap": 22, "weather": "sunny"}
+{"ts": "2026-08-23T10:24:14", "event": "[WARNING]", "fn": "safety_car", "msg": "driver mistake penalty", "name": "Hiro Tanaka", "penalty": 40, "lap": 25, "weather": "sunny"}
+{"ts": "2026-08-23T10:24:18", "event": "[WARNING]", "fn": "get_player_tyre", "msg": "driver key missing", "driver_key": "driver_1"}
+{"ts": "2026-08-23T10:24:18", "event": "[WARNING]", "fn": "get_player_tyre", "msg": "driver key missing", "driver_key": "driver_2"}
+{"ts": "2026-08-23T10:24:20", "event": "[WARNING]", "fn": "safety_car", "msg": "driver mistake penalty", "name": "Santiago Cruz", "penalty": 14, "lap": 37, "weather": "sunny"}
+{"ts": "2026-08-23T10:24:20", "event": "[WARNING]", "fn": "safety_car", "msg": "driver mistake penalty", "name": "Carlos Navarro", "penalty": 47, "lap": 44, "weather": "sunny"}
+{"ts": "2026-08-23T10:24:20", "event": "[WARNING]", "fn": "safety_car", "msg": "driver mistake penalty", "name": "Theo Hartman", "penalty": 12, "lap": 56, "weather": "sunny"}
+{"ts": "2026-08-23T10:24:28", "event": "[WARNING]", "fn": "api_sim_race", "msg": "time_laps not empty at sim_race start — leftover from previous race?", "race": "Grand Prix de France", "time_laps_count": 2100}
+{"ts": "2026-08-23T10:24:28", "event": "[WARNING]", "fn": "safety_car", "msg": "driver mistake penalty", "name": "Pierre Lucien", "penalty": 51, "lap": 6, "weather": "sunny"}
+{"ts": "2026-08-23T10:24:30", "event": "[WARNING]", "fn": "safety_car", "msg": "driver mistake penalty", "name": "Hiro Tanaka", "penalty": 53, "lap": 53, "weather": "sunny"}
+{"ts": "2026-08-23T10:24:30", "event": "[WARNING]", "fn": "safety_car", "msg": "driver mistake penalty", "name": "Santiago Cruz", "penalty": 54, "lap": 55, "weather": "sunny"}
+{"ts": "2026-08-23T10:24:30", "event": "[WARNING]", "fn": "safety_car", "msg": "driver mistake penalty", "name": "Carlos Navarro", "penalty": 18, "lap": 63, "weather": "sunny"}
+{"ts": "2026-08-23T10:24:40", "event": "[WARNING]", "fn": "get_player_tyre", "msg": "driver key missing", "driver_key": "driver_1"}
+{"ts": "2026-08-23T10:24:40", "event": "[WARNING]", "fn": "get_player_tyre", "msg": "driver key missing", "driver_key": "driver_2"}

@@ -933,9 +933,7 @@ async def api_get_climax():
     }
 
 
-# ---------------------------------------------------------------------------
 # POST /api/post_championship
-# ---------------------------------------------------------------------------
 
 
 def api_post_championship():
@@ -954,14 +952,22 @@ def api_post_championship():
         _b,
         season_count,
     ) = load_game_objects(apply_state=False)
+
+    list_drivers_mmr2 = load_mmr2_drivers()
     best, worst = simulate_season_mmr2(list_drivers_mmr2)
+
     season_count += 1
 
     for mmr2_driver in list_drivers_mmr2:
         mmr2_driver.rating -= 1 / (season_count * 2)
-
-    worst.name = random.choice(names_free_drivers)
+    # Worst player removed
     worst.rating = random.uniform(0.95, 1.05)
+    worst_old_player = worst.name
+    new_name_mmr2 = random.choice(names_free_drivers)
+    names_free_drivers.remove(new_name_mmr2)
+    worst.name = new_name_mmr2
+
+
     ilog(
         fn="api_post_championship",
         msg="MMR2 season simmed",
@@ -972,16 +978,28 @@ def api_post_championship():
      
     cars.sort(key=lambda x: x.points, reverse=True)
     last_car = cars[-1]
-
+    # Best in mmr2 -- worst in mmr1
     if last_car.is_player:
         old_best_name = best.name
         old_best_rating = best.rating
         if player.name == last_car.name:
+            player_name_cpy = player.name
+            player_ratings_cpy = player.ratings
             player.name = old_best_name
             player.ratings = old_best_rating
         elif player_2.name == last_car.name:
+            player_name_cpy = player_2.name
+            player_ratings_cpy = player_2.ratings
             player_2.name = old_best_name
             player_2.ratings = old_best_rating
+        else:
+            elog(
+                fn="api_post_championship",
+                msg="Bad config of drivers",
+            )
+            raise ValueError("Bad config of drivers")
+        best.name = player_name_cpy
+        best.rating = player_ratings_cpy
         ilog(
             fn="api_post_championship",
             msg="last-placed player auto-promoted from MMR2",
@@ -993,7 +1011,7 @@ def api_post_championship():
     teams, player, player_2, player.name, player_2.name, cars = (
         trading_at_the_of_season(teams, player, player_2, cars)
     )
-    
+    save_mmr2_drivers(list_drivers_mmr2)
     save_state_end_of_season(cars, teams, season_count)
     save_season_csv(cars, teams, season_count)
     WETTINESS, cars, teams = reset_championship(cars, teams)
@@ -1017,9 +1035,7 @@ def api_post_championship():
     return {"status": "championship_done", "season": season_count}
 
 
-# ---------------------------------------------------------------------------
 # Lap user data / init config
-# ---------------------------------------------------------------------------
 
 
 @app.post("/api/set_lap_user_data")
@@ -1107,8 +1123,7 @@ async def api_get_transfer_offers():
     }
 
     try:
-        from engine.mmr2 import list_drivers_mmr2, simulate_season_mmr2
-
+        list_drivers_mmr2 = load_mmr2_drivers()
         best, _ = simulate_season_mmr2(list_drivers_mmr2)
         result["mmr2_best"] = {"name": best.name, "rating": round(best.rating, 4)}
     except Exception as e:

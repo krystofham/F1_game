@@ -1,5 +1,5 @@
 import random
-
+import json
 from log import ilog
 
 drivers_mmr2 = [
@@ -80,7 +80,62 @@ def simulate_season_mmr2(drivers):
     )
     return best, worst
 
+def save_mmr2_drivers(drivers, filename="mmr2_drivers.json"):
+    data = []
 
-list_drivers_mmr2 = [
-    Drivermmr2(name, random.uniform(5.95, 8.05)) for name in drivers_mmr2
-]
+    for driver in drivers:
+        data.append({
+            "name": driver.name,
+            "rating": driver.rating,
+            "ratings": driver.ratings,
+            "points": driver.points,
+        })
+
+    with open(filename, "w", encoding="utf-8") as f:
+        json.dump(data, f, ensure_ascii=False, indent=4)
+
+    ilog(
+        fn="save_mmr2_drivers",
+        msg="MMR2 drivers saved",
+        driver_count=len(drivers),
+        filename=filename,
+    )
+
+
+def load_mmr2_drivers(filename="mmr2_drivers.json"):
+    try:
+        with open(filename, "r", encoding="utf-8") as f:
+            data = json.load(f)
+
+        drivers = []
+
+        for driver_data in data:
+            driver = Drivermmr2(
+                driver_data["name"],
+                driver_data["rating"],
+            )
+
+            driver.ratings = driver_data.get("ratings", driver.rating)
+            driver.points = driver_data.get("points", 0)
+
+            drivers.append(driver)
+
+        ilog(
+            fn="load_mmr2_drivers",
+            msg="MMR2 drivers loaded",
+            driver_count=len(drivers),
+            filename=filename,
+        )
+
+        return drivers
+
+    except FileNotFoundError:
+        ilog(
+            fn="load_mmr2_drivers",
+            msg="MMR2 driver file not found",
+            filename=filename,
+        )
+        return []
+
+list_drivers_mmr2 = [Drivermmr2(name, random.uniform(5.95, 8.05)) for name in drivers_mmr2]
+save_mmr2_drivers(list_drivers_mmr2)

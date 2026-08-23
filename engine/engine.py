@@ -4,7 +4,7 @@ import random
 
 from load_data_json import *
 from log import dlog, elog, ilog, wlog
-from mmr2 import list_drivers_mmr2, simulate_season_mmr2
+from mmr2 import simulate_season_mmr2, load_mmr2_drivers, save_mmr2_drivers
 from paths import config_dir
 from weather import generate_weather
 

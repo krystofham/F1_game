@@ -98,9 +98,6 @@ def sim_the_lap(
     position_2 = RANK.index(player_2.name) + 1 if player_2.name in RANK else COUNT_CARS
 
     WETTINESS = wet_track(weather_1, WETTINESS)
-    # print(f"\n📊 Leaderboard {player.name}: {position}. position from {len(RANK)}")
-    # print(f"\n📊 Leaderboard {player_2.name}: {position_2}. position from {len(RANK)}")
-    drivers_table(cars, COUNT_CARS)
 
     for car in cars:
         SAFETY_CAR, LAPS_REMAINING = car.simuluj_ai(
